@@ -1,14 +1,19 @@
 import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-toolbox";
 import { configDotenv } from "dotenv";
-import { HardhatUserConfig } from "hardhat/config";
+import { type HardhatUserConfig } from "hardhat/config";
 
 configDotenv({
   path: ["./.env.local", ".env"],
 })
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.27",
+  solidity: {
+    version: "0.8.28",
+    settings: {
+      viaIR: true,
+    }
+  },
   networks: {
     sepolia: {
       url: process.env.API_URL,
