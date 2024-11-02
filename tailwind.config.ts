@@ -8,10 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
+      fontFamily: {
+        Satoshi: ["Satoshi", "sans-serif"],
+      }
     },
   },
   plugins: [],

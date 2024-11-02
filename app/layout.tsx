@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`w-screen h-screen bg-yellow-100 antialiased`}
+        className={`w-screen h-screen bg-red-50 antialiased font-medium`}
       >
         {children}
       </body>
