@@ -1,9 +1,9 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "C:\\Users\\Michthebrand\\Documents\\swe\\solidity-projects\\easymilestones\\contracts\\EasyMilestones.sol": {
-      "lastModificationDate": 1730571425809,
-      "contentHash": "43706b23d73addb18f15c1ce6d4b7024",
+    "C:\\Users\\Michthebrand\\Documents\\swe\\solidity-projects\\easymilestones\\backend\\contracts\\EasyMilestones.sol": {
+      "lastModificationDate": 1730586440800,
+      "contentHash": "fdb88f2452d3f359019721e289062566",
       "sourceName": "contracts/EasyMilestones.sol",
       "solcConfig": {
         "version": "0.8.28",

@@ -21,6 +21,16 @@ import type {
 } from "./common";
 
 export declare namespace EasyMilestones {
+  export type MilestoneWithoutStatusStruct = {
+    amount: BigNumberish;
+    deadline: BigNumberish;
+  };
+
+  export type MilestoneWithoutStatusStructOutput = [
+    amount: bigint,
+    deadline: bigint
+  ] & { amount: bigint; deadline: bigint };
+
   export type MilestoneStruct = {
     amount: BigNumberish;
     deadline: BigNumberish;
@@ -57,7 +67,7 @@ export interface EasyMilestonesInterface extends Interface {
 
   encodeFunctionData(
     functionFragment: "create_transaction",
-    values: [BigNumberish, EasyMilestones.MilestoneStruct[]]
+    values: [BigNumberish, EasyMilestones.MilestoneWithoutStatusStruct[]]
   ): string;
   encodeFunctionData(
     functionFragment: "get_transaction",
@@ -118,7 +128,10 @@ export interface EasyMilestones extends BaseContract {
   ): Promise<this>;
 
   create_transaction: TypedContractMethod<
-    [_deadline: BigNumberish, _milestones: EasyMilestones.MilestoneStruct[]],
+    [
+      _deadline: BigNumberish,
+      _milestones: EasyMilestones.MilestoneWithoutStatusStruct[]
+    ],
     [void],
     "payable"
   >;
@@ -136,7 +149,10 @@ export interface EasyMilestones extends BaseContract {
   getFunction(
     nameOrSignature: "create_transaction"
   ): TypedContractMethod<
-    [_deadline: BigNumberish, _milestones: EasyMilestones.MilestoneStruct[]],
+    [
+      _deadline: BigNumberish,
+      _milestones: EasyMilestones.MilestoneWithoutStatusStruct[]
+    ],
     [void],
     "payable"
   >;

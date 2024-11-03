@@ -1,11 +1,11 @@
-async function main() {
+export async function main() {
   const [
     owner,
   ] = await ethers.getSigners();
-  const Razor = await ethers.getContractFactory('Razor', owner);
-  const razor = await Razor.deploy();
-  await razor.waitForDeployment();
-  console.log("Razor token deployed to address: ", await razor.getAddress());
+  const EasyMilestones = await ethers.getContractFactory('EasyMilestones', owner);
+  const easymilestones = await EasyMilestones.deploy();
+  await easymilestones.waitForDeployment();
+  console.log("EasyMilestones deployed to address: ", await easymilestones.getAddress());
   console.log("By this homie: ", owner.address)
 }
 

@@ -33,6 +33,12 @@ importers:
       hardhat:
         specifier: ^2.22.12
         version: 2.22.15(bufferutil@4.0.5)(ts-node@10.9.2(@types/node@22.8.6)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.7)
+      prettier:
+        specifier: ^3.3.3
+        version: 3.3.3
+      prettier-plugin-solidity:
+        specifier: ^1.4.1
+        version: 1.4.1(prettier@3.3.3)
 
 packages:
 
@@ -2084,9 +2090,20 @@ packages:
     resolution: {integrity: sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==}
     engines: {node: '>= 0.8.0'}
 
+  prettier-plugin-solidity@1.4.1:
+    resolution: {integrity: sha512-Mq8EtfacVZ/0+uDKTtHZGW3Aa7vEbX/BNx63hmVg6YTiTXSiuKP0amj0G6pGwjmLaOfymWh3QgXEZkjQbU8QRg==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      prettier: '>=2.3.0'
+
   prettier@2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
     engines: {node: '>=10.13.0'}
+    hasBin: true
+
+  prettier@3.3.3:
+    resolution: {integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==}
+    engines: {node: '>=14'}
     hasBin: true
 
   process-nextick-args@2.0.1:
@@ -5312,7 +5329,15 @@ snapshots:
 
   prelude-ls@1.1.2: {}
 
+  prettier-plugin-solidity@1.4.1(prettier@3.3.3):
+    dependencies:
+      '@solidity-parser/parser': 0.18.0
+      prettier: 3.3.3
+      semver: 7.6.3
+
   prettier@2.8.8: {}
+
+  prettier@3.3.3: {}
 
   process-nextick-args@2.0.1: {}
 
