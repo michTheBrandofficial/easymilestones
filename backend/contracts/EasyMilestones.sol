@@ -82,7 +82,7 @@ contract EasyMilestones {
 
 	event FundsTransferred(address indexed recipient, uint256 amount, uint256 timestamp);
 
-	function process_due_milestones() private {
+	function process_due_milestones() public {
 		for (uint i = 0; i < transaction_owners_list.length; i++) {
 			address owner = transaction_owners_list[i];
 			Transaction storage txn = transactions[owner];

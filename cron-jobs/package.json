@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cron": "^3.1.8"
+    "cron": "^3.1.8",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.4"
   }
 }

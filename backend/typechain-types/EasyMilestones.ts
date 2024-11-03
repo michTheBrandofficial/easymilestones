@@ -8,6 +8,8 @@ import type {
   FunctionFragment,
   Result,
   Interface,
+  EventFragment,
+  AddressLike,
   ContractRunner,
   ContractMethod,
   Listener,
@@ -16,6 +18,7 @@ import type {
   TypedContractEvent,
   TypedDeferredTopicFilter,
   TypedEventLog,
+  TypedLogDescription,
   TypedListener,
   TypedContractMethod,
 } from "./common";
@@ -62,8 +65,13 @@ export declare namespace EasyMilestones {
 
 export interface EasyMilestonesInterface extends Interface {
   getFunction(
-    nameOrSignature: "create_transaction" | "get_transaction"
+    nameOrSignature:
+      | "create_transaction"
+      | "get_transaction"
+      | "process_due_milestones"
   ): FunctionFragment;
+
+  getEvent(nameOrSignatureOrTopic: "FundsTransferred"): EventFragment;
 
   encodeFunctionData(
     functionFragment: "create_transaction",
@@ -71,6 +79,10 @@ export interface EasyMilestonesInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "get_transaction",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "process_due_milestones",
     values?: undefined
   ): string;
 
@@ -82,6 +94,32 @@ export interface EasyMilestonesInterface extends Interface {
     functionFragment: "get_transaction",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "process_due_milestones",
+    data: BytesLike
+  ): Result;
+}
+
+export namespace FundsTransferredEvent {
+  export type InputTuple = [
+    recipient: AddressLike,
+    amount: BigNumberish,
+    timestamp: BigNumberish
+  ];
+  export type OutputTuple = [
+    recipient: string,
+    amount: bigint,
+    timestamp: bigint
+  ];
+  export interface OutputObject {
+    recipient: string;
+    amount: bigint;
+    timestamp: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
 
 export interface EasyMilestones extends BaseContract {
@@ -142,6 +180,8 @@ export interface EasyMilestones extends BaseContract {
     "view"
   >;
 
+  process_due_milestones: TypedContractMethod<[], [void], "nonpayable">;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -159,6 +199,28 @@ export interface EasyMilestones extends BaseContract {
   getFunction(
     nameOrSignature: "get_transaction"
   ): TypedContractMethod<[], [EasyMilestones.TransactionStructOutput], "view">;
+  getFunction(
+    nameOrSignature: "process_due_milestones"
+  ): TypedContractMethod<[], [void], "nonpayable">;
 
-  filters: {};
+  getEvent(
+    key: "FundsTransferred"
+  ): TypedContractEvent<
+    FundsTransferredEvent.InputTuple,
+    FundsTransferredEvent.OutputTuple,
+    FundsTransferredEvent.OutputObject
+  >;
+
+  filters: {
+    "FundsTransferred(address,uint256,uint256)": TypedContractEvent<
+      FundsTransferredEvent.InputTuple,
+      FundsTransferredEvent.OutputTuple,
+      FundsTransferredEvent.OutputObject
+    >;
+    FundsTransferred: TypedContractEvent<
+      FundsTransferredEvent.InputTuple,
+      FundsTransferredEvent.OutputTuple,
+      FundsTransferredEvent.OutputObject
+    >;
+  };
 }
