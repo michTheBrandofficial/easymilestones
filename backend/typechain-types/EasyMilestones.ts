@@ -71,7 +71,9 @@ export interface EasyMilestonesInterface extends Interface {
       | "process_due_milestones"
   ): FunctionFragment;
 
-  getEvent(nameOrSignatureOrTopic: "FundsTransferred"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "FundsTransferred" | "TransactionCreated"
+  ): EventFragment;
 
   encodeFunctionData(
     functionFragment: "create_transaction",
@@ -115,6 +117,19 @@ export namespace FundsTransferredEvent {
     recipient: string;
     amount: bigint;
     timestamp: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace TransactionCreatedEvent {
+  export type InputTuple = [amount: BigNumberish, deadline: BigNumberish];
+  export type OutputTuple = [amount: bigint, deadline: bigint];
+  export interface OutputObject {
+    amount: bigint;
+    deadline: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -210,6 +225,13 @@ export interface EasyMilestones extends BaseContract {
     FundsTransferredEvent.OutputTuple,
     FundsTransferredEvent.OutputObject
   >;
+  getEvent(
+    key: "TransactionCreated"
+  ): TypedContractEvent<
+    TransactionCreatedEvent.InputTuple,
+    TransactionCreatedEvent.OutputTuple,
+    TransactionCreatedEvent.OutputObject
+  >;
 
   filters: {
     "FundsTransferred(address,uint256,uint256)": TypedContractEvent<
@@ -221,6 +243,17 @@ export interface EasyMilestones extends BaseContract {
       FundsTransferredEvent.InputTuple,
       FundsTransferredEvent.OutputTuple,
       FundsTransferredEvent.OutputObject
+    >;
+
+    "TransactionCreated(uint256,uint256)": TypedContractEvent<
+      TransactionCreatedEvent.InputTuple,
+      TransactionCreatedEvent.OutputTuple,
+      TransactionCreatedEvent.OutputObject
+    >;
+    TransactionCreated: TypedContractEvent<
+      TransactionCreatedEvent.InputTuple,
+      TransactionCreatedEvent.OutputTuple,
+      TransactionCreatedEvent.OutputObject
     >;
   };
 }

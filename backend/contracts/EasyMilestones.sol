@@ -1,18 +1,9 @@
 // SPDX-License-Identifier: GPL 3.0
 pragma solidity 0.8.28;
+import "hardhat/console.sol";
 
 /// @notice implement, authentication in a different contract.
 contract EasyMilestones {
-	// holds tokens till a specific milestone is reached
-	// we need the following:
-	// 1. a way to store each user's balance
-	// 2. each user will have only one pending transaction at a time
-	// 3. each transaction will have many milestones
-	// 4. each milestone will have a specific amount of tokens
-	// 5. each milestone will have a specific deadline to be paid
-	// 6. each milestone
-
-	/// @notice the address of the user, the deadline here is the deadline of the last milestone in the array.
 	struct Transaction {
 		uint256 amount;
 		uint256 deadline;
@@ -47,6 +38,8 @@ contract EasyMilestones {
 		_;
 	}
 
+	event TransactionCreated(uint256 amount, uint256 deadline);
+
 	/// @notice this function will create a new transaction for the user, clearing any one it has before, this is bad!!!!!
 	function create_transaction(
 		uint256 _deadline,
@@ -71,6 +64,7 @@ contract EasyMilestones {
 			_deadline,
 			_milestonesWithStatus
 		);
+		emit TransactionCreated(msg.value, _deadline);
 	}
 
 	function get_transaction() external view returns (Transaction memory txn) {
@@ -82,20 +76,35 @@ contract EasyMilestones {
 
 	event FundsTransferred(address indexed recipient, uint256 amount, uint256 timestamp);
 
-	function process_due_milestones() public {
+	function pay_owner(address payable transaction_owner, Milestone memory milestone, uint block_timestamp_milliseconds) internal {
+		if (
+			block_timestamp_milliseconds >= milestone.deadline &&
+			milestone.status == Status.unpaid
+		) {
+			milestone.status = Status.paid;
+			(bool success,) = transaction_owner.call{value: milestone.amount}("");
+			require(success, "Failed to transfer funds");
+			if (success) {
+				console.log('all paid');
+				emit FundsTransferred(transaction_owner, milestone.amount, block_timestamp_milliseconds);
+			} else console.log('not paid');
+		}
+	}
+
+	/// @notice this function will use block.timestamp to check if the milestone is due by converting it to milliseconds.
+	function process_due_milestones() external {
+		uint256 block_timestamp_milliseconds = block.timestamp * 1000;
 		for (uint i = 0; i < transaction_owners_list.length; i++) {
-			address owner = transaction_owners_list[i];
-			Transaction storage txn = transactions[owner];
+			address payable transaction_owner = payable(transaction_owners_list[i]);
+			Transaction storage txn = transactions[transaction_owner];
 			for (uint j = 0; j < txn.milestones.length; j++) {
-				if (
-					block.timestamp >= txn.milestones[j].deadline &&
-					txn.milestones[j].status == Status.unpaid
-				) {
-					txn.milestones[j].status = Status.paid;
-					payable(owner).transfer(txn.milestones[j].amount);
-					emit FundsTransferred(owner, txn.milestones[j].amount, block.timestamp);
-				}
+				pay_owner(
+					transaction_owner, 
+					txn.milestones[j], 
+					block_timestamp_milliseconds
+				);
 			}
 		}
 	}
+
 }

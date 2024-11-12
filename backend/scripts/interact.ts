@@ -1,63 +1,42 @@
+import { ethers } from "hardhat";
 import { last } from "../utils";
+import { MilestoneBuilder } from "./milestone_builder";
 
 export async function main() {
-  const address = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-  const easymilestones = await ethers.getContractAt("EasyMilestones", address);
-  const [signer1 = { address }] = await ethers.getSigners();
-  easymilestones;
-  const milestoneBuilder = new MilestoneBuilder(1000n);
-  const milestones = milestoneBuilder
-    .appendMilestone(2000n, new Date(2024, 10, 4))
-    .appendMilestone(8000n, new Date(2024, 10, 5))
-    .build();
-  await easymilestones.create_transaction(
-    last(milestones).deadline,
-    milestones,
-    {
-      value: milestoneBuilder.getTotalAmount(),
-    }
-  );
-  const transaction = await easymilestones.get_transaction();
-  console.log(`${address} has these milestones:`, transaction[2]);
-}
-
-class MilestoneBuilder {
-  private totalAmount: bigint;
-  private milestoneAmounts: bigint[] = [];
-  private deadlines: bigint[] = [];
-
-  constructor(totalAmount: bigint) {
-    this.totalAmount = totalAmount;
-  }
-
-  appendMilestone(amount: bigint, deadline: Date): MilestoneBuilder {
-    this.milestoneAmounts.push(amount);
-    this.deadlines.push(BigInt(deadline.getTime()));
-    return this;
-  }
-
-  build() {
-    const sum = this.milestoneAmounts.reduce((a, b) => a + b, 0n);
-    if (sum !== this.totalAmount) {
-      throw new Error("Sum of milestone amounts must equal total amount");
-    }
-
-    const milestones = this.milestoneAmounts.map((amount, index) => ({
-      amount,
-      deadline: this.deadlines[index],
-    }));
-
-    return milestones;
-  }
-
-  getTotalAmount() {
-    return this.totalAmount;
-  }
+	const address = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+	const easyMilestones = await ethers.getContractAt("EasyMilestones", address);
+	const [signer1, , , signer3, signer4] = await ethers.getSigners();
+	const contractWithSigner1 = easyMilestones.connect(signer3);
+	const contractWithSigner2 = easyMilestones.connect(signer4);
+	const milestoneBuilder = new MilestoneBuilder(10000n);
+	const milestones = milestoneBuilder
+		.appendMilestone(2000n, new Date(2024, 10, 11, 17, 22))
+		.appendMilestone(6000n, new Date(2024, 10, 11, 17, 24))
+		.appendMilestone(2000n, new Date(2024, 10, 11, 17, 28))
+		.build();
+	await contractWithSigner1.create_transaction(
+		last(milestones).deadline,
+		milestones,
+		{
+			value: milestoneBuilder.getTotalAmount(),
+		},
+	);
+	const txRes = await contractWithSigner2.create_transaction(
+		last(milestones).deadline,
+		milestones,
+		{
+			value: milestoneBuilder.getTotalAmount(),
+		},
+	);
+	await new Promise((resolve) => setTimeout(resolve, 10000));
+	const receipt = await txRes.wait();
+	console.log("receipt", receipt?.events);
+	return easyMilestones;
 }
 
 main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+	.then(() => process.exit(0))
+	.catch((error) => {
+		console.error(error);
+		process.exit(1);
+	});

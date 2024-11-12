@@ -1,6 +1,6 @@
 import { ethers as Ethers } from "hardhat";
-export { };
+export {};
 
 declare global {
-  var ethers: typeof Ethers;
+	var ethers: typeof Ethers;
 }
