@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file://C%3A/Users/Michthebrand/Documents/swe/solidity-projects/easymilestones/frontend/app/page.tsx"],"sourcesContent":["'use client'\nimport { useAccount, useEnsName } from 'wagmi'\n\nexport function Profile() {\n  const { address } = useAccount()\n  const { data, error, status } = useEnsName({ address })\n  if (status === 'pending') return <div>Loading ENS name</div>\n  if (status === 'error')\n    return <div>Error fetching ENS name: {error.message}</div>\n  return <div>ENS name: {data}</div>\n}\n\n\nexport default function Home() {\n  return (\n    <>\n      <header className=\"font-Satoshi\" >I am the header</header>\n      <Profile />\n    </>\n  );\n}\n"],"names":[],"mappings":";;;;;AACA;AAAA;;;AADA;;AAGO,SAAS;;IACd,MAAM,EAAE,OAAO,EAAE,GAAG,CAAA,GAAA,gXAAA,CAAA,aAAU,AAAD;IAC7B,MAAM,EAAE,IAAI,EAAE,KAAK,EAAE,MAAM,EAAE,GAAG,CAAA,GAAA,gXAAA,CAAA,aAAU,AAAD,EAAE;QAAE;IAAQ;IACrD,IAAI,WAAW,WAAW,qBAAO,+YAAC;kBAAI;;;;;;IACtC,IAAI,WAAW,SACb,qBAAO,+YAAC;;YAAI;YAA0B,MAAM,OAAO;;;;;;;IACrD,qBAAO,+YAAC;;YAAI;YAAW;;;;;;;AACzB;GAPgB;;QACM,gXAAA,CAAA,aAAU;QACE,gXAAA,CAAA,aAAU;;;KAF5B;AAUD,SAAS;IACtB,qBACE;;0BACE,+YAAC;gBAAO,WAAU;0BAAgB;;;;;;0BAClC,+YAAC;;;;;;;AAGP;MAPwB"}},
+    {"offset": {"line": 85, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}
