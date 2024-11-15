@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["turbopack://[project]/app/page.tsx"],"sourcesContent":["'use client'\nimport { useAccount, useEnsName } from 'wagmi'\n\nexport function Profile() {\n  const { address } = useAccount()\n  const { data, error, status } = useEnsName({ address })\n  if (status === 'pending') return <div>Loading ENS name</div>\n  if (status === 'error')\n    return <div>Error fetching ENS name: {error.message}</div>\n  return <div>ENS name: {data}</div>\n}\n\n\nexport default function Home() {\n  return (\n    <>\n      <header className=\"font-Satoshi\" >I am the header</header>\n      <Profile />\n    </>\n  );\n}\n"],"names":[],"mappings":";;;;;AACA;AAAA;AADA;;;AAGO,SAAS;IACd,MAAM,EAAE,OAAO,EAAE,GAAG,CAAA,GAAA,6WAAA,CAAA,aAAU,AAAD;IAC7B,MAAM,EAAE,IAAI,EAAE,KAAK,EAAE,MAAM,EAAE,GAAG,CAAA,GAAA,6WAAA,CAAA,aAAU,AAAD,EAAE;QAAE;IAAQ;IACrD,IAAI,WAAW,WAAW,qBAAO,gcAAC;kBAAI;;;;;;IACtC,IAAI,WAAW,SACb,qBAAO,gcAAC;;YAAI;YAA0B,MAAM,OAAO;;;;;;;IACrD,qBAAO,gcAAC;;YAAI;YAAW;;;;;;;AACzB;AAGe,SAAS;IACtB,qBACE;;0BACE,gcAAC;gBAAO,WAAU;0BAAgB;;;;;;0BAClC,gcAAC;;;;;;;AAGP"}},
-    {"offset": {"line": 69, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
-}
