@@ -3,13 +3,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { type ReactNode } from 'react'
 import { cookieToInitialState, createConfig, http, WagmiProvider } from 'wagmi'
 import { sepolia } from 'wagmi/chains'
-import { ganache } from '../utils/chains/ganache'
+import { metaMask } from 'wagmi/connectors'
 
 export const config = createConfig({
-  chains: [ganache, sepolia],
+  chains: [sepolia],
   ssr: true,
+  connectors: [
+    metaMask({
+      extensionOnly: true
+    }),
+  ],
   transports: {
-    [ganache.id]: http(),
     [sepolia.id]: http(),
   },
 })
