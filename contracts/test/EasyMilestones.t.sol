@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { Test, console } from "forge-std/Test.sol";
 import { EasyMilestones } from "../src/EasyMilestones.sol";
 
-library ArrayUtils {
+library LibArray {
   function last(EasyMilestones.MilestoneWithoutStatus[] storage arr)
     internal
     view
@@ -16,7 +16,7 @@ library ArrayUtils {
 }
 
 contract EasyMilestonesTest is Test {
-  using ArrayUtils for EasyMilestones.MilestoneWithoutStatus[];
+  using LibArray for EasyMilestones.MilestoneWithoutStatus[];
 
   EasyMilestones private easyMilestones;
   uint256 private FIRST_NOVEMBER = 1730415600;
@@ -33,7 +33,7 @@ contract EasyMilestonesTest is Test {
     vm.deal(address(this), 1000 ether);
     milestones.push(EasyMilestones.MilestoneWithoutStatus(1 ether, FIFTH_NOVEMBER));
     easyMilestones = new EasyMilestones();
-    easyMilestones.create_transaction{ value: 1 ether }(milestones.last().deadline, milestones);
+    easyMilestones.createTransaction{ value: 1 ether }(milestones.last().deadline, milestones);
   }
 
   function test_FundsTransferred_EventEmitted_When_MilestoneProcessed() public {
@@ -41,16 +41,15 @@ contract EasyMilestonesTest is Test {
     // Check for the event match
     vm.expectEmit(true, false, false, true);
     emit EasyMilestones.FundsTransferred(address(this), 1 ether, block.timestamp);
-    easyMilestones.process_due_milestones();
+    easyMilestones.processDueMilestones();
   }
 
   /// @notice run test with forge test -vvv for console.logs to show
-  function test_actually_paid_address() public {
+  function test_Payment_Is_Made() public {
     vm.warp(THIRTEENTH_NOVEMBER);
     console.log(address(this).balance);
     // Check for the event match
-    easyMilestones.process_due_milestones();
+    easyMilestones.processDueMilestones();
     console.log(address(this).balance);
   }
-
 }
