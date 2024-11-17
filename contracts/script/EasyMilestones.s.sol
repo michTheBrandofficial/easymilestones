@@ -7,7 +7,7 @@ import { EasyMilestones } from "../src/EasyMilestones.sol";
 contract EasyMilestonesScript is Script {
   EasyMilestones public easyMilestones;
 
-  function setUp() public {}
+  function setUp() public { }
 
   function run() public {
     vm.startBroadcast();
