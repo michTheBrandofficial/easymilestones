@@ -1,3 +1,4 @@
+import Logo from '@/assets/images/favicon.png';
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import WagmiContextProvider from "./_context";
@@ -16,8 +17,9 @@ export default async function RootLayout({
   const cookies = (await headers()).get("cookie") || "";
   return (
     <html lang="en">
+      <link rel="icon" href={Logo.src} />
       <body
-        className={`w-screen h-screen bg-red-50 antialiased font-medium`}
+        className={`w-screen h-screen font-Satoshi antialiased font-medium`}
       >
         <WagmiContextProvider cookies={cookies} >
           {children}

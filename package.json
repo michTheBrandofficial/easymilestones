@@ -1,0 +1,6 @@
+{
+  "name": "easy-milestones",
+  "scripts": {
+    "fe": "cd frontend && pnpm run dev"
+  }
+}

@@ -2,11 +2,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { type ReactNode } from 'react'
 import { cookieToInitialState, createConfig, http, WagmiProvider } from 'wagmi'
-import { sepolia } from 'wagmi/chains'
+import { baseSepolia } from 'wagmi/chains'
 import { metaMask } from 'wagmi/connectors'
 
 export const config = createConfig({
-  chains: [sepolia],
+  chains: [baseSepolia],
   ssr: true,
   connectors: [
     metaMask({
@@ -14,7 +14,7 @@ export const config = createConfig({
     }),
   ],
   transports: {
-    [sepolia.id]: http(),
+    [baseSepolia.id]: http(),
   },
 })
 
