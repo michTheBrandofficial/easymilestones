@@ -2,9 +2,9 @@
   "name": "cron-jobs",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "bun run --watch index.ts"
+    "start": "tsx --watch index.ts"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +12,7 @@
   "dependencies": {
     "cron": "^3.1.8",
     "dotenv": "^16.4.5",
-    "ethers": "^6.13.4"
+    "tsx": "^4.19.3",
+    "viem": "^2.23.9"
   }
 }

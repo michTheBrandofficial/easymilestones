@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL 3.0
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.24;
+
 import "forge-std/console.sol";
 import { Set } from "./Libs.sol";
 
@@ -38,7 +39,6 @@ contract EasyMilestones {
 
   event TransactionCreated(address indexed owner, uint256 amount, Milestone[] milestones);
 
-  /// @notice this function will create a new transaction for the user, clearing any one it has before, this is bad!!!!! 👎👎👎
   function createTransaction(uint256 _deadline, MilestoneWithoutStatus[] memory _milestones)
     public
     payable
@@ -50,20 +50,24 @@ contract EasyMilestones {
     for (uint256 i = 0; i < _milestones.length; i++) {
       _milestonesWithStatus[i] = Milestone(_milestones[i].amount, _milestones[i].deadline, Status.unpaid);
     }
+    // deadline here refers to final deadline, which is equal to the deadline of the last milestone in the array.
     transactions[newTransactionOwner].push(Transaction(msg.value, _deadline, _milestonesWithStatus));
     emit TransactionCreated(newTransactionOwner, msg.value, _milestonesWithStatus);
   }
 
-  function getTransactions() external view returns (Transaction[] memory txn) {
-    if (transactionOwnersSet.has(msg.sender)) {
-      txn = transactions[msg.sender];
+  /// @notice anybody can view anybody's transactions
+  function getTransactions(address owner) external view returns (Transaction[] memory txn) {
+    if (transactionOwnersSet.has(owner)) {
+      txn = transactions[owner];
     }
     return txn;
   }
 
   event FundsTransferred(address indexed owner, uint256 amount, uint256 timestamp);
 
-  function payTransactionOwner(address payable transaction_owner, Milestone memory milestone, uint256 block_timestamp) internal {
+  function payTransactionOwner(address payable transaction_owner, Milestone memory milestone, uint256 block_timestamp)
+    internal
+  {
     if (block_timestamp >= milestone.deadline && milestone.status == Status.unpaid) {
       (bool success,) = transaction_owner.call{ value: milestone.amount }("");
       require(success, "Failed to transfer funds");
@@ -73,7 +77,6 @@ contract EasyMilestones {
   }
 
   /// @notice this function will use block.timestamp to check if the milestone is due.
-  /// @notice there are no transactions here
   function processDueMilestones() external {
     uint256 timestamp = block.timestamp;
     address[] memory transactionOwnersList = transactionOwnersSet.toArray();
