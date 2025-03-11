@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL 3.0
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.24;
+
 import "forge-std/console.sol";
 
 contract Set {
   mapping(address => bool) internal addedValuesMapping;
-  address[] internal addedValuesList; 
+  address[] internal addedValuesList;
 
   /// @dev adds an address to a list if the list doesn't have it
   function add(address value) public {

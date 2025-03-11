@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL 3.0
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.24;
+
 import "forge-std/console.sol";
 import { Set } from "./Libs.sol";
 
@@ -64,7 +65,9 @@ contract EasyMilestones {
 
   event FundsTransferred(address indexed owner, uint256 amount, uint256 timestamp);
 
-  function payTransactionOwner(address payable transaction_owner, Milestone memory milestone, uint256 block_timestamp) internal {
+  function payTransactionOwner(address payable transaction_owner, Milestone memory milestone, uint256 block_timestamp)
+    internal
+  {
     if (block_timestamp >= milestone.deadline && milestone.status == Status.unpaid) {
       (bool success,) = transaction_owner.call{ value: milestone.amount }("");
       require(success, "Failed to transfer funds");

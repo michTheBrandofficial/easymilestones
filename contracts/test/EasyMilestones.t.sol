@@ -40,19 +40,15 @@ contract EasyMilestonesTest is Test {
     easyMilestones.createTransaction{ value: 1 ether }(milestones2.last().deadline, milestones2);
   }
 
-  function test_UserHas_2_Transactions() public {
-    EasyMilestones.Transaction[] memory transactions = easyMilestones.getTransactions(
-      address(this)
-    );
+  function test_UserHas_2_Transactions() public view {
+    EasyMilestones.Transaction[] memory transactions = easyMilestones.getTransactions(address(this));
     assertEq(transactions.length, 2);
   }
 
-  function test_UserHas_3_MilestonesInTotal() public  {
+  function test_UserHas_3_MilestonesInTotal() public {
     vm.skip(true);
     uint256 totalMilestones = 0;
-    EasyMilestones.Transaction[] memory transactions = easyMilestones.getTransactions(
-      address(this)
-    );
+    EasyMilestones.Transaction[] memory transactions = easyMilestones.getTransactions(address(this));
     for (uint256 i = 0; i < transactions.length; i++) {
       EasyMilestones.Transaction memory transaction = transactions[i];
       totalMilestones += transaction.milestones.length;

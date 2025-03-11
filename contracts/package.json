@@ -1,5 +1,5 @@
 {
-  "name": "Easy Milestones",
+  "name": "easy-milestones",
   "scripts": {
     "local": "anvil",
     "compile": "forge build",
