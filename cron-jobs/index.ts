@@ -1,7 +1,7 @@
 import { CronJob } from "cron";
 import { configDotenv } from "dotenv";
 import { ethers } from "ethers";
-import abiData from "./abi.json";
+import abi from "./abi";
 
 configDotenv({
   path: ["./.env.local", ".env"],
@@ -12,7 +12,6 @@ const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const DEPLOYED_CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS!;
 // this can also be called the signer, this is the account that will be used to to pay for gas to process due milestones
 const wallet = new ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY!, provider);
-const abi = abiData.abi;
 const contract = new ethers.Contract(DEPLOYED_CONTRACT_ADDRESS, abi, wallet);
 
 async function processDueMilestones() {

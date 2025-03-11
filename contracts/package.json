@@ -1,0 +1,10 @@
+{
+  "name": "Easy Milestones",
+  "scripts": {
+    "local": "anvil",
+    "compile": "forge build",
+    "test": "forge test -vvvv",
+    "deploy:local": "forge create src/EasyMilestones.sol:EasyMilestones --rpc-url http://localhost:8545 --interactive --broadcast",
+    "deploy:testnet": "forge create src/EasyMilestones.sol:EasyMilestones --rpc-url https://infu --interactive --broadcast"
+  }
+}
