@@ -2,7 +2,7 @@
   "name": "cron-jobs",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "start": "tsx --watch index.ts"
   },
