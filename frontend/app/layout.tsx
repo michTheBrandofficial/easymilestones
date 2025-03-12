@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import WagmiContextProvider from "./_context";
+import { LocalAccountProvider } from "./_context/local-account";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,11 +17,13 @@ export default async function RootLayout({
 }>) {
   const cookies = (await headers()).get("cookie") || "";
   return (
-    <html lang="en" className="w-screen h-screen" >
+    <html lang="en" className="w-screen h-screen">
       <body className={`w-screen h-screen antialiased font-medium select-none`}>
-        <WagmiContextProvider cookies={cookies}>
-          {children}
-        </WagmiContextProvider>
+        <LocalAccountProvider>
+          <WagmiContextProvider cookies={cookies}>
+            {children}
+          </WagmiContextProvider>
+        </LocalAccountProvider>
       </body>
     </html>
   );

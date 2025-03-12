@@ -10,6 +10,15 @@ const config: Config = {
     extend: {
       fontFamily: {
         Satoshi: ["Satoshi", "sans-serif"],
+      },
+      colors: {
+        em: {
+          'primary': "#FFFFFF",
+          'sky-blue': "#A3D5FA",
+          'dark': '#101010',
+          'light-dark': '#808080',
+          'blue': "#4CABEF"
+        }
       }
     },
   },
