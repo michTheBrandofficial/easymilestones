@@ -1,49 +1,41 @@
-'use client'
-import { formatUnits } from 'viem';
-import { useAccount, useBalance, useConnect, useDisconnect, useEnsAvatar, useEnsName } from 'wagmi';
-import { sepolia } from 'wagmi/chains';
+"use client";
 
-export function ConnectWalletOptions() {
-  const { connectors, connect } = useConnect()
+import { createPublicClient, createWalletClient, http } from "viem";
+import { privateKeyToAccount, publicKeyToAddress } from "viem/accounts";
+import { anvil } from "viem/chains";
+import easyMilestonesAbi from "./utils/abi";
 
-  return connectors.map((connector) => (
-    <button className='w-fit block' key={connector.uid} onClick={() => connect({ connector })}>
-      {connector.name}
-    </button>
-  ))
-}
-
-export function Account() {
-  const { address, } = useAccount()
-  const { disconnect } = useDisconnect()
-  const { data: ensName } = useEnsName({ address })
-  const { data: ensAvatar } = useEnsAvatar({ name: ensName! })
-  const { data: balance } = useBalance({
-    address: address,
-    chainId: sepolia.id,
-    query: {
-      enabled: !!address,
-    }
-  })
-
-
-  return (
-    <div>
-      {ensAvatar && <img alt="ENS Avatar" src={ensAvatar} />}
-      {address && <div>{ensName ? `${ensName} (${address})` : address}</div>}
-      {balance && <div>Chinonso's Sepolia Eth balance is {formatUnits(balance.value, balance.decimals)} {balance.symbol}</div>}
-      <button onClick={() => disconnect()}>Disconnect</button>
-    </div>
-  )
-}
-
+const localAccount = privateKeyToAccount(process.env.NEXT_PUBLIC_DEPLOYER_PRIVATE_KEY! as `0x${string}`)
+const walletClient = createWalletClient({
+  chain: anvil,
+  transport: http(process.env.NEXT_PUBLIC_RPC_URL),
+  account: localAccount,
+});
+const publicClient = createPublicClient({
+  chain: anvil,
+  transport: http(process.env.NEXT_PUBLIC_RPC_URL),
+});
+const DEPLOYED_CONTRACT_ADDRESS = process.env
+  .NEXT_PUBLIC_CONTRACT_ADDRESS! as `0x${string}`;
 
 export default function Home() {
+  async function fetchTransactions() {
+    const result = await publicClient.readContract({
+      abi: easyMilestonesAbi,
+      functionName: 'getTransactions',
+      address: DEPLOYED_CONTRACT_ADDRESS,
+      args: [localAccount.address]
+    })
+    console.log(result)
+  }
   return (
-    <div className='font-Satoshi'>
-      <header className="font-Satoshi" >I am the header</header>
-      <ConnectWalletOptions />
-      <Account />
-    </div>
+    <section className="font-Satoshi w-full h-full">
+      <p className="w-full text-ellipsis p-2 overflow-hidden" >
+        {localAccount.publicKey}
+      </p>
+      <button onClick={fetchTransactions} >
+        Fetch Transactions
+      </button>
+    </section>
   );
 }

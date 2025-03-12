@@ -1,4 +1,4 @@
-const abi = [
+const easyMilestonesAbi = [
   {
     type: "function",
     name: "createTransaction",
@@ -131,4 +131,4 @@ const abi = [
     anonymous: false,
   },
 ] as const;
-export default abi;
+export default easyMilestonesAbi;
