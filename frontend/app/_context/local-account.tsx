@@ -18,6 +18,7 @@ type LocalAccountContextType = {
   walletClient: WalletClient;
   publicClient: PublicClient;
   privateKeyAccount: PrivateKeyAccount;
+  deployedContractAddress: `0x${string}`;
 };
 
 const localAccountContext = createContext<LocalAccountContextType | null>(null);
@@ -61,6 +62,8 @@ export const LocalAccountProvider = ({
         walletClient,
         publicClient,
         privateKeyAccount: localAccount,
+        deployedContractAddress: process.env
+          .NEXT_PUBLIC_CONTRACT_ADDRESS! as `0x${string}`,
       }}
     >
       {children}

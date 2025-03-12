@@ -1,30 +1,26 @@
 "use client";
 
-import easyMilestonesAbi from "./utils/abi";
-import { useLocalAccount } from "./_context/local-account";
-
-const DEPLOYED_CONTRACT_ADDRESS = process.env
-  .NEXT_PUBLIC_CONTRACT_ADDRESS! as `0x${string}`;
+import { Button } from "@/components/buttons";
+import AccountModal from "./_components/account-modal";
+import { modalsBuilder } from "./utils/modals-builder";
 
 const Home = () => {
-  const { publicClient, privateKeyAccount } = useLocalAccount();
-  async function fetchTransactions() {
-    const result = await publicClient.readContract({
-      abi: easyMilestonesAbi,
-      functionName: "getTransactions",
-      address: DEPLOYED_CONTRACT_ADDRESS,
-      args: [privateKeyAccount.address],
-    });
-    console.log(result);
-  }
+  const { modals, modalFunctions } = modalsBuilder({
+    account: {
+      open: false,
+    },
+  });
   return (
     <section className="font-Satoshi w-full h-full">
-      <p className="w-full text-ellipsis p-2 overflow-hidden">
-        {privateKeyAccount.publicKey}
-      </p>
-      <button onClick={fetchTransactions}>Fetch Transactions</button>
+      <Button onTap={() => modalFunctions.openModal("account", {})}>
+        Open account
+      </Button>
+      <AccountModal
+        open={modals.account.open}
+        onClose={() => modalFunctions.closeModal("account")}
+      />
     </section>
   );
-}
+};
 
 export default Home;
