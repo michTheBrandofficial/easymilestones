@@ -11,7 +11,7 @@ const Home = () => {
     },
   });
   return (
-    <section className="font-Satoshi w-full h-full">
+    <section className="font-Satoshi w-full h-full bg-em-sky-blue">
       <Button onTap={() => modalFunctions.openModal("account", {})}>
         Open account
       </Button>

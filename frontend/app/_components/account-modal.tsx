@@ -27,7 +27,7 @@ const AccountModal: React.FC<ModalProps> = ({ open, onClose }) => {
   });
   return (
     <Modal open={open} onClose={onClose}>
-      <Modal.Body className="bg-em-dark min-w-[280px] text-white flex flex-col gap-y-4 ">
+      <Modal.Body className="bg-em-dark min-w-[280px] text-white flex flex-col gap-y-4 !border-none">
         <Modal.Header title="Connected" />
         <div className="flex justify-center">
           <BlueGirlAvatar />

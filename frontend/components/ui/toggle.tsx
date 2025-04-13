@@ -17,7 +17,7 @@ const Toggle: React.FC<ToggleProps> = ({ checked, onChange, ...rest }) => {
   return (
     <div className="flex items-center gap-2 ">
       {rest.label && (
-        <Typography variant={"p"} className="!text-sm -mt-1">
+        <Typography variant={"p"} className="text-sm! -mt-1">
           {rest.label}
         </Typography>
       )}
@@ -31,9 +31,9 @@ const Toggle: React.FC<ToggleProps> = ({ checked, onChange, ...rest }) => {
           checked={checked}
           disabled={rest.disabled}
           onChange={(e) => onChange(e.target.checked)}
-          className="sr-only peer focus:outline-none active:outline-none"
+          className="sr-only peer focus:outline-hidden active:outline-hidden"
         />
-        <div className="w-11 h-6 bg-gray-100 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:bg-primary-500 after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-200 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-300 after:ease-in-out peer-checked:after:translate-x-full peer-checked:after:border-white "></div>
+        <div className="w-11 h-6 bg-gray-100 peer-focus:outline-hidden rounded-full peer dark:bg-gray-700 peer-checked:bg-em-blue after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-200 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-300 after:ease-in-out peer-checked:after:translate-x-full peer-checked:after:border-white "></div>
       </label>
     </div>
   );

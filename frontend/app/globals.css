@@ -1,9 +1,54 @@
-@config "../tailwind.config.ts";
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@theme {
+  --font-Satoshi: Satoshi, sans-serif;
+  --font-Bricolage_Grotesque: Bricolage_Grotesque, sans-serif;
 
+  --color-em-primary: #ffffff;
+  --color-em-sky-blue: #a3d5fa;
+  --color-em-dark: #101010;
+  --color-em-light-dark: #808080;
+  --color-em-blue: #4cabef;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility fade-animation {
+  animation: fade 1s linear infinite;;
+}
+
+@keyframes fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.25;
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 :root {
   --background: #ffffff;
@@ -15,8 +60,12 @@
   src: url(../public/fonts/Satoshi/VariableWght.ttf);
 }
 
+@font-face {
+  font-family: Bricolage_Grotesque;
+  src: url(../public/fonts/Bricolage_Grotesque/VariableFont.ttf);
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
 }

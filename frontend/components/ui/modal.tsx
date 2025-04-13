@@ -2,7 +2,7 @@ import { cn } from "@/components/cn";
 import { AnimatePresence, motion } from "motion/react";
 import React, { createContext, useContext, useMemo } from "react";
 import { Button } from "../buttons";
-import { Xmark } from "@gravity-ui/icons";
+import { Cancel01Icon } from "hugeicons-react";
 import { Typography } from "../typography";
 
 type ModalContextType = {
@@ -36,11 +36,11 @@ const ModalUnderLay = ({
       <AnimatePresence>
         {isOpen ? (
           <section
-            className={cn(
-              "bg-black/5 backdrop-blur-[2px]",
-              className,
-              " w-screen h-screen fixed z-[10000000] top-0 left-0 flex items-center justify-center"
-            )}
+          className={cn(
+            "bg-white/25 backdrop-blur-[3px]",
+            className,
+            " w-screen h-screen fixed z-[10000000] top-0 left-0 flex items-center justify-center"
+          )}
             onClick={(e) => {
               if (e.target === e.currentTarget) props.onClose();
             }}
@@ -67,7 +67,7 @@ const ModalBody: React.FC<Props> = ({ children, className }) => {
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.5 }}
-        className={cn(`min-h-[320px] bg-white rounded-[40px] py-6 px-7`, className)}
+        className={cn(`min-h-[320px] bg-white rounded-[40px] py-6 px-7 !border !border-gray-100`, className)}
       >
         {children}
       </motion.section>
@@ -83,7 +83,7 @@ const ModalHeader: React.FC<{ title?: string }> = ({ title }) => {
         variant="ghost"
         className="p-0 invisible pointer-events-none text-em-light-dark"
       >
-        <Xmark width={24} height={24} />
+        <Cancel01Icon width={24} height={24} />
       </Button>
       <Typography className="font-bold">{title || ''}</Typography>
       <Button
@@ -91,7 +91,7 @@ const ModalHeader: React.FC<{ title?: string }> = ({ title }) => {
         onTap={onClose}
         className="p-0 text-em-light-dark"
       >
-        <Xmark width={24} height={24} />
+        <Cancel01Icon width={24} height={24} />
       </Button>
     </div>
   );

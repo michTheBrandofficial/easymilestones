@@ -36,7 +36,7 @@ export const Button: React.FC<ButtonProps> = ({
       whileTap={{ scale: props.disabled ? 1 : 0.9 }}
       whileHover={{ scale: props.disabled ? 1 : 1.05 }}
       className={cn(
-        `font-semibold rounded-xl `,
+        `font-semibold cursor-pointer rounded-xl `,
         { "bg-em-sky-blue text-white": variant === "full" },
         { "px-6 py-2": variant !== "icon" },
         {
