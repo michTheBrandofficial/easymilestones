@@ -12,7 +12,7 @@ const Components = () => {
   const [open, setOpen] = useState(false);
   const [phone] = useState("");
   return (
-    <section className="w-full h-screen overflow-x-auto p-3 p space-y-10 no-scrollbar text-center ">
+    <section className="w-full h-screen overflow-x-auto p-3 p space-y-10 no-scrollbar ">
       <CheckBox checked={open} onChange={(checked) => setOpen(checked)} />
       <Toggle checked={open} onChange={(checked) => setOpen(checked)} />
       <Button onTap={() => setOpen(true)}>Open Modal</Button>
@@ -31,7 +31,12 @@ const Components = () => {
       title="Confirm"
       >
         <Sheet.Body>
-
+          <Sheet.Header>
+            Address
+          </Sheet.Header>
+          <Sheet.Content>
+            djdjkd
+          </Sheet.Content>
         </Sheet.Body>
       </Sheet>
     </section>

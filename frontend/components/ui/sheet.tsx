@@ -3,13 +3,10 @@ import { AnimatePresence, motion } from "motion/react";
 import React, { createContext, useContext, useMemo } from "react";
 import { Button } from "../buttons";
 import {
-  ArrowLeft01Icon,
-  ArrowLeft02Icon,
-  ArrowLeft03Icon,
-  Cancel01Icon,
+  Cancel01Icon
 } from "hugeicons-react";
 import { Typography } from "../typography";
-import { ArrowLeft, ChevronLeft } from "@gravity-ui/icons";
+import { ChevronLeft } from "@gravity-ui/icons";
 
 type SheetContextType = {
   open: boolean;
@@ -90,7 +87,7 @@ const SheetBody: React.FC<Omit<Props, "className">> = ({ children }) => {
         }}
         exit={{ y: "100%" }}
         className={cn(
-          `w-full bg-white h-fit rounded-t-[16px] pb-32 absolute left-0 bottom-0 overflow-clip`
+          `w-full bg-white h-fit rounded-t-[16px] pb-6 absolute left-0 bottom-0 overflow-clip`
         )}
       >
         <div className="w-full pt-1.5 flex items-center justify-center">
@@ -128,43 +125,41 @@ const SheetBody: React.FC<Omit<Props, "className">> = ({ children }) => {
   );
 };
 
-const SheetHeader: React.FC<{ title?: string }> = ({ title }) => {
-  const { onClose } = useSheet();
+const SheetHeader: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="w-full flex items-center justify-between ">
-      <Button
-        variant="ghost"
-        className="p-0 invisible pointer-events-none text-em-light-dark"
-      >
-        <Cancel01Icon width={24} height={24} />
-      </Button>
-      <Typography className="font-bold">{title || ""}</Typography>
-      <Button
-        variant="ghost"
-        onTap={onClose}
-        className="p-0 text-em-light-dark"
-      >
-        <Cancel01Icon width={24} height={24} />
-      </Button>
+    <div className="w-full pb-2 px-2.5 border-b-2 border-b-[#D3D3D3] ">
+      {children}
+    </div>
+  );
+};
+
+const SheetContent: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+  return (
+    <div className="w-full px-2.5">
+      {children}
     </div>
   );
 };
 
 /**
  * @example
- * ```jsx
- * <Sheet className="" open={open} >
- *  <Sheet.Body className="p-5 flex justify-between items-center" >
- *    <button onClick={...} >
- *      <X />
- *    </button>
+ * 
+ * <Sheet className="" open={open} onClose={...} backTitle="Back" title="Title">
+ *  <Sheet.Body>
+ *    <Sheet.Header>
+ *      Header Content
+ *    </Sheet.Header>
+ *    <Sheet.Content>
+ *      Content goes here
+ *    </Sheet.Content>
  *  </Sheet.Body>
  * </Sheet>
- * ```
+ * 
  */
 const Sheet = Object.assign(SheetUnderlay, {
   Body: SheetBody,
   Header: SheetHeader,
+  Content: SheetContent,
 });
 
 export default Sheet;
