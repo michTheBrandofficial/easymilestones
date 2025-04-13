@@ -5,6 +5,8 @@ import Popover from "./ui/popover";
 import CheckBox from "./ui/checkbox";
 import Toggle from "./ui/toggle";
 import PendingOverlay from "./ui/pending-overlay";
+import Sheet from "./ui/sheet";
+import { noop } from "@/lib/utils";
 
 const Components = () => {
   const [open, setOpen] = useState(false);
@@ -23,6 +25,14 @@ const Components = () => {
       </Popover>
       <Button onTap={() => setOpen(!open)}>Charles</Button>
       <PendingOverlay isPending={false} />
+      <Sheet 
+      open={true}
+      onClose={noop}
+      >
+        <Sheet.Body>
+
+        </Sheet.Body>
+      </Sheet>
     </section>
   );
 };
