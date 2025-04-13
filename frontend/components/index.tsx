@@ -28,6 +28,7 @@ const Components = () => {
       <Sheet 
       open={true}
       onClose={noop}
+      title="Confirm"
       >
         <Sheet.Body>
 
