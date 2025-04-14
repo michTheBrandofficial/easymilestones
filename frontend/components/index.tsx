@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useState } from "react";
 import { Button } from "./buttons";
 import Popover from "./ui/popover";
@@ -6,7 +6,6 @@ import CheckBox from "./ui/checkbox";
 import Toggle from "./ui/toggle";
 import PendingOverlay from "./ui/pending-overlay";
 import Sheet from "./ui/sheet";
-import { noop } from "@/lib/utils";
 
 const Components = () => {
   const [open, setOpen] = useState(false);
@@ -25,18 +24,12 @@ const Components = () => {
       </Popover>
       <Button onTap={() => setOpen(!open)}>Charles</Button>
       <PendingOverlay isPending={false} />
-      <Sheet 
-      open={true}
-      onClose={noop}
-      title="Confirm"
-      >
+      <Sheet open={open} onClose={() => {
+        setOpen(false)
+      }} title="Confirm">
         <Sheet.Body>
-          <Sheet.Header>
-            Address
-          </Sheet.Header>
-          <Sheet.Content>
-            djdjkd
-          </Sheet.Content>
+          <Sheet.Header>Address</Sheet.Header>
+          <Sheet.Content>djdjkd</Sheet.Content>
         </Sheet.Body>
       </Sheet>
     </section>
