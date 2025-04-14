@@ -11,6 +11,7 @@ const IOSSpinner: React.FC<{ color?: string }> = ({ color }) => {
             if (color) styles.backgroundColor = color;
             return (
               <div
+              key={i}
                 className="w-[3px] h-1.5 bg-[#A3A3AB] rounded-full fade-animation "
                 style={{
                   transform: `rotate(${45 * i}deg) translateY(${percentage(

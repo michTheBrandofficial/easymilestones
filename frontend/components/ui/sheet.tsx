@@ -1,10 +1,6 @@
 import { cn } from "@/components/cn";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValue
-} from "motion/react";
-import React, { createContext, useContext, useMemo } from "react";
+import { animate, AnimatePresence, motion, useMotionValue } from "motion/react";
+import React, { createContext, useContext, useMemo, useRef } from "react";
 import { Button } from "../buttons";
 import { Typography } from "../typography";
 import { ChevronLeft } from "@gravity-ui/icons";
@@ -79,39 +75,56 @@ type Props = {
 const SheetBody: React.FC<Omit<Props, "className">> = ({ children }) => {
   const { backTitle, onClose, title, action } = useSheet();
   const y = useMotionValue(0);
-
-  // Handle drag end to determine if sheet should close
-  const handleDragEnd = (e: MouseEvent) => {
-    const { height: sheetHeight } = (
-      e.target as HTMLDivElement
-    ).getBoundingClientRect();
-    if (y.get() >= 0 && y.get() > (sheetHeight / 2)) {
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const handleDragEnd = () => {
+    const { height: sheetHeight } = sheetRef.current!.getBoundingClientRect();
+    if (y.get() >= 0 && y.get() > sheetHeight * 0.75) {
       // if dragged down more than half of the sheet height, close the sheet
       onClose();
     } else {
-      console.log(y.get(), "start");
-      // Otherwise, snap back to original position
-      y.set(0);
-      console.log(y.get());
-      console.log("Snapping back to original position");
+      // snap back to original position
+      animate(y, 0, {
+        duration: 0.27,
+        type: "spring",
+      });
     }
   };
   return (
     <motion.section
       initial={{ y: "100%" }}
-      animate={{ y: 0 }}
-      transition={{
-        type: "keyframes",
-        duration: 0.27,
+      animate={{
+        y: 0,
+        transition: {
+          type: "keyframes",
+          duration: 0.27,
+        },
       }}
-      exit={{ y: "100%" }}
+      ref={sheetRef}
+      exit={{
+        y: "100%",
+        transition: {
+          duration: 0.17,
+          type: "keyframes",
+        },
+      }}
       style={{ y }}
       drag="y"
       dragConstraints={{ top: 0 }}
-      dragElastic={0.2}
+      dragElastic={0.5}
+      dragTransition={{
+        power: 0.2, // Lower values make it more responsive (0-1)
+        timeConstant: 200, // Lower values make it faster
+        modifyTarget: (target) => target * 1.5, // Multiplier for drag distance
+      }}
+      layout
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+      }}
       onDragEnd={handleDragEnd}
       className={cn(
-        `w-full bg-white h-fit rounded-t-[16px] pb-6 absolute z-[100000000] left-0 bottom-0 overflow-clip`
+        `w-full bg-white h-fit max-h-[90%] rounded-t-[16px] pb-6 absolute z-[100000000] left-0 bottom-0 overflow-y-auto flex flex-col transition-[height] duration-200 `
       )}
     >
       <div className="w-full pt-1.5 flex items-center justify-center">
@@ -161,7 +174,19 @@ const SheetHeader: React.FC<{ children?: React.ReactNode }> = ({
 const SheetContent: React.FC<{ children?: React.ReactNode }> = ({
   children,
 }) => {
-  return <div className="w-full px-2.5">{children}</div>;
+  return (
+    <motion.div
+      layout
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+      }}
+      className="w-full px-2.5 overflow-y-auto no-scrollbar grow"
+    >
+      {children}
+    </motion.div>
+  );
 };
 
 /**
