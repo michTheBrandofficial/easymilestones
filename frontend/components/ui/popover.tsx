@@ -127,7 +127,7 @@ const PopoverContent: React.FC<Props> = ({ children, className }) => {
             onClick={(e) => {
               if (e.target === e.currentTarget) setOpen(false);
             }}
-            className="fixed h-screen w-screen bg-white/25 backdrop-blur-[3px] !mt-0 top-0 left-0 z-[10000000]"
+            className="fixed h-screen w-screen bg-white/25 backdrop-blur-[3px] !m-0 top-0 left-0 z-[10000000]"
           ></section>
           <motion.section
             ref={containerRef}

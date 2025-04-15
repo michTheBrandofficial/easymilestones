@@ -6,7 +6,7 @@ import { useLocalAccount } from "../_context/local-account";
 import { useQuery } from "@tanstack/react-query";
 import { formatEther } from "viem";
 import { Typography } from "@/components/typography";
-import { formatEthAddress } from "../utils/format-address";
+import { formatEthAddress } from "@/lib/utils";
 import BlueGirlAvatar from "../_avatars/blue-girl";
 
 type ModalProps = {
@@ -35,7 +35,7 @@ const AccountModal: React.FC<ModalProps> = ({ open, onClose }) => {
         <div className="flex flex-col gap-y-1 items-center justify-center">
           <div className="flex items-center justify-center gap-x-2">
             <Typography className="">
-              {formatEthAddress(privateKeyAccount.address)}
+              {formatEthAddress(privateKeyAccount.address, 'star')}
             </Typography>
             <Button
               onTap={async () => {

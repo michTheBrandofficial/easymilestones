@@ -3,10 +3,19 @@
   "explorer.fileNesting.patterns": {
     "package.json": "*"
   },
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "on",
+    "strings": "on"
+  },
+  "tailwindCSS.hovers": true,
+  "tailwindCSS.suggestions": true,
+  "tailwindcss-intellisense.trace.server": "verbose",
   "solidity.remappings": ["forge-std/=lib/forge-std/src/"],
   "solidity.compileUsingLocalVersion": "v0.8.28",
   "solidity.formatter": "forge",
   "editor.formatOnSave": true,
+  "files.autoSaveWhenNoErrors": true,
   "solidity.packageDefaultDependenciesContractsDirectory": "src",
   "solidity.packageDefaultDependenciesDirectory": "lib",
   "solidity.linter": "solhint",

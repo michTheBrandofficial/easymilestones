@@ -17,8 +17,8 @@ export default async function RootLayout({
 }>) {
   const cookies = (await headers()).get("cookie") || "";
   return (
-    <html lang="en" className="w-screen h-screen no-scrollbar">
-      <body className={`w-screen h-screen antialiased font-medium font-Satoshi select-none`}>
+    <html lang="en" className="w-screen h-screen overflow-y-auto no-scrollbar">
+      <body className={`w-screen h-screen antialiased font-medium font-Satoshi select-none overflow-y-auto no-scrollbar`}>
         <LocalAccountProvider>
           <WagmiContextProvider cookies={cookies}>
             {children}

@@ -1,36 +1,7 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  --font-Satoshi: Satoshi, sans-serif;
-  --font-Bricolage_Grotesque: Bricolage_Grotesque, sans-serif;
-
-  --color-em-primary: #ffffff;
-  --color-em-sky-blue: #a3d5fa;
-  --color-em-dark: #101010;
-  --color-em-light-dark: #808080;
-  --color-em-blue: #4cabef;
-}
-
-@utility no-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-@utility fade-animation {
-  animation: fade 1s linear infinite;;
-}
-
-@keyframes fade {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0.25;
-  }
-}
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,

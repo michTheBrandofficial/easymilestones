@@ -12,7 +12,11 @@ type SheetContextType = {
   backTitle?: "Back" | (string & {});
   action?: {
     title: string;
-    do: VoidFunction;
+    /**
+     * @param closeSheet closes the sheet after the action is done
+     * @returns {void}
+     */
+    do: (closeSheet: () => void) => void;
   };
 };
 
@@ -49,9 +53,9 @@ const SheetUnderlay = ({
           <>
             <section
               className={cn(
-                "bg-black/20 backdrop-blur-[3px]",
+                "bg-black/25 backdrop-blur-[3px]",
                 className,
-                " w-screen h-screen fixed z-[10000000] top-0 left-0 flex items-center justify-center"
+                " w-screen h-screen fixed z-[10000000] !m-0 top-0 left-0 flex items-center justify-center"
               )}
               onClick={(e) => {
                 if (e.target === e.currentTarget) props.onClose();
@@ -78,7 +82,7 @@ const SheetBody: React.FC<Omit<Props, "className">> = ({ children }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
   const handleDragEnd = () => {
     const { height: sheetHeight } = sheetRef.current!.getBoundingClientRect();
-    if (y.get() >= 0 && y.get() > sheetHeight * 0.75) {
+    if (y.get() >= 0 && y.get() > sheetHeight * 0.4) {
       // if dragged down more than half of the sheet height, close the sheet
       onClose();
     } else {
@@ -147,7 +151,9 @@ const SheetBody: React.FC<Omit<Props, "className">> = ({ children }) => {
           {action && (
             <Button
               whileHover={""}
-              onTap={action.do}
+              onTap={() => {
+                action.do(onClose)
+              }}
               variant="ghost"
               className="!px-0 flex items-center justify-center"
             >
@@ -182,7 +188,7 @@ const SheetContent: React.FC<{ children?: React.ReactNode }> = ({
         stiffness: 300,
         damping: 30,
       }}
-      className="w-full px-2.5 overflow-y-auto no-scrollbar grow"
+      className="w-full px-2.5 overflow-y-auto no-scrollbar flex-grow"
     >
       {children}
     </motion.div>

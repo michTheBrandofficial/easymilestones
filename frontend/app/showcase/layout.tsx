@@ -12,9 +12,9 @@ export default async function ShowcaseLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="w-screen h-screen">
+    <html lang="en" className="w-screen h-screen no-scrollbar">
       <body
-        className={`w-screen h-screen antialiased font-medium font-Satoshi select-none`}
+        className={`w-screen h-screen antialiased font-medium font-Satoshi select-none no-scrollbar`}
       >
         {children}
       </body>

@@ -39,7 +39,7 @@ const ModalUnderLay = ({
           className={cn(
             "bg-white/25 backdrop-blur-[3px]",
             className,
-            " w-screen h-screen fixed z-[10000000] top-0 left-0 flex items-center justify-center"
+            " w-screen h-screen !m-0 fixed z-[10000000] top-0 left-0 flex items-center justify-center"
           )}
             onClick={(e) => {
               if (e.target === e.currentTarget) props.onClose();
