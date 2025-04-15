@@ -143,10 +143,10 @@ const SheetBody: React.FC<Omit<Props, "className">> = ({ children }) => {
             className="!px-0 flex items-center justify-center"
           >
             <ChevronLeft width={26} height={26} />{" "}
-            <span className="-mt-0.5">{backTitle}</span>
+            <span className="-mt-0.5 font-medium">{backTitle}</span>
           </Button>
         </div>
-        <Typography className="font-extrabold">{title}</Typography>
+        <Typography className="font-extrabold text-[17px] ">{title}</Typography>
         <div className="flex justify-end pr-1.5">
           {action && (
             <Button
@@ -155,7 +155,7 @@ const SheetBody: React.FC<Omit<Props, "className">> = ({ children }) => {
                 action.do(onClose)
               }}
               variant="ghost"
-              className="!px-0 flex items-center justify-center"
+              className="!px-0 flex font-medium items-center justify-center"
             >
               <span>{action.title}</span>
             </Button>

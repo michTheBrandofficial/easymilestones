@@ -95,20 +95,32 @@ const Components = () => {
             </div>
           </Sheet.Header>
           <Sheet.Content>
-            {createTransactionMutation.isPending ? (
+            {false ? (
               <div className="py-14 flex items-center justify-center">
                 <IOSSpinner />
               </div>
             ) : (
-              <div className="gap-y-[640px] grid ">
-                <p>djsksl</p>
-                <p>djsksl</p>
+              <div className="pt-10 px-4">
+                <Milestone />
               </div>
             )}
           </Sheet.Content>
         </Sheet.Body>
       </Sheet>
     </section>
+  );
+};
+
+const Milestone = (_props: any) => {
+  return (
+    <div className="flex items-center gap-x-2">
+      <div className="flex flex-col items-center" >
+        <div className="w-[3px] h-20 bg-em-gray"></div>
+        <div className="w-fit h-fit p-2 border-2 border-em-gray rounded-full">
+          <div className="w-3 h-3 bg-em-gray rounded-full" />
+        </div>
+      </div>
+    </div>
   );
 };
 

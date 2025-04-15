@@ -19,7 +19,8 @@ const config: Config = {
           'sky-blue': "#A3D5FA",
           'dark': '#101010',
           'light-dark': '#808080',
-          'blue': "#4CABEF"
+          'blue': "#4CABEF",
+          'gray': "#d3d3d3"
         }
       }
     },
