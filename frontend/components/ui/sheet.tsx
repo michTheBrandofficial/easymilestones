@@ -1,6 +1,6 @@
 import { cn } from "@/components/cn";
 import { animate, AnimatePresence, motion, useMotionValue } from "motion/react";
-import React, { createContext, useContext, useMemo, useRef } from "react";
+import React, { createContext, useContext, useMemo, useRef, useState } from "react";
 import { Button } from "../buttons";
 import { Typography } from "../typography";
 import { ChevronLeft } from "@gravity-ui/icons";
@@ -80,7 +80,9 @@ const SheetBody: React.FC<Omit<Props, "className">> = ({ children }) => {
   const { backTitle, onClose, title, action } = useSheet();
   const y = useMotionValue(0);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const handleDragEnd = () => {
+    setIsDragging(false)
     const { height: sheetHeight } = sheetRef.current!.getBoundingClientRect();
     if (y.get() >= 0 && y.get() > sheetHeight * 0.4) {
       // if dragged down more than half of the sheet height, close the sheet
@@ -126,9 +128,13 @@ const SheetBody: React.FC<Omit<Props, "className">> = ({ children }) => {
         stiffness: 300,
         damping: 30,
       }}
+      onDragStart={() => {
+        setIsDragging(true);
+      }}
       onDragEnd={handleDragEnd}
+      data-isdragging={isDragging}
       className={cn(
-        `w-full bg-white h-fit max-h-[90%] rounded-t-[16px] pb-6 absolute z-[100000000] left-0 bottom-0 overflow-y-auto flex flex-col transition-[height] duration-200 `
+        `w-full bg-white h-fit max-h-[90%] rounded-t-[16px] absolute z-[100000000] left-0 bottom-0 overflow-y-auto flex flex-col transition-[height] duration-200 data-[isdragging=true]:cursor-grabbing `
       )}
     >
       <div className="w-full pt-1.5 flex items-center justify-center">
@@ -188,7 +194,7 @@ const SheetContent: React.FC<{ children?: React.ReactNode }> = ({
         stiffness: 300,
         damping: 30,
       }}
-      className="w-full px-2.5 overflow-y-auto no-scrollbar flex-grow"
+      className="w-full px-2.5 pb-6 overflow-y-auto no-scrollbar flex-grow "
     >
       {children}
     </motion.div>
