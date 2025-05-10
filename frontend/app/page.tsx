@@ -12,7 +12,7 @@ const Home = () => {
     },
   });
   return (
-    <section className="font-Satoshi w-full h-full bg-em-sky-blue flex flex-col gap-y-10">
+    <section className="font-Satoshi w-full h-full  flex flex-col gap-y-10">
       <Button onTap={() => modalFunctions.openModal("account", {})}>
         Open account
       </Button>
@@ -20,7 +20,7 @@ const Home = () => {
         open={modals.account.open}
         onClose={() => modalFunctions.closeModal("account")}
       />
-      <Link href={"/showcase"}>Showcase</Link>
+      <Link href={"/create-transaction"}>Create Transaction</Link>
     </section>
   );
 };

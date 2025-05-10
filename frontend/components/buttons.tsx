@@ -1,5 +1,6 @@
+'use client'
 import { cn } from "./cn";
-import { HTMLMotionProps, motion } from "motion/react";
+import { type HTMLMotionProps, motion } from "motion/react";
 import React, { PropsWithChildren } from "react";
 
 type Variants = "full" | "outline" | "icon" | "ghost";

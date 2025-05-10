@@ -1,19 +1,37 @@
 import { CSSProperties } from "react";
 
-export const getDims = ({ width, height }: CSSStyleDeclaration) => {
-  return {
-    width: Number(width.replace('px', '')),
-    height: Number(height.replace('px', '')),
-  };
+/**
+ * Scales the size of a dimension based on a given size multiplier
+ * @param size A scaling factor (typically 1 or a number)
+ * @param width The original width to be scaled
+ * @param height The original height to be scaled
+ * @returns A tuple of scaled width and height
+ */
+export const scaleSize = <T extends string | number>(
+  size: 1 | (number & {}),
+  {
+    width,
+    height,
+  }: {
+    width: T;
+    height: T;
+  }
+) => {
+  const [w, h] = [width, height].map((dim) => Number(dim) * size);
+  return [w, h] as [number, number];
 };
 
-export const px = <V extends string | number>(value: V): `${V}px` => `${value}px`;
+export const px = <V extends string | number>(value: V): `${V}px` =>
+  `${value}px`;
 
-export const deg = <V extends string | number>(value: V): `${V}deg` => `${value}deg`;
+export const deg = <V extends string | number>(value: V): `${V}deg` =>
+  `${value}deg`;
 
-export const sec = <V extends string | number>(value: V): `${V}s` => `${value}s`;
+export const sec = <V extends string | number>(value: V): `${V}s` =>
+  `${value}s`;
 
-export const percentage = <V extends string | number>(value: V): `${V}%` => `${value}%`;
+export const percentage = <V extends string | number>(value: V): `${V}%` =>
+  `${value}%`;
 
 export const createStyles = <
   Props extends CSSProperties,
@@ -37,7 +55,7 @@ export const round = Math.round;
 
 export const noop = () => undefined;
 
-export const toReversed = (arr: any[]) => structuredClone(arr).reverse()
+export const toReversed = (arr: any[]) => structuredClone(arr).reverse();
 
 /**
  * uses Promise.resolve() to wait for a given amount of time
@@ -85,7 +103,6 @@ export function inlineSwitch<Check, Case extends Check, Return>(
   return pickedReturn;
 }
 
-
 /**
  * Formats an Ethereum address by displaying the first 6 characters and the last 4 characters, with the middle characters replaced by asterisks.
  *
@@ -93,9 +110,14 @@ export function inlineSwitch<Check, Case extends Check, Return>(
  * @returns The formatted Ethereum address.
  * @throws {Error} If the input address is not 42 characters long.
  */
-export function formatEthAddress(address: `0x${string}`, middleChars: 'star' | 'ellipsis' = 'ellipsis') {
-  if (address.length !== 42) throw new Error('Invalid address passed!');
-  return `${address.slice(0, 6)}${
-    inlineSwitch(middleChars, ['star', '****'], ['ellipsis', '....'])
-  }${address.slice(-4)}`;
+export function formatEthAddress(
+  address: `0x${string}`,
+  middleChars: "star" | "ellipsis" = "ellipsis"
+) {
+  if (address.length !== 42) throw new Error("Invalid address passed!");
+  return `${address.slice(0, 6)}${inlineSwitch(
+    middleChars,
+    ["star", "****"],
+    ["ellipsis", "...."]
+  )}${address.slice(-4)}`;
 }
