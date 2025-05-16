@@ -113,7 +113,10 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
         },
       }}
     >
-      <div id="app_sheet_container" className="h-screen w-screen bg-black flex items-center justify-center relative overflow-y-auto no-scrollbar ">
+      <div
+        id="app_sheet_container"
+        className="h-screen w-screen bg-black flex items-center justify-center relative overflow-y-auto no-scrollbar "
+      >
         <motion.div
           initial={{
             width: percentage(100),
@@ -158,13 +161,11 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
   // Use a ref to track if we've already registered this sheet
   const registeredRef = useRef(false);
   const [mounted, setMounted] = useState(false);
-  
   // Handle client-side only rendering for the portal
   useEffect(() => {
     setMounted(true);
     return () => setMounted(false);
   }, []);
-  
   useEffect(() => {
     if (!props.sheetId || registeredRef.current) return;
     // Mark as registered
@@ -179,26 +180,56 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
       open: props.open,
     };
     registerSheet(props.sheetId, sheetConfig);
-  }, [props.sheetId, registerSheet, props.onClose, props.title, props.action, props.backButton, props.open]);
-  
+  }, [
+    props.sheetId,
+    registerSheet,
+    props.onClose,
+    props.title,
+    props.action,
+    props.backButton,
+    props.open,
+  ]);
   const y = useMotionValue(0);
   const sheetRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [dragProgress, setDragProgress] = useState(0);
+  // Function to calculate drag progress percentage
+  const calculateDragProgress = useCallback(() => {
+    if (!sheetRef.current) return 0;
+    const { height: sheetHeight } = sheetRef.current.getBoundingClientRect();
+    const threshold = sheetHeight * 0.3;
+    const currentY = y.get();
+    // Calculate progress as a percentage (0 to 1)
+    const progress = Math.min(Math.max(currentY / threshold, 0), 1);
+    return progress;
+  }, [y]);
+  // Handle drag events
+  const handleDrag = useCallback(() => {
+    if (!isDragging) return;
+    const progress = calculateDragProgress();
+    setDragProgress(progress);
+
+    // You can also trigger other actions based on the progress
+    // For example, updating UI elements or animations
+  }, [isDragging, calculateDragProgress]);
   const handleDragEnd = () => {
     setIsDragging(false);
-    const { height: sheetHeight } = sheetRef.current!.getBoundingClientRect();
-    if (y.get() >= 0 && y.get() > sheetHeight * 0.3) {
-      // if dragged down more than half of the sheet height, close the sheet
+    const progress = calculateDragProgress();
+    if (progress >= 1) {
       onClose();
     } else {
-      // snap back to original position
       animate(y, 0, {
         duration: 0.27,
         type: "spring",
       });
     }
+    setDragProgress(0);
   };
-
+  // Subscribe to motion value changes
+  useEffect(() => {
+    const unsubscribeY = y.on('change', handleDrag);
+    return () => unsubscribeY();
+  }, [y, handleDrag]);
   // Sheet content to be rendered in the portal
   const sheetContent = (
     <AnimatePresence>
@@ -245,6 +276,7 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
               stiffness: 300,
               damping: 30,
             }}
+            onDrag={handleDrag}
             onDragStart={() => {
               setIsDragging(true);
             }}
@@ -298,7 +330,10 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
   // Only render the portal on the client side
   if (!mounted) return null;
   // Create portal to render the sheet at the document body level
-  return createPortal(sheetContent, document.querySelector<HTMLDivElement>('div#app_sheet_container')!);
+  return createPortal(
+    sheetContent,
+    document.querySelector<HTMLDivElement>("div#app_sheet_container")!
+  );
 };
 
 const SheetHeaderImpl: React.FC<{ children?: React.ReactNode }> = ({
