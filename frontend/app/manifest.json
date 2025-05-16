@@ -25,7 +25,7 @@
     }
   ],
   "shortcuts": [],
-  "display": "standalone",
+  "display": "fullscreen",
   "theme_color": "#A3D5FA",
   "background_color": "#fff",
   "scope": "/",

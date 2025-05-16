@@ -4,23 +4,13 @@ import { Button } from "@/components/buttons";
 import AccountModal from "./_components/account-modal";
 import { modalsBuilder } from "./utils/modals-builder";
 import Link from "next/link";
+import { useSheet } from "@/components/ui/sheet";
 
 const Home = () => {
-  const { modals, modalFunctions } = modalsBuilder({
-    account: {
-      open: false,
-    },
-  });
+  const { Sheet, SheetContent, SheetHeader, openSheet } = useSheet('account')
   return (
-    <section className="font-Satoshi w-full h-full  flex flex-col gap-y-10">
-      <Button onTap={() => modalFunctions.openModal("account", {})}>
-        Open account
-      </Button>
-      <AccountModal
-        open={modals.account.open}
-        onClose={() => modalFunctions.closeModal("account")}
-      />
-      <Link href={"/create-transaction"}>Create Transaction</Link>
+    <section className="font-Satoshi w-full h-full flex-col gap-y-10 ">
+      <Sheet title="Account"  ></Sheet>
     </section>
   );
 };
