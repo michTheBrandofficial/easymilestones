@@ -14,6 +14,7 @@ import { Button } from "../buttons";
 import { Typography } from "../typography";
 import { ChevronLeft } from "@gravity-ui/icons";
 import { percentage, pick, px } from "@/lib/utils";
+import { createPortal } from "react-dom";
 
 type SheetContextType = {
   sheetMap: {
@@ -59,13 +60,13 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
   const [sheetMap, setSheetMap] = useState<SheetContextType["sheetMap"]>({});
   const sheetMapRef = useRef<SheetContextType["sheetMap"]>({});
   const [openSheets, setOpenSheets] = useState<string[]>([]);
-  const isFirstSheetOpen = useMemo(() => openSheets.length === 0, [openSheets]);
+  const isFirstSheetOpen = useMemo(() => openSheets.length > 0, [openSheets]);
   useEffect(() => {
     sheetMapRef.current = sheetMap;
   }, [sheetMap]);
   const registerSheet = useCallback(
     (sheetId: string, config: SheetContextType["sheetMap"][string]) => {
-      if (sheetId in sheetMapRef.current) return (console.log('yes', sheetId));
+      if (sheetId in sheetMapRef.current) return;
       setSheetMap((prev) => ({
         ...prev,
         [sheetId]: {
@@ -112,7 +113,7 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
         },
       }}
     >
-      <div className="h-screen w-screen bg-blue-300 flex items-center justify-center relative overflow-y-auto no-scrollbar ">
+      <div id="app_sheet_container" className="h-screen w-screen bg-black flex items-center justify-center relative overflow-y-auto no-scrollbar ">
         <motion.div
           initial={{
             width: percentage(100),
@@ -156,6 +157,14 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
   const { onClose, title, action, backButton, open } = props;
   // Use a ref to track if we've already registered this sheet
   const registeredRef = useRef(false);
+  const [mounted, setMounted] = useState(false);
+  
+  // Handle client-side only rendering for the portal
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+  
   useEffect(() => {
     if (!props.sheetId || registeredRef.current) return;
     // Mark as registered
@@ -171,13 +180,14 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
     };
     registerSheet(props.sheetId, sheetConfig);
   }, [props.sheetId, registerSheet, props.onClose, props.title, props.action, props.backButton, props.open]);
+  
   const y = useMotionValue(0);
   const sheetRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const handleDragEnd = () => {
     setIsDragging(false);
     const { height: sheetHeight } = sheetRef.current!.getBoundingClientRect();
-    if (y.get() >= 0 && y.get() > sheetHeight * 0.4) {
+    if (y.get() >= 0 && y.get() > sheetHeight * 0.3) {
       // if dragged down more than half of the sheet height, close the sheet
       onClose();
     } else {
@@ -188,13 +198,15 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
       });
     }
   };
-  return (
+
+  // Sheet content to be rendered in the portal
+  const sheetContent = (
     <AnimatePresence>
       {open ? (
         <>
           <section
             className={cn(
-              "bg-black/25 backdrop-blur-[3px]",
+              "bg-black/20",
               "w-screen h-screen fixed z-[10000000] !m-0 top-0 left-0 flex items-center justify-center"
             )}
             onClick={(e) => {
@@ -223,9 +235,9 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
             dragConstraints={{ top: 0 }}
             dragElastic={0.5}
             dragTransition={{
-              power: 0.2, // Lower values make it more responsive (0-1)
-              timeConstant: 200, // Lower values make it faster
-              modifyTarget: (target) => target * 1.5, // Multiplier for drag distance
+              power: 0.2,
+              timeConstant: 200,
+              modifyTarget: (target) => target * 1.5,
             }}
             layout
             transition={{
@@ -239,11 +251,11 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
             onDragEnd={handleDragEnd}
             data-isdragging={isDragging}
             className={cn(
-              `w-full bg-white h-fit max-h-[90%] rounded-t-[16px] absolute z-[100000000] left-0 bottom-0 overflow-y-auto flex flex-col transition-[height] duration-200 data-[isdragging=true]:cursor-grabbing `
+              `w-full bg-white h-full rounded-t-[16px] absolute z-[100000000] top-[54px] left-0 bottom-0 overflow-y-auto flex flex-col transition-[height] duration-200 data-[isdragging=true]:cursor-grabbing `
             )}
           >
             <div className="w-full pt-1.5 flex items-center justify-center">
-              <div className="w-[46px] h-[5px] bg-[#D9D9D9] rounded-full"></div>
+              <div className="w-[46px] h-[4px] bg-[#D9D9D9] rounded-full"></div>
             </div>
             <div className="w-full py-0 grid items-center grid-cols-[1fr_auto_1fr] gap-x-2 px-1">
               <div>
@@ -280,11 +292,13 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
             {children}
           </motion.section>
         </>
-      ) : (
-        ""
-      )}
+      ) : null}
     </AnimatePresence>
   );
+  // Only render the portal on the client side
+  if (!mounted) return null;
+  // Create portal to render the sheet at the document body level
+  return createPortal(sheetContent, document.querySelector<HTMLDivElement>('div#app_sheet_container')!);
 };
 
 const SheetHeaderImpl: React.FC<{ children?: React.ReactNode }> = ({
