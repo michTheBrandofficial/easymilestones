@@ -3,6 +3,7 @@ import { cn } from "@/components/cn";
 import { animate, AnimatePresence, motion, useMotionValue } from "motion/react";
 import React, {
   createContext,
+  memo,
   useCallback,
   useContext,
   useEffect,
@@ -13,7 +14,7 @@ import React, {
 import { Button } from "../buttons";
 import { Typography } from "../typography";
 import { ChevronLeft } from "@gravity-ui/icons";
-import { percentage, pick, px } from "@/lib/utils";
+import { percentage, px } from "@/lib/utils";
 import { createPortal } from "react-dom";
 
 type SheetContextType = {
@@ -47,6 +48,11 @@ type SheetContextType = {
   openSheets?: string[];
   openSheet(sheetId: string): void;
   closeSheet(sheetId: string): void;
+  /**
+   * @dev this is for the drag progress of the sheet 0 - 1
+   */
+  dragProgress: number;
+  setDragProgress: (progress: number) => void;
 };
 
 type SheetUnderlayProps = Pick<Props, "children">;
@@ -60,6 +66,7 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
   const [sheetMap, setSheetMap] = useState<SheetContextType["sheetMap"]>({});
   const sheetMapRef = useRef<SheetContextType["sheetMap"]>({});
   const [openSheets, setOpenSheets] = useState<string[]>([]);
+  const [dragProgress, setDragProgress] = useState(0);
   const isFirstSheetOpen = useMemo(() => openSheets.length > 0, [openSheets]);
   useEffect(() => {
     sheetMapRef.current = sheetMap;
@@ -76,6 +83,16 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
     },
     []
   );
+  /**
+   * @dev width: Controls the width percentage (100% initially, 95% when open)
+   * y: Controls vertical position (0px initially, 48px when open)
+   * borderRadius: Controls border radius (0px initially, 16px when open)
+   */
+  const positionMap = {
+    width: { initial: 100, final: 95 },
+    y: { initial: 0, final: 48 },
+    borderRadius: { initial: 0, final: 16 },
+  } as const;
   return (
     <SheetContext.Provider
       value={{
@@ -111,20 +128,27 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
             },
           }));
         },
+        dragProgress,
+        setDragProgress: (progress) => setDragProgress(progress),
       }}
     >
       <div
         id="app_sheet_container"
-        className="h-screen w-screen bg-black flex items-center justify-center relative overflow-y-auto no-scrollbar "
+        className="h-screen w-screen bg-black flex items-center justify-center relative overflow-y-auto no-scrollbar"
       >
         <motion.div
           initial={{
-            width: percentage(100),
+            width: percentage(positionMap.width.initial),
           }}
           animate={
             isFirstSheetOpen
               ? {
-                  width: percentage(95),
+                  // formula is ((initial - final) * progress) + final, when dragProgress is 0 final is 95;
+                  width: percentage(
+                    (positionMap.width.initial - positionMap.width.final) *
+                      dragProgress +
+                      positionMap.width.final
+                  ),
                   y: px(48),
                   borderTopRightRadius: px(16),
                   borderTopLeftRadius: px(16),
@@ -192,27 +216,18 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
   const y = useMotionValue(0);
   const sheetRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragProgress, setDragProgress] = useState(0);
   // Function to calculate drag progress percentage
   const calculateDragProgress = useCallback(() => {
     if (!sheetRef.current) return 0;
     const { height: sheetHeight } = sheetRef.current.getBoundingClientRect();
-    const threshold = sheetHeight * 0.3;
+    const threshold = sheetHeight * 0.6;
     const currentY = y.get();
     // Calculate progress as a percentage (0 to 1)
     const progress = Math.min(Math.max(currentY / threshold, 0), 1);
     return progress;
   }, [y]);
   // Handle drag events
-  const handleDrag = useCallback(() => {
-    if (!isDragging) return;
-    const progress = calculateDragProgress();
-    setDragProgress(progress);
-
-    // You can also trigger other actions based on the progress
-    // For example, updating UI elements or animations
-  }, [isDragging, calculateDragProgress]);
-  const handleDragEnd = () => {
+  const handleDragEnd = useCallback(() => {
     setIsDragging(false);
     const progress = calculateDragProgress();
     if (progress >= 1) {
@@ -223,14 +238,7 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
         type: "spring",
       });
     }
-    setDragProgress(0);
-  };
-  // Subscribe to motion value changes
-  useEffect(() => {
-    const unsubscribeY = y.on('change', handleDrag);
-    return () => unsubscribeY();
-  }, [y, handleDrag]);
-  // Sheet content to be rendered in the portal
+  }, [onClose, y]);
   const sheetContent = (
     <AnimatePresence>
       {open ? (
@@ -264,7 +272,7 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
             style={{ y }}
             drag="y"
             dragConstraints={{ top: 0 }}
-            dragElastic={0.5}
+            dragElastic={0.2}
             dragTransition={{
               power: 0.2,
               timeConstant: 200,
@@ -276,7 +284,6 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
               stiffness: 300,
               damping: 30,
             }}
-            onDrag={handleDrag}
             onDragStart={() => {
               setIsDragging(true);
             }}
@@ -371,7 +378,7 @@ const useSheet = <S extends string>(sheetId: S) => {
   }
 
   return {
-    Sheet: (props: Omit<SheetProps<S>, "sheetId" | "onClose" | "open">) => {
+    Sheet: memo((props: Omit<SheetProps<S>, "sheetId" | "onClose" | "open">) => {
       return (
         <SheetImpl
           {...props}
@@ -381,7 +388,7 @@ const useSheet = <S extends string>(sheetId: S) => {
           sheetId={sheetId}
         />
       );
-    },
+    }),
     SheetContent: SheetContentImpl,
     SheetHeader: SheetHeaderImpl,
     openSheet: () => sheetContext.openSheet(sheetId),
@@ -390,3 +397,4 @@ const useSheet = <S extends string>(sheetId: S) => {
 };
 
 export { SheetProvider, useSheet };
+
