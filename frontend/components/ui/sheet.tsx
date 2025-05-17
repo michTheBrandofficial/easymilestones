@@ -13,7 +13,7 @@ import React, {
 } from "react";
 import { Button } from "../buttons";
 import { Typography } from "../typography";
-import { ChevronLeft } from "@gravity-ui/icons";
+import { ArrowLeft01Icon } from "hugeicons-react";
 import { percentage, px } from "@/lib/utils";
 import { createPortal } from "react-dom";
 
@@ -161,7 +161,7 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
           transition={{
             type: "keyframes",
           }}
-          className="h-full bg-white no-scrollbar overflow-y-auto "
+          className="h-full no-scrollbar overflow-y-auto "
         >
           {children}
         </motion.div>
@@ -220,7 +220,7 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
   const calculateDragProgress = useCallback(() => {
     if (!sheetRef.current) return 0;
     const { height: sheetHeight } = sheetRef.current.getBoundingClientRect();
-    const threshold = sheetHeight * 0.6;
+    const threshold = sheetHeight * 0.3;
     const currentY = y.get();
     // Calculate progress as a percentage (0 to 1)
     const progress = Math.min(Math.max(currentY / threshold, 0), 1);
@@ -305,7 +305,7 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
                     variant="ghost"
                     className="!px-0 flex items-center justify-center"
                   >
-                    <ChevronLeft width={26} height={26} />{" "}
+                    <ArrowLeft01Icon width={26} height={26} />{" "}
                     <span className="-mt-0.5 font-medium">{backButton}</span>
                   </Button>
                 )}
@@ -378,17 +378,19 @@ const useSheet = <S extends string>(sheetId: S) => {
   }
 
   return {
-    Sheet: memo((props: Omit<SheetProps<S>, "sheetId" | "onClose" | "open">) => {
-      return (
-        <SheetImpl
-          {...props}
-          // defaults to false
-          open={sheetContext.sheetMap[sheetId]?.open ?? false}
-          onClose={() => sheetContext.closeSheet(sheetId)}
-          sheetId={sheetId}
-        />
-      );
-    }),
+    Sheet: memo(
+      (props: Omit<SheetProps<S>, "sheetId" | "onClose" | "open">) => {
+        return (
+          <SheetImpl
+            {...props}
+            // defaults to false
+            open={sheetContext.sheetMap[sheetId]?.open ?? false}
+            onClose={() => sheetContext.closeSheet(sheetId)}
+            sheetId={sheetId}
+          />
+        );
+      }
+    ),
     SheetContent: SheetContentImpl,
     SheetHeader: SheetHeaderImpl,
     openSheet: () => sheetContext.openSheet(sheetId),

@@ -38,14 +38,14 @@ export const Button: React.FC<ButtonProps> = ({
       }
       className={cn(
         `font-semibold cursor-pointer rounded-xl `,
-        { "bg-em-sky-blue text-white": variant === "full" },
+        { "bg-em-dark text-white": variant === "full" },
         { "px-6 py-2": variant !== "icon" },
         {
-          "border-2 border-em-sky-blue text-em-sky-blue/70 ":
+          "border-2 border-em-dark text-em-dark ":
             variant === "outline",
         },
-        { "text-em-sky-blue": variant === "ghost" },
-        { "bg-em-sky-blue text-white px-2 py-2": variant === "icon" },
+        { "text-em-dark": variant === "ghost" },
+        { "bg-em-dark text-white px-2 py-2": variant === "icon" },
         { "cursor-not-allowed opacity-50": props.disabled },
         className
       )}

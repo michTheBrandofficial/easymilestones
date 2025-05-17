@@ -1,18 +1,26 @@
 "use client";
 import { Button } from "@/components/buttons";
+import PageScreen from "@/components/ui/screen";
 import { useSheet } from "@/components/ui/sheet";
+import { useToast } from "@/components/ui/toast-context";
+import { ArrowLeft01Icon } from "hugeicons-react";
 
 const Home = () => {
   const { Sheet, SheetContent, openSheet } = useSheet("account");
+  const showToast = useToast()
   return (
-    <section className="font-Satoshi w-full h-full flex-col gap-y-10 ">
-      <Sheet title="Account">
-        <SheetContent>
-          Address: 0x1234567890
-        </SheetContent>
+    <PageScreen className="">
+      <ArrowLeft01Icon width={24} height={24} className="text-black " />
+      <Sheet title="Account" backButton="Back" >
+        <SheetContent>Address: 0x1234567890</SheetContent>
       </Sheet>
-      <Button onTap={openSheet} className="mt-40" >Open</Button>
-    </section>
+      <Button onTap={() => {
+        openSheet;
+        showToast('info', 'Transaction complete')
+      }} className="mt-40">
+        Open
+      </Button>
+    </PageScreen>
   );
 };
 

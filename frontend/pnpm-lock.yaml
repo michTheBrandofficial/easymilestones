@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@gravity-ui/icons':
-        specifier: ^2.13.0
-        version: 2.13.0(react@19.0.0-rc-02c0e824-20241028)
       '@tanstack/react-query':
         specifier: ^5.60.2
         version: 5.60.2(react@19.0.0-rc-02c0e824-20241028)
@@ -829,14 +826,6 @@ packages:
   '@ethereumjs/util@8.1.0':
     resolution: {integrity: sha512-zQ0IqbdX8FZ9aw11vP+dZkKDkS+kgIvQPHnSAXzP9pLu+Rfu3D3XEeLbicvoXJTYnhZiPmsZUxgdzXwNKxRPbA==}
     engines: {node: '>=14'}
-
-  '@gravity-ui/icons@2.13.0':
-    resolution: {integrity: sha512-oHWJTb8rTuZo1czZRBSggEWMmthiXeM5LBpB0GzyS1tCkNE1A7DpEvvrKUwHYVHTxpw/xWIqQCxNj7LIo2R3NQ==}
-    peerDependencies:
-      react: '*'
-    peerDependenciesMeta:
-      react:
-        optional: true
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -5666,10 +5655,6 @@ snapshots:
       '@ethereumjs/rlp': 4.0.1
       ethereum-cryptography: 2.2.1
       micro-ftch: 0.3.1
-
-  '@gravity-ui/icons@2.13.0(react@19.0.0-rc-02c0e824-20241028)':
-    optionalDependencies:
-      react: 19.0.0-rc-02c0e824-20241028
 
   '@humanfs/core@0.19.1': {}
 

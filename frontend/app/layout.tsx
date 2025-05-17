@@ -4,6 +4,7 @@ import WagmiContextProvider from "./_context";
 import { LocalAccountProvider } from "./_context/local-account";
 import "./globals.css";
 import { SheetProvider } from "@/components/ui/sheet";
+import ToastProvider from "@/components/ui/toast";
 
 export const metadata: Metadata = {
   title: "Home | EasyMilestones",
@@ -22,13 +23,15 @@ export default async function RootLayout({
       <body
         className={`w-screen h-screen antialiased font-medium font-Satoshi select-none overflow-y-auto no-scrollbar `}
       >
-        <SheetProvider>
-          <LocalAccountProvider>
-            <WagmiContextProvider cookies={cookies}>
-              {children}
-            </WagmiContextProvider>
-          </LocalAccountProvider>
-        </SheetProvider>
+        <ToastProvider>
+          <SheetProvider>
+            <LocalAccountProvider>
+              <WagmiContextProvider cookies={cookies}>
+                {children}
+              </WagmiContextProvider>
+            </LocalAccountProvider>
+          </SheetProvider>
+        </ToastProvider>
       </body>
     </html>
   );
