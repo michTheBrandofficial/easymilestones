@@ -15,14 +15,14 @@ const config: Config = {
       },
       colors: {
         em: {
-          'primary': "#FFFFFF",
-          'sky-blue': "#A3D5FA",
-          'dark': '#101010',
-          'light-dark': '#808080',
-          'blue': "#4CABEF",
-          'gray': "#d3d3d3"
-        }
-      }
+          primary: "#FFFFFF",
+          "sky-blue": "#A3D5FA",
+          dark: "#101010",
+          "light-dark": "#808080",
+          blue: "#4CABEF",
+          gray: "#d3d3d3",
+        },
+      },
     },
   },
   plugins: [
@@ -36,16 +36,17 @@ const config: Config = {
           "scrollbar-width": "none",
         },
         ".fade-animation": {
-          animation: "fade 1s linear infinite"
+          animation: "fade 1s linear infinite",
         },
         "@keyframes fade": {
-          "from": {
-            opacity: "1"
+          from: {
+            opacity: "1",
           },
-          "to": {
-            opacity: "0.25"
-          }
-        },      });
+          to: {
+            opacity: "0.25",
+          },
+        },
+      });
     }),
   ],
 };
