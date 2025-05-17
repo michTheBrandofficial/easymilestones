@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "../buttons";
 import { AnimatePresence, motion } from "motion/react";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import {
   ToastContext,
@@ -9,7 +9,6 @@ import {
   ToastOptions,
   ToastType,
 } from "./toast-context";
-import { ArrowLeft01Icon } from "hugeicons-react";
 
 const toastStyles = {
   // success: "bg-green-100/70",
@@ -187,6 +186,34 @@ const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
           },
         },
       ]);
+    playNotificationSound()
+  };
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Initialize audio on client side only
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      audioRef.current = new Audio('/sounds/ui-negative-answer-om-fx-1-00-03.mp3');
+    }
+    
+    // Cleanup function
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+  
+  // Function to play the notification sound
+  const playNotificationSound = () => {
+    if (audioRef.current) {
+      // Reset to beginning if already played
+      audioRef.current.currentTime = 0;
+      // Play with error handling
+      audioRef.current.play().catch(err => {
+        console.error('Failed to play notification sound:', err);
+      });
+    }
   };
 
   return (
