@@ -5,6 +5,8 @@ import { LocalAccountProvider } from "./_context/local-account";
 import "./globals.css";
 import { SheetProvider } from "@/components/ui/sheet";
 import ToastProvider from "@/components/ui/toast";
+import { AnimatePresence } from "motion/react";
+import AnimationProvider from "@/components/animation-provider";
 
 export const metadata: Metadata = {
   title: "Home | EasyMilestones",
@@ -27,7 +29,7 @@ export default async function RootLayout({
           <SheetProvider>
             <LocalAccountProvider>
               <WagmiContextProvider cookies={cookies}>
-                {children}
+                <AnimationProvider>{children}</AnimationProvider>
               </WagmiContextProvider>
             </LocalAccountProvider>
           </SheetProvider>
