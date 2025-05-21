@@ -20,7 +20,7 @@ function Home() {
         <SheetContent>Address: 0x1234567890</SheetContent>
       </Sheet>
       <Button onTap={() => {
-        openSheet;
+        openSheet()
         showToast('info', 'Transaction complete')
       }} className="mt-40">
         Open
