@@ -27,7 +27,7 @@ import { HTMLMotionProps, motion } from "motion/react";
  */
 const PageScreen = (
   { skipInitialAnimation, ...props }: HTMLMotionProps<"section"> & { skipInitialAnimation?: boolean }
-): JSX.Element => {
+): React.JSX.Element => {
   const [isFirstRender, setIsFirstRender] = useState(true);
 
   useEffect(() => {

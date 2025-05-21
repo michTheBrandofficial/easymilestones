@@ -1,12 +1,16 @@
-"use client";
 import { Button } from "@/components/buttons";
 import PageScreen from "@/components/ui/screen";
 import { useSheet } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/toast-context";
 import { ArrowLeft01Icon } from "hugeicons-react";
-import Link from "next/link";
+import * as React from 'react'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
-const Home = () => {
+export const Route = createFileRoute('/')({
+  component: Home,
+})
+
+function Home() {
   const { Sheet, SheetContent, openSheet } = useSheet("account");
   const showToast = useToast()
   return (
@@ -21,7 +25,7 @@ const Home = () => {
       }} className="mt-40">
         Open
       </Button>
-      <Link href={'/showcase'}>
+      <Link to={'/showcase'}>
         <Button className="mt-40">
           Showcase
         </Button>
@@ -29,5 +33,3 @@ const Home = () => {
     </PageScreen>
   );
 };
-
-export default Home;
