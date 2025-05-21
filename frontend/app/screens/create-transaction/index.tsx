@@ -1,10 +1,16 @@
 import { Button } from "@/components/buttons";
 import { Typography } from "@/components/typography";
-import { MilestoneCreationSVGs } from "./_components/milestone-creation-svgs";
+import { MilestoneCreationSVGs } from "./-components/milestone-creation-svgs";
 import { Calendar04Icon } from "hugeicons-react";
-import AddCircle from "../_icons/add-circle";
+import AddCircle from "../../../components/icons/add-circle";
+import { createFileRoute } from "@tanstack/react-router";
 
-const CreateTransaction = () => {
+
+export const Route = createFileRoute('/create-transaction/')({
+  component: CreateTransaction,
+})
+
+function CreateTransaction() {
   // add modals variable here for controlling sheet
   return (
     <section className="flex flex-col gap-y-4 w-full h-full px-4 py-6 pb-6">
