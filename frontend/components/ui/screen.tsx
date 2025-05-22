@@ -26,34 +26,18 @@ import { HTMLMotionProps, motion } from "motion/react";
  * </PageScreeen>
  */
 const PageScreen = (
-  { skipInitialAnimation, ...props }: HTMLMotionProps<"section"> & { skipInitialAnimation?: boolean }
+  { ...props }: React.HTMLAttributes<HTMLElement>
 ): React.JSX.Element => {
-  const [isFirstRender, setIsFirstRender] = useState(true);
-
-  useEffect(() => {
-    // After component mounts, it's no longer the first render
-    setIsFirstRender(false);
-  }, []);
-
-  // Skip animation on first render if skipInitialAnimation is true or not specified
-  const shouldSkipAnimation =
-    skipInitialAnimation !== false && isFirstRender;
   return (
-    <motion.section
+    <section
       {...props}
-      initial={
-        shouldSkipAnimation ? { opacity: 1, y: 0 } : { opacity: 0, y: 300 }
-      }
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -300 }}
-      transition={{ duration: 1 }}
       className={cn(
-        "font-Satoshi w-full h-full bg-em-primary pt-[48px]",
+        "font-Satoshi w-full h-full bg-em-primary ",
         props.className
       )}
     >
       {props.children}
-    </motion.section>
+    </section>
   );
 };
 

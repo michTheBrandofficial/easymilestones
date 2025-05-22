@@ -59,6 +59,8 @@ type SheetUnderlayProps = Pick<Props, "children">;
 
 const SheetContext = createContext<SheetContextType | null>(null);
 
+const SHEET_UNDERLAY_TOP_OFFSET = 48
+
 /**
  * @dev this one to be mounted at top most of app
  */
@@ -90,7 +92,7 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
    */
   const positionMap = {
     width: { initial: 100, final: 95 },
-    y: { initial: 0, final: 48 },
+    y: { initial: 0, final: SHEET_UNDERLAY_TOP_OFFSET },
     borderRadius: { initial: 0, final: 16 },
   } as const;
   return (
@@ -149,7 +151,7 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
                       dragProgress +
                       positionMap.width.final
                   ),
-                  y: px(48),
+                  y: px(SHEET_UNDERLAY_TOP_OFFSET),
                   borderTopRightRadius: px(16),
                   borderTopLeftRadius: px(16),
                 }
@@ -175,8 +177,11 @@ type Props = {
   className?: string;
 };
 
+const SHEET_TOP_OFFSET = SHEET_UNDERLAY_TOP_OFFSET + 6;
+
 type SheetProps<SheetId extends string> = Pick<Props, "children"> & {
   sheetId: SheetId;
+  className?: string
 } & SheetContextType["sheetMap"][string];
 
 const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
@@ -269,7 +274,7 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
                 type: "keyframes",
               },
             }}
-            style={{ y }}
+            style={{ y, height: `calc(100% - ${SHEET_TOP_OFFSET}px)` }}
             drag="y"
             dragConstraints={{ top: 0 }}
             dragElastic={0.2}
@@ -290,23 +295,24 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
             onDragEnd={handleDragEnd}
             data-isdragging={isDragging}
             className={cn(
-              `w-full bg-white h-full rounded-t-[16px] absolute z-[100000000] top-[54px] left-0 bottom-0 overflow-y-auto flex flex-col transition-[height] duration-200 data-[isdragging=true]:cursor-grabbing `
+              `w-full bg-white rounded-t-[16px] absolute z-[100000000] left-0 bottom-0 overflow-y-auto  transition-[height] duration-200 data-[isdragging=true]:cursor-grabbing `,
             )}
           >
-            <div className="w-full pt-1.5 flex items-center justify-center">
+            <div className={cn("w-full h-full flex flex-col", props.className)}>
+            <div className="w-full pt-1.5 hidden items-center justify-center">
               <div className="w-[46px] h-[4px] bg-[#D9D9D9] rounded-full"></div>
             </div>
             <div className="w-full py-0 grid items-center grid-cols-[1fr_auto_1fr] gap-x-2 px-1">
-              <div>
+              <div className="mt-1 text-em-secondary">
                 {typeof backButton === "string" && (
                   <Button
                     whileHover={""}
                     onTap={onClose}
                     variant="ghost"
-                    className="!px-0 flex items-center justify-center"
+                    className="!px-0 flex items-center justify-center text-em-secondary"
                   >
                     <ArrowLeft01Icon width={26} height={26} />{" "}
-                    <span className="-mt-0.5 font-medium">{backButton}</span>
+                    <span className="font-medium inline-block -ml-0.5">{backButton}</span>
                   </Button>
                 )}
               </div>
@@ -321,14 +327,15 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
                       action.do(onClose);
                     }}
                     variant="ghost"
-                    className="!px-0 flex font-medium items-center justify-center"
+                    className="!px-0 flex font-medium items-center justify-center text-em-secondary"
                   >
-                    <span>{action.title}</span>
+                    <span className="font-medium" >{action.title}</span>
                   </Button>
                 )}
               </div>
             </div>
             {children}
+            </div>
           </motion.section>
         </>
       ) : null}
@@ -353,8 +360,8 @@ const SheetHeaderImpl: React.FC<{ children?: React.ReactNode }> = ({
   );
 };
 
-const SheetContentImpl: React.FC<{ children?: React.ReactNode }> = ({
-  children,
+const SheetContentImpl: React.FC<{ children?: React.ReactNode, className?: string }> = ({
+  children, className
 }) => {
   return (
     <motion.div
@@ -364,7 +371,7 @@ const SheetContentImpl: React.FC<{ children?: React.ReactNode }> = ({
         stiffness: 300,
         damping: 30,
       }}
-      className="w-full px-2.5 pb-6 overflow-y-auto no-scrollbar flex-grow "
+      className={cn("w-full px-2.5 pb-6 overflow-y-auto no-scrollbar flex-grow ", className)}
     >
       {children}
     </motion.div>
