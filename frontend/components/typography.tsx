@@ -9,7 +9,7 @@ const typographyVariants = cva("", {
       h2: "scroll-m-20 text-black text-3xl font-semibold font-Bricolage_Grotesque tracking-tight",
       h3: "scroll-m-20 text-black text-2xl font-semibold font-Bricolage_Grotesque tracking-tight",
       h4: "scroll-m-20 text-black text-xl font-semibold font-Bricolage_Grotesque tracking-tight",
-      p: "leading-7 font-medium ",
+      p: "font-medium ",
       span: "font-medium ",
     },
   },
