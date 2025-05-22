@@ -5,7 +5,7 @@ export default class FakeData {
     {
       amount: 10,
       deadline: 1699708800,
-      title: "Transaction 1",
+      title: "Transaction 1 for birthday",
       milestones: [
         {
           amount: 5,
