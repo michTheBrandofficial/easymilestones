@@ -1,5 +1,6 @@
 import { Button } from "@/components/buttons";
 import { cn } from "@/components/cn";
+import { Transaction0Index, TransactionCompletedBadge, TransactionOngoingBadge } from "@/components/icons/transaction-list-svgs";
 import { Typography } from "@/components/typography";
 import PageScreen from "@/components/ui/screen";
 import FakeData from "@/lib/fake-data";
@@ -65,10 +66,16 @@ function Home() {
           </Button>
         </div>
         <div className="space-y-3">
+          {/* filter through to get only transactions that have at least one milestone */}
           {transactions.map((tx, index) => {
             const isAllPaid = tx.milestones.every(
               (m) => m.status === Status.paid
             );
+            const transactionParameters = (() => {
+              return {
+                firstMilestoneCompleted: tx.milestones[0].status === Status.paid,
+              }
+            })()
             return (
               <div key={index} className="w-full flex items-start gap-x-2">
                 <div
@@ -85,10 +92,16 @@ function Home() {
                     <Clock04Icon className={cn("size-7")} />
                   )}
                 </div>
-                <div className="w-fit flex flex-col gap-y-1 items-end ">
+                <div className="w-fit flex flex-col gap-y-1 flex-grow items-start ">
                   <Typography className="font-bold" >{tx.title}</Typography>
+                  <div className="w-full flex pt-2">
+                    <Transaction0Index size={1} completed={transactionParameters.firstMilestoneCompleted} />
+                    {transactionParameters.firstMilestoneCompleted ? (
+                      <TransactionCompletedBadge size={1.5} className="-ml-1 -mt-1" />
+                    ) : <TransactionOngoingBadge size={1.5} className="-ml-1 -mt-1" />}
+                  </div>
                 </div>
-                <div className="w-fit flex flex-col gap-y-1 items-end ml-auto">
+                <div className="w-fit flex flex-col gap-y-1 items-end ">
                   <Typography className="font-semibold" >{tx.amount} ETH</Typography>
                   <Typography className="font-medium text-em-text text-xs" >{isAllPaid ? 'Completed' : 'Ongoing'}</Typography>
                 </div>
