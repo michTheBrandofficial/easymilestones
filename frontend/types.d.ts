@@ -1,8 +1,20 @@
-export { };
+import { Status } from "./lib/utils";
+
+export {};
 
 declare global {
-  namespace App {
-    
+  interface Transaction {
+    amount: number;
+    deadline: number;
+    title: string;
+    milestones: Milestone[];
+  }
+
+  interface Milestone {
+    amount: number;
+    deadline: number;
+    title: string;
+    status: Status;
   }
 
   namespace Helpers {

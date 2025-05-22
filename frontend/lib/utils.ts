@@ -37,7 +37,7 @@ export const createStyles = <
   Props extends CSSProperties,
   S extends {
     [index: string]: Readonly<Props>;
-  }
+  },
 >(
   styles: S
 ) => styles;
@@ -182,4 +182,9 @@ export function deepCopy<T extends DeepCopyable>(value: T): T {
 
   // Handle primitives (strings, numbers, booleans)
   return value;
+}
+
+export enum Status {
+  unpaid,
+  paid,
 }
