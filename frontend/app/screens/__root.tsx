@@ -48,7 +48,7 @@ function RootComponent() {
         </div>
       )}
       <Outlet />
-      <FloatingTabBar />
+      <FloatingTabBar onClickAccount={openSheet} />
       {pathname === "/onboarding" ? null : (
         <Sheet title="Account" backButton="Back" className="bg-white">
           <SheetContent className="flex flex-col justify-between border-t border-gray-300">

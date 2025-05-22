@@ -12,6 +12,7 @@ import {
 import React from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { cn } from "@/components/cn";
+import { Button } from "@/components/buttons";
 
 const links = [
   {
@@ -29,14 +30,19 @@ const links = [
     icon: <Target02Icon size={18} className="text-white" />,
     to: "/create-transaction",
   },
-  {
-    title: "Profile",
-    icon: <UserCircle02Icon size={18} className="text-white " />,
-    to: "/profile",
-  },
 ];
 
-const FloatingTabBar = () => {
+type Props = {
+  /**
+   * @dev this is for the account modals
+   */
+  onClickAccount?: () => void;
+};
+
+/**
+ * @dev onClickAccount should open the account sheet;
+ */
+const FloatingTabBar = (props: Props) => {
   const { pathname } = useLocation();
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 p-1.5 rounded-full bg-em-dark flex items-center gap-x-3 shadow-lg">
@@ -45,7 +51,7 @@ const FloatingTabBar = () => {
           key={index}
           to={link.to}
           className={cn(
-            "size-8 flex items-center justify-center  rounded-full  hover:bg-em-tertiary ",
+            "size-8 flex items-center justify-center  rounded-full  hover:bg-em-tertiary transition-colors duration-300 ",
             {
               "bg-em-tertiary": pathname === link.to,
             }
@@ -54,6 +60,14 @@ const FloatingTabBar = () => {
           {link.icon}
         </Link>
       ))}
+      <Button
+      onTap={props.onClickAccount}
+          className={cn(
+            "size-8 flex items-center justify-center  rounded-full p-0  hover:bg-em-tertiary transition-colors duration-300 ",
+          )}
+        >
+          <UserCircle02Icon size={18} className="text-white " />
+        </Button>
     </div>
   );
 };
