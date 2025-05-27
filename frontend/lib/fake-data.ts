@@ -22,6 +22,31 @@ export default class FakeData {
       ],
     },
     {
+      amount: 7,
+      deadline: 1699708800,
+      title: "Transaction 1 for birthday",
+      milestones: [
+        {
+          amount: 5,
+          deadline: 1699708800,
+          title: "Milestone 1",
+          status: Status.paid,
+        },
+        {
+          amount: 5,
+          deadline: 1702396800,
+          title: "Milestone 2",
+          status: Status.unpaid,
+        },
+        {
+          amount: 5,
+          deadline: 1702396800,
+          title: "Milestone 2",
+          status: Status.unpaid,
+        },
+      ],
+    },
+    {
       amount: 20,
       deadline: 1702396800,
       title: "Transaction 2",

@@ -114,3 +114,27 @@ export const MilestoneSVG = ({
     <MilestoneOngoing size={size} {...props} />
   );
 };
+
+export const LittleMilestoneSVG = ({ size = 1, completed, ...props }: TransactionListSVGProps) => {
+  const [w, h] = scaleSize(size, {
+    width: "29",
+    height: "12",
+  });
+  return (
+    <svg
+      fill="none"
+      {...props}
+      width={w}
+      height={h}
+      viewBox="0 0 29 12"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M1 5.95018C12 -11.0496 16.821 22.5485 28 5.95018"
+        stroke={
+          completed ? "#A3D5FA" : "#1717174d"
+        }
+      />
+    </svg>
+  );
+};

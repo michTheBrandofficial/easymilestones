@@ -1,10 +1,10 @@
 import { Button } from "@/components/buttons";
 import { cn } from "@/components/cn";
-import { MilestoneSVG } from "@/components/icons/transaction-list-svgs";
+import { LittleMilestoneSVG, MilestoneSVG } from "@/components/icons/transaction-list-svgs";
 import { Typography } from "@/components/typography";
 import PageScreen from "@/components/ui/screen";
 import FakeData from "@/lib/fake-data";
-import { Status } from "@/lib/utils";
+import { last, Status } from "@/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CheckmarkBadge01Icon, Clock04Icon } from "hugeicons-react";
 export const Route = createFileRoute("/")({
@@ -78,7 +78,17 @@ function Home() {
                 hasMultipleMilestones: tx.milestones.length > 1,
                 secondMilestoneCompleted:
                   tx.milestones[1]?.status === Status.paid,
-                shouldTruncate: tx.milestones.length > 2,
+                moreThan2Milestones:
+                  tx.milestones.length > 2
+                    ? {
+                        inBetween: tx.milestones.slice(
+                          1,
+                          tx.milestones.length - 1
+                        ),
+                        lastMilestoneCompleted:
+                          last(tx.milestones).status === Status.paid,
+                      }
+                    : null,
               };
             })();
             return (
@@ -97,8 +107,6 @@ function Home() {
                     <Clock04Icon className={cn("size-7")} />
                   )}
                 </div>
-                {/* size down this elements here a bit */}
-                {/* formula is .slice(1 [second index], length - 1 [last index]) */}
                 <div className="flex flex-col gap-y-1 w-[60%] items-start ">
                   <Typography className="font-bold whitespace-nowrap overflow-hidden overflow-ellipsis w-full">
                     {tx.title}
@@ -108,41 +116,21 @@ function Home() {
                       size={1.2}
                       completed={transactionParameters.firstMilestoneCompleted}
                     />
-                    {transactionParameters.hasMultipleMilestones && (
-                      <MilestoneSVG
-                        size={1.2}
-                        completed={transactionParameters.secondMilestoneCompleted}
-                        className="-mt-2.5 -ml-2"
-                      />
-                    )}
-                    {/* {transactionParameters.hasMultipleMilestones &&
-                      inlineSwitch(
-                        transactionParameters.shouldTruncate,
-                        [
-                          false,
-                          <>
-                            <Transaction1Index
-                              size={1}
-                              completed={
-                                transactionParameters.secondMilestoneCompleted
-                              }
-                              className="-mt-2.5 -ml-1.5 "
-                            />
-                            {transactionParameters.secondMilestoneCompleted ? (
-                              <TransactionCompletedBadge
-                                size={1.5}
-                                className="-ml-0.5 -mt-3"
-                              />
-                            ) : (
-                              <TransactionOngoingBadge
-                                size={1.5}
-                                className="-ml-0.5 -mt-3"
-                              />
-                            )}
-                          </>,
-                        ],
-                        { default: <></> }
-                      )} */}
+                    {transactionParameters.hasMultipleMilestones &&
+                      (transactionParameters.moreThan2Milestones ? (
+                        <>
+                          <LittleMilestoneSVG completed={transactionParameters.secondMilestoneCompleted} className="-mt-1 -ml-[7px]" />
+                          <Typography className="text-em-text font-bold text-sm -mt-2 mx-1.5">{transactionParameters.moreThan2Milestones.inBetween.length} more</Typography>
+                        </>
+                      ) : (
+                        <MilestoneSVG
+                          size={1.2}
+                          completed={
+                            transactionParameters.secondMilestoneCompleted
+                          }
+                          className="-mt-2.5 -ml-2"
+                        />
+                      ))}
                   </div>
                 </div>
                 <div className="w-fit flex flex-col gap-y-1 items-end ml-auto">
