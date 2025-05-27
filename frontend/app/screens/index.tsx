@@ -1,15 +1,10 @@
 import { Button } from "@/components/buttons";
 import { cn } from "@/components/cn";
-import {
-  Transaction0Index,
-  Transaction1Index,
-  TransactionCompletedBadge,
-  TransactionOngoingBadge,
-} from "@/components/icons/transaction-list-svgs";
+import { MilestoneSVG } from "@/components/icons/transaction-list-svgs";
 import { Typography } from "@/components/typography";
 import PageScreen from "@/components/ui/screen";
 import FakeData from "@/lib/fake-data";
-import { inlineSwitch, Status } from "@/lib/utils";
+import { Status } from "@/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CheckmarkBadge01Icon, Clock04Icon } from "hugeicons-react";
 export const Route = createFileRoute("/")({
@@ -105,24 +100,15 @@ function Home() {
                 {/* size down this elements here a bit */}
                 {/* formula is .slice(1 [second index], length - 1 [last index]) */}
                 <div className="flex flex-col gap-y-1 w-[60%] items-start ">
-                  <Typography className="font-bold whitespace-nowrap overflow-hidden overflow-ellipsis w-full">{tx.title}</Typography>
+                  <Typography className="font-bold whitespace-nowrap overflow-hidden overflow-ellipsis w-full">
+                    {tx.title}
+                  </Typography>
                   <div className="w-full flex pt-3">
-                    <Transaction0Index
-                      size={1}
+                    <MilestoneSVG
+                      size={1.2}
                       completed={transactionParameters.firstMilestoneCompleted}
                     />
-                    {transactionParameters.firstMilestoneCompleted ? (
-                      <TransactionCompletedBadge
-                        size={1.5}
-                        className="-ml-1 -mt-1"
-                      />
-                    ) : (
-                      <TransactionOngoingBadge
-                        size={1.5}
-                        className="-ml-1 -mt-1"
-                      />
-                    )}
-                    {transactionParameters.hasMultipleMilestones &&
+                    {/* {transactionParameters.hasMultipleMilestones &&
                       inlineSwitch(
                         transactionParameters.shouldTruncate,
                         [
@@ -149,10 +135,10 @@ function Home() {
                           </>,
                         ],
                         { default: <></> }
-                      )}
+                      )} */}
                   </div>
                 </div>
-                <div className="w-fit flex flex-col gap-y-1 items-end ">
+                <div className="w-fit flex flex-col gap-y-1 items-end ml-auto">
                   <Typography className="font-semibold">
                     {tx.amount} ETH
                   </Typography>
