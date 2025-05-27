@@ -1,60 +1,90 @@
+"use client";
 import { useState } from "react";
 import { Button } from "./buttons";
+import PendingOverlay from "./ui/pending-overlay";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Typography } from "./typography";
-import DatePicker from "./ui/calendar";
-import Popover from "./ui/popover";
-import Pagination from "./ui/pagination";
-import CheckBox from "./ui/checkbox";
-import Toggle from "./ui/toggle";
-import Tab from "./ui/tab";
+import { useLocalAccount } from "@/app/screens/-contexts/local-account";
+import { Calendar01Icon, MoneySendSquareIcon } from "hugeicons-react";
 
 const Components = () => {
   const [open, setOpen] = useState(false);
-  const [page, setPage] = useState(1);
-  const [phone] = useState("");
+  const { isFetching: _isFetching } = useQuery({
+    queryFn: () => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("done");
+        }, 2000);
+      });
+    },
+    queryKey: ["test"],
+    enabled: open,
+  });
+  // @ts-ignore
+  const createTransactionMutation = useMutation({
+    mutationFn: (data: any) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(data);
+        }, 4000);
+      });
+    },
+  });
+  const { privateKeyAccount, publicClient } = useLocalAccount();
+  const { data: balance } = useQuery({
+    queryKey: ["account-balance"],
+    queryFn: async () =>
+      publicClient.getBalance({
+        address: privateKeyAccount.address,
+        blockTag: "latest",
+      }),
+    refetchOnWindowFocus: false,
+  });
   return (
-    <section className="w-full h-screen overflow-x-auto p-3 p space-y-10 no-scrollbar text-center ">
-      <Tab>
-        <Tab.Header >
-          <Tab.Link value="all" label="All" />
-          <Tab.Link value="missed" label="Missed" />
-        </Tab.Header>
-      </Tab>
-      <CheckBox checked={open} onChange={(checked) => setOpen(checked)} />
-      <Toggle checked={open} onChange={(checked) => setOpen(checked)} />
-      <Button onTap={() => setOpen(true)}>Open Modal</Button>
-      {phone}
-      <div className="w-full py-20 space-y-2">
-        <Typography variant={"h2"}>
-          We're on page <span className="bg-orange-400 px-4">{page}</span>
-        </Typography>
-        <Pagination
-          totalPages={20}
-          onPageChange={(_page) => setPage(_page)}
-          page={page}
-          className=" mx-auto"
-        />
-      </div>
-      <Popover transformOrigin="top-left">
-        <Popover.Trigger>
-          <Button>Click me</Button>
-        </Popover.Trigger>
-        <Popover.Content className="p-4">anams</Popover.Content>
-      </Popover>
-      <DatePicker
-        onChange={(date) => console.log(date)}
-        disableOldDates={true}
-        disabledDays={["Sunday", "Monday", "Thursday"]}
-        className="w-full max-w-[400px] rounded-3xl "
-      />
-      <Button onTap={() => setOpen(!open)}>Charles</Button>
-      <Typography variant={"span"}>I am boy</Typography>
-      <Typography variant={"p"}>I am boy</Typography>
-      <Typography variant={"h1"}>I am boy</Typography>
-      <Typography variant={"h2"}>I am boy 44</Typography>
-      <Typography variant={"h3"}>I am boy</Typography>
-      <Typography variant={"h4"}>I am boy</Typography>
+    <section className="w-full h-full bg-orange-400overflow-y-auto no-scrollbar flex ">
+      <Button onTap={() => setOpen(!open)} className="!my-auto !mt-48 mx-auto">
+        Complete Transaction
+      </Button>
+      <PendingOverlay isPending={false} />
     </section>
+  );
+};
+
+const Milestone = (_props: any) => {
+  return (
+    <div className="flex items-end gap-x-2 group ">
+      <div className="flex flex-col items-center">
+        <div className="w-[3px] h-24 group-first:h-20 bg-em-gray"></div>
+        <div className="w-fit h-fit p-2 border-2 border-em-gray rounded-full">
+          <div className="w-3 h-3 bg-em-gray rounded-full" />
+        </div>
+      </div>
+      <div className="w-full flex flex-col gap-y-3 -mb-1">
+        <div className="flex items-center gap-x-3">
+          <Calendar01Icon size={28} strokeWidth={2.2} />
+          <Typography className="font-Bricolage_Grotesque font-bold text-base text-em-dark bg-em-blue/10 w-fit p-2 px-4 rounded-xl">
+            {new Date()
+              .toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })
+              .replace(/(\d+)/, (match) => {
+                const day = parseInt(match);
+                const suffix =
+                  ["th", "st", "nd", "rd"][day % 10 > 3 ? 0 : day % 10] || "th";
+                return day + suffix;
+              })}
+          </Typography>
+        </div>
+        <div className="flex items-center gap-x-3">
+          <MoneySendSquareIcon size={28} strokeWidth={2.2} />
+          <Typography className="font-Bricolage_Grotesque font-bold text-base text-green-700 bg-green-100 w-fit p-2 px-4 rounded-xl">
+            0.2 ETH
+          </Typography>
+        </div>
+      </div>
+    </div>
   );
 };
 

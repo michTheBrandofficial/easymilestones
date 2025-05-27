@@ -1,5 +1,5 @@
-import { cn } from "@/components/cn";
-import { AnimatePresence, motion } from "framer-motion";
+import { cn } from "../cn";
+import { AnimatePresence, motion } from "motion/react";
 import React, {
   createContext,
   Dispatch,
@@ -76,12 +76,14 @@ const PopoverTrigger: React.FC<
       triggerRef?: React.Ref<HTMLDivElement>;
     }
 > = ({ children, className, triggerRef, ...props }) => {
-  const { setOpen } = usePopover();
+  const { setOpen, open } = usePopover();
   return (
     <div
       {...props}
       ref={triggerRef}
-      className={cn("w-fit h-fit ", className)}
+      className={cn("w-fit h-fit ", className, {
+        'relative z-[100000000]': open
+      })}
       onClick={() => setOpen(true)}
     >
       {children}
@@ -125,7 +127,7 @@ const PopoverContent: React.FC<Props> = ({ children, className }) => {
             onClick={(e) => {
               if (e.target === e.currentTarget) setOpen(false);
             }}
-            className="fixed h-screen w-screen !mt-0 top-0 left-0 z-[10000000]"
+            className="fixed h-screen w-screen bg-white/25 backdrop-blur-[3px] !m-0 top-0 left-0 z-[10000000]"
           ></section>
           <motion.section
             ref={containerRef}

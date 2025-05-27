@@ -1,5 +1,5 @@
 import { cn } from "@/components/cn";
-import { Person } from "@gravity-ui/icons";
+import { UserCircleIcon } from "hugeicons-react";
 import React from "react";
 
 type Props = {
@@ -34,7 +34,7 @@ const Avatar: React.FC<Props> = ({ size = 48, className, ...props }) => {
           className="w-full h-full object-cover rounded-[inherit]"
         />
       ) : (
-        <Person className="text-inherit" />
+        <UserCircleIcon className="text-inherit" />
       )}
     </div>
   );

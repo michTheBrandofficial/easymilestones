@@ -1,5 +1,5 @@
 import { cn } from "@/components/cn";
-import CircularLoader from "./circular-loader";
+import IOSSpinner from "./ios-spinner";
 
 type Props = {
   isPending: boolean;
@@ -13,14 +13,14 @@ const PendingOverlay = (props: Props) => {
   return !props.isPending ? null : (
     <section
       className={cn(
-        "fixed -top-2 left-0 w-screen h-screen flex items-center justify-center opacity-0 -z-[400]",
+        "fixed -top-2 !m-0 left-0 w-screen h-screen bg-white flex items-center justify-center opacity-0 -z-400",
         props.className || "",
         {
-          "z-[1000000000] opacity-100": props.isPending,
+          "z-1000000000 opacity-100": props.isPending,
         }
       )}
     >
-      <CircularLoader />
+      <IOSSpinner />
     </section>
   );
 };

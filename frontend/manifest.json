@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "start_url": "/",
+  "short_name": "Easy Milestones",
+  "name": "Easy Milestones",
+  "description": "Decentralized milestone payment application",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable monochrome"
+    }
+  ],
+  "shortcuts": [],
+  "display": "fullscreen",
+  "theme_color": "#A3D5FA",
+  "background_color": "#fff",
+  "scope": "/",
+  "orientation": "portrait"
+}

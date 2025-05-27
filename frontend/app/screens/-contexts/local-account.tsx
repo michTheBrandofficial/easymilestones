@@ -45,16 +45,16 @@ export const LocalAccountProvider = ({
   children?: React.ReactNode;
 }) => {
   const localAccount = privateKeyToAccount(
-    process.env.NEXT_PUBLIC_DEPLOYER_PRIVATE_KEY! as `0x${string}`
+    import.meta.env.VITE_PUBLIC_DEPLOYER_PRIVATE_KEY! as `0x${string}`
   );
   const walletClient = createWalletClient({
     chain: anvil,
-    transport: http(process.env.NEXT_PUBLIC_RPC_URL),
+    transport: http(import.meta.env.VITE_PUBLIC_RPC_URL),
     account: localAccount,
   });
   const publicClient = createPublicClient({
     chain: anvil,
-    transport: http(process.env.NEXT_PUBLIC_RPC_URL),
+    transport: http(import.meta.env.VITE_PUBLIC_RPC_URL),
   });
   return (
     <localAccountContext.Provider
@@ -62,8 +62,8 @@ export const LocalAccountProvider = ({
         walletClient,
         publicClient,
         privateKeyAccount: localAccount,
-        deployedContractAddress: process.env
-          .NEXT_PUBLIC_CONTRACT_ADDRESS! as `0x${string}`,
+        deployedContractAddress: import.meta.env
+          .VITE_PUBLIC_CONTRACT_ADDRESS! as `0x${string}`,
       }}
     >
       {children}

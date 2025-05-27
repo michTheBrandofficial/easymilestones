@@ -1,5 +1,6 @@
+'use client'
 import { cn } from "./cn";
-import { HTMLMotionProps, motion } from "motion/react";
+import { type HTMLMotionProps, motion } from "motion/react";
 import React, { PropsWithChildren } from "react";
 
 type Variants = "full" | "outline" | "icon" | "ghost";
@@ -24,6 +25,8 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   return (
     <motion.button
+      whileTap={{ scale: props.disabled ? 1 : 0.9 }}
+      whileHover={{ scale: props.disabled ? 1 : 1.05 }}
       {...props}
       onTap={
         onTap
@@ -33,18 +36,16 @@ export const Button: React.FC<ButtonProps> = ({
             }
           : undefined
       }
-      whileTap={{ scale: props.disabled ? 1 : 0.9 }}
-      whileHover={{ scale: props.disabled ? 1 : 1.05 }}
       className={cn(
-        `font-semibold rounded-xl `,
-        { "bg-em-sky-blue text-white": variant === "full" },
+        `font-semibold cursor-pointer rounded-xl `,
+        { "bg-em-dark text-white": variant === "full" },
         { "px-6 py-2": variant !== "icon" },
         {
-          "border-2 border-em-sky-blue text-em-sky-blue/70 ":
+          "border-2 border-em-dark text-em-dark ":
             variant === "outline",
         },
-        { "text-em-sky-blue": variant === "ghost" },
-        { "bg-em-sky-blue text-white px-2 py-2": variant === "icon" },
+        { "text-em-dark": variant === "ghost" },
+        { "bg-em-dark text-white px-2 py-2": variant === "icon" },
         { "cursor-not-allowed opacity-50": props.disabled },
         className
       )}
