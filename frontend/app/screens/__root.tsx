@@ -30,7 +30,7 @@ function RootComponent() {
   });
   return (
     // padding top of 48 for safe area zone.
-    <div className="w-full h-full bg-em-primary pt-[48px] px-4 ">
+    <div className="w-full h-full overflow-y-auto no-scrollbar bg-em-primary pt-[48px] px-4 ">
       {pathname === "/onboarding" ? null : (
         <div className="w-full flex items-center justify-between pt-5">
           <img
