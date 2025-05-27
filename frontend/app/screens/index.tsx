@@ -1,6 +1,6 @@
 import { Button } from "@/components/buttons";
 import { cn } from "@/components/cn";
-import { LittleMilestoneSVG, MilestoneSVG } from "@/components/icons/transaction-list-svgs";
+import { LastLittleMilestoneSVG, LittleMilestoneSVG, MilestoneSVG } from "@/components/icons/transaction-list-svgs";
 import { Typography } from "@/components/typography";
 import PageScreen from "@/components/ui/screen";
 import FakeData from "@/lib/fake-data";
@@ -107,34 +107,35 @@ function Home() {
                     <Clock04Icon className={cn("size-7")} />
                   )}
                 </div>
-                <div className="flex flex-col gap-y-1 w-[60%] items-start ">
+                <div className="flex flex-col gap-y-1 w-[65%] items-start ">
                   <Typography className="font-bold whitespace-nowrap overflow-hidden overflow-ellipsis w-full">
                     {tx.title}
                   </Typography>
                   <div className="w-full flex pt-4 pb-2 bg-orange-">
                     <MilestoneSVG
-                      size={1.2}
+                      size={1}
                       completed={transactionParameters.firstMilestoneCompleted}
                     />
                     {transactionParameters.hasMultipleMilestones &&
                       (transactionParameters.moreThan2Milestones ? (
                         <>
-                          <LittleMilestoneSVG completed={transactionParameters.secondMilestoneCompleted} className="-mt-1 -ml-[7px]" />
-                          <Typography className="text-em-text font-bold text-sm -mt-2 mx-1.5">{transactionParameters.moreThan2Milestones.inBetween.length} more</Typography>
+                          <LittleMilestoneSVG size={.8} completed={transactionParameters.secondMilestoneCompleted} className="-mt-1 -ml-[7px]" />
+                          <Typography className="text-em-text font-bold text-xs -mt-2 mx-1.5 whitespace-nowrap">{transactionParameters.moreThan2Milestones.inBetween.length} more</Typography>
+                          <LastLittleMilestoneSVG size={.8} completed={transactionParameters.moreThan2Milestones.lastMilestoneCompleted} className="-mt-[9px] -ml-" />
                         </>
                       ) : (
                         <MilestoneSVG
-                          size={1.2}
+                          size={1}
                           completed={
                             transactionParameters.secondMilestoneCompleted
                           }
-                          className="-mt-2.5 -ml-2"
+                          className="-mt-2.5 -ml-[7px]"
                         />
                       ))}
                   </div>
                 </div>
                 <div className="w-fit flex flex-col gap-y-1 items-end ml-auto">
-                  <Typography className="font-semibold">
+                  <Typography className="font-semibold whitespace-nowrap">
                     {tx.amount} ETH
                   </Typography>
                   <Typography className="font-medium text-em-text text-xs">
