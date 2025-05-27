@@ -51,7 +51,7 @@ function RootComponent() {
       <FloatingTabBar onClickAccount={openSheet} />
       {pathname === "/onboarding" ? null : (
         <Sheet title="Account" backButton="Back" className="bg-white">
-          <SheetContent className="flex flex-col justify-between border-t border-gray-300">
+          <SheetContent className="flex flex-col justify-between ">
             <div className="w-full px-1 5 py-2 flex flex-col gap-y-3">
               <div className="w-full flex items-center gap-x-2">
                 <Typography className="text-em-text">Address:</Typography>

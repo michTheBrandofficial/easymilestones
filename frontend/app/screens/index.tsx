@@ -103,11 +103,18 @@ function Home() {
                   <Typography className="font-bold whitespace-nowrap overflow-hidden overflow-ellipsis w-full">
                     {tx.title}
                   </Typography>
-                  <div className="w-full flex pt-3">
+                  <div className="w-full flex pt-4 pb-2 bg-orange-">
                     <MilestoneSVG
                       size={1.2}
                       completed={transactionParameters.firstMilestoneCompleted}
                     />
+                    {transactionParameters.hasMultipleMilestones && (
+                      <MilestoneSVG
+                        size={1.2}
+                        completed={transactionParameters.secondMilestoneCompleted}
+                        className="-mt-2.5 -ml-2"
+                      />
+                    )}
                     {/* {transactionParameters.hasMultipleMilestones &&
                       inlineSwitch(
                         transactionParameters.shouldTruncate,
