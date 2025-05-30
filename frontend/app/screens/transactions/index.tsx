@@ -11,7 +11,8 @@ import {
 } from "hugeicons-react";
 import { formatDate } from "date-fns";
 import { cn } from "@/components/cn";
-import { Status } from "@/lib/utils";
+import { last, Status } from "@/lib/utils";
+import { LastLittleMilestoneSVG, LittleMilestoneSVG, MilestoneSVG } from "@/components/icons/transaction-list-svgs";
 
 export const Route = createFileRoute("/transactions/")({
   component: Transactions,
@@ -37,9 +38,24 @@ function Transactions() {
 }
 
 const Transaction = () => {
-  const [tx] = FakeData.transactions;
+  const [tx] = FakeData.transactions.slice(1);
+  const txParameters = (() => {
+    return {
+      firstMilestoneCompleted: tx.milestones[0].status === Status.paid,
+      hasMultipleMilestones: tx.milestones.length > 1,
+      secondMilestoneCompleted: tx.milestones[1]?.status === Status.paid,
+      moreThan2Milestones:
+        tx.milestones.length > 2
+          ? {
+              inBetween: tx.milestones.slice(1, tx.milestones.length - 1),
+              lastMilestoneCompleted:
+                last(tx.milestones).status === Status.paid,
+            }
+          : null,
+    };
+  })();
   return (
-    <div className="w-full bg-em-secondary/40 p-3.5 px-4 rounded-2xl ">
+    <div className="w-full bg-white/80 p-3.5 px-4 rounded-2xl max-h-96 overflow-y-auto no-scrollbar">
       <div className="w-full flex items-center justify-between">
         <Typography className="font-bold whitespace-nowrap overflow-hidden overflow-ellipsis w-full">
           {tx.title}
@@ -47,6 +63,39 @@ const Transaction = () => {
         <Typography className="font-bold text-lg font-Bricolage_Grotesque text-em-green whitespace-nowrap">
           {tx.amount} ETH
         </Typography>
+      </div>
+      <div className="w-full mt-4 flex py-6">
+        <MilestoneSVG
+          size={1}
+          className="flex-1 h-fit "
+          completed={txParameters.firstMilestoneCompleted}
+        />
+        {txParameters.hasMultipleMilestones &&
+          (txParameters.moreThan2Milestones ? (
+            <>
+              <LittleMilestoneSVG
+                size={0.8}
+                completed={txParameters.secondMilestoneCompleted}
+                className="-mt-1 -ml-[10px] flex-1 h-fit max-w-[40px] "
+              />
+              <Typography className="text-em-text font-bold text-sm -mt-1.5 mx-1.5 whitespace-nowrap">
+                {txParameters.moreThan2Milestones.inBetween.length} more
+              </Typography>
+              <LastLittleMilestoneSVG
+                size={0.8}
+                completed={
+                  txParameters.moreThan2Milestones.lastMilestoneCompleted
+                }
+                className="-mt-[6px] flex-1 h-fit max-w-[42px]"
+              />
+            </>
+          ) : (
+            <MilestoneSVG
+              size={1}
+              completed={txParameters.secondMilestoneCompleted}
+              className="flex-1 h-fit -mt-2.5 -ml-[4px]"
+            />
+          ))}
       </div>
       <div className="w-full flex items-center justify-between mt-4 ">
         <div className="flex items-center gap-x-1.5 text-em-text text-sm">
@@ -70,12 +119,12 @@ const Transaction = () => {
             See all
           </Button>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-5">
           {tx.milestones.map((milestone, index) => (
             <div key={index} className="w-full flex items-start gap-x-2">
               <div
                 className={cn(
-                  "size-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
+                  "size-12 min-w-12 min-h-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
                   {
                     "bg-em-green/50": milestone.status === Status.paid,
                   }
