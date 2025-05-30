@@ -12,7 +12,12 @@ import {
 import { formatDate } from "date-fns";
 import { cn } from "@/components/cn";
 import { last, Status } from "@/lib/utils";
-import { LastLittleMilestoneSVG, LittleMilestoneSVG, MilestoneSVG } from "@/components/icons/transaction-list-svgs";
+import {
+  LastLittleMilestoneSVG,
+  LittleMilestoneSVG,
+  MilestoneSVG,
+} from "@/components/icons/transaction-list-svgs";
+import Tabs from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/transactions/")({
   component: Transactions,
@@ -21,7 +26,7 @@ export const Route = createFileRoute("/transactions/")({
 function Transactions() {
   const navigate = useNavigate();
   return (
-    <PageScreen className="flex flex-col gap-y-5">
+    <PageScreen className="flex flex-col gap-y-5 relative overflow-y-auto no-scrollbar">
       <div className="w-full flex items-center justify-between  ">
         <Typography variant="h1">Transactions</Typography>
         <Button
@@ -32,13 +37,65 @@ function Transactions() {
           <PlusSignIcon strokeWidth="2" size={20} />
         </Button>
       </div>
-      <Transaction />
+      <Tabs onValueChange={() => {}} defaultValue="ongoing" className="w-full ">
+        <div className="w-full bg-em-primary sticky top-0">
+          <Tabs.List className="grid w-full grid-cols-3 md:flex-grow ">
+            <Tabs.Trigger
+              value="all"
+              className=" px-0 flex items-center justify-center gap-x-2"
+            >
+              All
+            </Tabs.Trigger>
+            <Tabs.Trigger
+              value="ongoing"
+              className=" px-0 flex items-center justify-center gap-x-2"
+            >
+              Ongoing
+            </Tabs.Trigger>
+            <Tabs.Trigger
+              value="completed"
+              className=" px-0 flex items-center justify-center gap-x-2"
+            >
+              Completed
+            </Tabs.Trigger>
+          </Tabs.List>
+        </div>
+        <Tabs.Content className="flex flex-col pt-4 gap-y-6" value="all">
+          {FakeData.transactions.map((tx, index) => (
+            <Transaction key={index} tx={tx} />
+          ))}
+        </Tabs.Content>
+        <Tabs.Content className="flex flex-col pt-4 gap-y-6" value="ongoing">
+          {FakeData.transactions
+            .filter((tx) => {
+              const isAllPaid = tx.milestones.every(
+                (m) => m.status === Status.paid
+              );
+              return !isAllPaid;
+            })
+            .map((tx, index) => (
+              <Transaction key={index} tx={tx} />
+            ))}
+        </Tabs.Content>
+        <Tabs.Content className="flex flex-col pt-4 gap-y-6" value="completed">
+          {FakeData.transactions
+            .filter((tx) => {
+              const isAllPaid = tx.milestones.every(
+                (m) => m.status === Status.paid
+              );
+              return isAllPaid;
+            })
+            .map((tx, index) => (
+              <Transaction key={index} tx={tx} />
+            ))}
+        </Tabs.Content>
+      </Tabs>
     </PageScreen>
   );
 }
 
-const Transaction = () => {
-  const [tx] = FakeData.transactions.slice(1);
+const Transaction = (props: { tx: Transaction }) => {
+  const tx = props.tx;
   const txParameters = (() => {
     return {
       firstMilestoneCompleted: tx.milestones[0].status === Status.paid,
