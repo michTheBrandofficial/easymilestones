@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './screens/__root'
 import { Route as IndexImport } from './screens/index'
+import { Route as TransactionsIndexImport } from './screens/transactions/index'
 import { Route as ShowcaseIndexImport } from './screens/showcase/index'
 import { Route as CreateTransactionIndexImport } from './screens/create-transaction/index'
 
@@ -20,6 +21,12 @@ import { Route as CreateTransactionIndexImport } from './screens/create-transact
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TransactionsIndexRoute = TransactionsIndexImport.update({
+  id: '/transactions/',
+  path: '/transactions/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShowcaseIndexImport
       parentRoute: typeof rootRoute
     }
+    '/transactions/': {
+      id: '/transactions/'
+      path: '/transactions'
+      fullPath: '/transactions'
+      preLoaderRoute: typeof TransactionsIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -69,12 +83,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create-transaction': typeof CreateTransactionIndexRoute
   '/showcase': typeof ShowcaseIndexRoute
+  '/transactions': typeof TransactionsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create-transaction': typeof CreateTransactionIndexRoute
   '/showcase': typeof ShowcaseIndexRoute
+  '/transactions': typeof TransactionsIndexRoute
 }
 
 export interface FileRoutesById {
@@ -82,14 +98,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/create-transaction/': typeof CreateTransactionIndexRoute
   '/showcase/': typeof ShowcaseIndexRoute
+  '/transactions/': typeof TransactionsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/create-transaction' | '/showcase'
+  fullPaths: '/' | '/create-transaction' | '/showcase' | '/transactions'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create-transaction' | '/showcase'
-  id: '__root__' | '/' | '/create-transaction/' | '/showcase/'
+  to: '/' | '/create-transaction' | '/showcase' | '/transactions'
+  id:
+    | '__root__'
+    | '/'
+    | '/create-transaction/'
+    | '/showcase/'
+    | '/transactions/'
   fileRoutesById: FileRoutesById
 }
 
@@ -97,12 +119,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreateTransactionIndexRoute: typeof CreateTransactionIndexRoute
   ShowcaseIndexRoute: typeof ShowcaseIndexRoute
+  TransactionsIndexRoute: typeof TransactionsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreateTransactionIndexRoute: CreateTransactionIndexRoute,
   ShowcaseIndexRoute: ShowcaseIndexRoute,
+  TransactionsIndexRoute: TransactionsIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -117,7 +141,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/create-transaction/",
-        "/showcase/"
+        "/showcase/",
+        "/transactions/"
       ]
     },
     "/": {
@@ -128,6 +153,9 @@ export const routeTree = rootRoute
     },
     "/showcase/": {
       "filePath": "showcase/index.tsx"
+    },
+    "/transactions/": {
+      "filePath": "transactions/index.tsx"
     }
   }
 }

@@ -21,7 +21,7 @@ const MilestoneOngoing = ({ size = 1, ...props }: SVGProps) => {
       <path
         d="M1.14734 11.4318C28.4214 -20.432 37.2835 32.9046 71.5666 11.4318"
         stroke="#171717"
-        stroke-opacity="0.3"
+        strokeOpacity="0.3"
         strokeWidth="1.25084"
       />
       <circle
@@ -29,14 +29,14 @@ const MilestoneOngoing = ({ size = 1, ...props }: SVGProps) => {
         cy="8.87572"
         r="2.77965"
         fill="#171717"
-        fill-opacity="0.3"
+        fillOpacity="0.3"
       />
       <circle
         cx="77.5876"
         cy="8.87565"
         r="6.94697"
         stroke="#171717"
-        stroke-opacity="0.3"
+        strokeOpacity="0.3"
         strokeWidth="0.930859"
       />
     </svg>
@@ -80,8 +80,8 @@ const MilestoneCompleted = ({ size = 1, ...props }: SVGProps) => {
           d="M75.588 8.70171C75.588 8.70171 76.1439 9.00367 76.4219 9.44626C76.4219 9.44626 77.2558 7.70898 78.3676 7.12988"
           stroke="#101010"
           strokeWidth="0.694912"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </g>
       <defs>
@@ -133,20 +133,20 @@ const LittleMilestoneOngoing = ({ size = 1, ...props }: SVGProps) => {
         cy="7.87572"
         r="2.77965"
         fill="#171717"
-        fill-opacity="0.3"
+        fillOpacity="0.3"
       />
       <circle
         cx="33.5876"
         cy="7.87565"
         r="6.94697"
         stroke="#171717"
-        stroke-opacity="0.3"
+        strokeOpacity="0.3"
         strokeWidth="0.930859"
       />
       <path
         d="M1 11.9502C12 -5.04962 16.821 28.5485 28 11.9502"
         stroke="#171717"
-        stroke-opacity="0.3"
+        strokeOpacity="0.3"
       />
     </svg>
   );
@@ -188,8 +188,8 @@ const LittleMilestoneCompleted = ({ size = 1, ...props }: SVGProps) => {
           d="M32.0226 7.82598C32.0226 7.82598 32.5785 8.12794 32.8565 8.57052C32.8565 8.57052 33.6904 6.83324 34.8022 6.25415"
           stroke="#101010"
           strokeWidth="0.694912"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </g>
       <defs>

@@ -28,12 +28,12 @@
 
 @font-face {
   font-family: Satoshi;
-  src: url(../public/fonts/Satoshi/VariableWght.ttf);
+  src: url(/fonts/Satoshi/VariableWght.ttf);
 }
 
 @font-face {
   font-family: Bricolage_Grotesque;
-  src: url(../public/fonts/Bricolage_Grotesque/VariableFont.ttf);
+  src: url(/fonts/Bricolage_Grotesque/VariableFont.ttf);
 }
 
 body {

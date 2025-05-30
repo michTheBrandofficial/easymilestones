@@ -1,14 +1,13 @@
 import { Outlet, createRootRoute, useLocation } from "@tanstack/react-router";
 import { Button } from "@/components/buttons";
 import { useLocalAccount } from "./-contexts/local-account";
-import Logo from "@/public/android-chrome-512x512.png";
+import Logo from "../android-chrome-512x512.png";
 import { formatEthAddress, noop } from "@/lib/utils";
 import Ethereum from "@/components/icons/ethereum";
 import FloatingTabBar from "./-components/floating-tab-bar";
 import { useSheet } from "@/components/ui/sheet";
 import { Typography } from "@/components/typography";
 import { formatEther } from "viem";
-import { getBalance } from "viem/actions";
 import { useQuery } from "@tanstack/react-query";
 export const Route = createRootRoute({
   component: RootComponent,
@@ -16,7 +15,7 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   const { pathname } = useLocation();
-  const { Sheet, SheetContent, openSheet, closeSheet, SheetHeader } =
+  const { Sheet, SheetContent, openSheet, closeSheet } =
     useSheet("account");
   const { privateKeyAccount, publicClient } = useLocalAccount();
   const { data: balance } = useQuery({

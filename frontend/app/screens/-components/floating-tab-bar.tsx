@@ -1,15 +1,9 @@
 import {
-  Home01Icon,
-  Home02Icon,
   Home03Icon,
-  MoneyExchange01Icon,
-  MoneyExchange02Icon,
   MoneyExchange03Icon,
   Target02Icon,
   UserCircle02Icon,
-  UserCircleIcon,
 } from "hugeicons-react";
-import React from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { cn } from "@/components/cn";
 import { Button } from "@/components/buttons";
@@ -21,7 +15,7 @@ const links = [
     to: "/",
   },
   {
-    title: "Exchange",
+    title: "Transactions",
     icon: <MoneyExchange03Icon size={18} className="text-white" />,
     to: "/transactions",
   },
@@ -45,7 +39,7 @@ type Props = {
 const FloatingTabBar = (props: Props) => {
   const { pathname } = useLocation();
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 p-1.5 rounded-full bg-em-dark flex items-center gap-x-3 shadow-lg">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 p-1.5 px-2 rounded-full bg-em-dark flex items-center gap-x-3 shadow-lg">
       {links.map((link, index) => (
         <Link
           key={index}
@@ -61,13 +55,13 @@ const FloatingTabBar = (props: Props) => {
         </Link>
       ))}
       <Button
-      onTap={props.onClickAccount}
-          className={cn(
-            "size-8 flex items-center justify-center  rounded-full p-0  hover:bg-em-tertiary transition-colors duration-300 ",
-          )}
-        >
-          <UserCircle02Icon size={18} className="text-white " />
-        </Button>
+        onTap={props.onClickAccount}
+        className={cn(
+          "size-8 flex items-center justify-center  rounded-full p-0  hover:bg-em-tertiary transition-colors duration-300 "
+        )}
+      >
+        <UserCircle02Icon size={18} className="text-white " />
+      </Button>
     </div>
   );
 };
