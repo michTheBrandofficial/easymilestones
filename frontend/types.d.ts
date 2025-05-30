@@ -4,8 +4,12 @@ export {};
 
 declare global {
   interface Transaction {
+    /**
+     * @dev timestamp is the day when the transaction was created, this would be the block.timestamp, calculated by the contract not the frontend.
+     */
+    created_at: number;
     amount: number;
-    deadline: number;
+    final_deadline: number;
     title: string;
     milestones: Milestone[];
   }
