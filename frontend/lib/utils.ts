@@ -53,6 +53,7 @@ export const pick = <O extends Record<string, any>, K extends keyof O>(
 
 export const round = Math.round;
 
+// @ts-ignore
 export const noop = (...args: any[]) => undefined;
 
 export const toReversed = (arr: any[]) => structuredClone(arr).reverse();
