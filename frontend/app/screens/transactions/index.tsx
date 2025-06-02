@@ -119,11 +119,11 @@ const Transaction = (props: { tx: Transaction }) => {
     <div className="w-full bg-gray-50 rounded-3xl max-h-96">
       <div className="w-full px-[2px] pt-[2px] rounded-[inherit] ">
         <div className="w-full bg-white px-4 pt-4 pb-3 rounded-[inherit] ">
-          <div className="w-full flex items-center justify-between">
-            <Typography className="font-bold whitespace-nowrap overflow-hidden overflow-ellipsis w-full">
+          <div className="w-full flex  gap-y-2  justify-between">
+            <Typography className="font-bold text-lg whitespace-nowrap overflow-hidden overflow-ellipsis w-full">
               {tx.title}
             </Typography>
-            <Typography className="font-bold text-lg font-Bricolage_Grotesque text-em-green whitespace-nowrap">
+            <Typography className="font-bold text- text-em-text whitespace-nowrap">
               {tx.amount} ETH
             </Typography>
           </div>
