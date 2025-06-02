@@ -25,11 +25,18 @@ const useTabCursorPosition = () => {
   return context;
 };
 
-const TabsList = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.List>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
->(({ className, children, ...props }, ref) => {
-  const [pos, setPos] = React.useState({ width: 29, x: 50, height: 29 });
+const TabsList = (({ className, children, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>) => {
+  const [pos, setPos] = React.useState({ width: 29, x: 0, height: 29 });
+  React.useEffect(() => {
+    const activeButton = tabsListRef.current?.querySelector<HTMLButtonElement>(
+      "button[data-state=active]"
+    );
+    if (activeButton) {
+      const { width, height } = activeButton.getBoundingClientRect();
+      setPos({ width, x: activeButton.offsetLeft, height });
+    }
+  }, [])
+  const tabsListRef = React.useRef<HTMLDivElement>(null);
   return (
     <TabCursorPositionContext.Provider
       value={{
@@ -38,7 +45,7 @@ const TabsList = React.forwardRef<
       }}
     >
       <TabsPrimitive.List
-        ref={ref}
+        ref={tabsListRef}
         className={cn(
           "inline-flex h-fit items-center justify-center rounded-xl bg-white border border-em-secondary/30 p-1 relative",
           className
@@ -51,7 +58,6 @@ const TabsList = React.forwardRef<
     </TabCursorPositionContext.Provider>
   );
 });
-TabsList.displayName = TabsPrimitive.List.displayName;
 
 const TabsCursor = ({ className, ...props }: HTMLMotionProps<"div">) => {
   const { position: cursorPosition } = useTabCursorPosition();
@@ -75,7 +81,7 @@ const TabsTrigger = React.forwardRef<
     <TabsPrimitive.Trigger
       ref={ref}
       className={cn(
-        "inline-flex items-center relative z-20 justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium ring-offset-white transition-colors ease-[ease] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-em-text data-[state=active]:text-white",
+        "inline-flex items-center relative z-20 justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium ring-offset-white transition-colors duration-700 ease-[ease] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-em-text data-[state=active]:text-white",
         className
       )}
       {...props}
@@ -98,7 +104,7 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      "ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 dark:ring-offset-zinc-950 dark:focus-visible:ring-zinc-300",
+      "!mt-2 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 dark:ring-offset-zinc-950 dark:focus-visible:ring-zinc-300",
       className
     )}
     {...props}
