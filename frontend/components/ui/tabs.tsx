@@ -47,7 +47,7 @@ const TabsList = (({ className, children, ...props }: React.ComponentPropsWithou
       <TabsPrimitive.List
         ref={tabsListRef}
         className={cn(
-          "inline-flex h-fit items-center justify-center rounded-xl bg-white border border-em-secondary/30 p-1 relative",
+          "inline-flex h-fit items-center justify-center rounded-xl bg-white border border-gray-50 p-1 relative",
           className
         )}
         {...props}

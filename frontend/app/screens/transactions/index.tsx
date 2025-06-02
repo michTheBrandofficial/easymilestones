@@ -26,7 +26,7 @@ export const Route = createFileRoute("/transactions/")({
 function Transactions() {
   const navigate = useNavigate();
   return (
-    <PageScreen className="flex flex-col gap-y-5 relative overflow-y-auto no-scrollbar">
+    <PageScreen className="flex flex-col flex-grow gap-y-5 relative overflow-y-auto no-scrollbar pb-0">
       <div className="w-full flex items-center justify-between  ">
         <Typography variant="h1">Transactions</Typography>
         <Button
@@ -40,9 +40,9 @@ function Transactions() {
       <Tabs
         onValueChange={() => {}}
         defaultValue="ongoing"
-        className="w-full flex flex-col gap-y-4"
+        className="w-full flex flex-col gap-y-4 flex-grow relative overflow-y-auto no-scrollbar pb-20 "
       >
-        <div className="w-full bg-em-primary sticky top-0">
+        <div className="w-full bg-em-primary rounded-b-xl sticky top-0">
           <Tabs.List className="grid w-full grid-cols-3 md:flex-grow ">
             <Tabs.Trigger
               value="all"
@@ -173,7 +173,7 @@ const Transaction = (props: { tx: Transaction }) => {
         </div>
       </div>
 
-      <div className="w-full space-y-6 mt-6 px-3.5 pb-5 max-h-[160px] overflow-y-auto no-scrollbar ">
+      <div className="w-full space-y-6 px-3.5 pt-4 pb-5 max-h-[160px] overflow-y-auto no-scrollbar ">
         <div className="space-y-5">
           {tx.milestones.map((milestone, index) => (
             <div key={index} className="w-full flex items-start gap-x-2">
