@@ -42,7 +42,7 @@ function RootComponent() {
           />
           <Button
             onTap={openSheet}
-            className="flex items-center gap-x-2 px-4 py-2 bg-em-dark text-white rounded-full text-sm"
+            className="flex items-center gap-x-2 px-4 py-2.5 bg-em-dark text-white rounded-full text-sm"
           >
             {formatEthAddress(privateKeyAccount?.address)}
             <Ethereum fill="#4CABEF" />
