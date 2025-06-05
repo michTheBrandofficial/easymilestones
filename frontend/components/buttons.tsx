@@ -37,9 +37,9 @@ export const Button: React.FC<ButtonProps> = ({
           : undefined
       }
       className={cn(
-        `font-semibold cursor-pointer rounded-xl `,
+        `font-semibold cursor-pointer rounded-full `,
         { "bg-em-dark text-white": variant === "full" },
-        { "px-6 py-2": variant !== "icon" },
+        { "px-6 py-3": variant !== "icon" },
         {
           "border-2 border-em-dark text-em-dark ":
             variant === "outline",

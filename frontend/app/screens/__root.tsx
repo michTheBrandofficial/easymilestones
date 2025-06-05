@@ -9,9 +9,12 @@ import { useSheet } from "@/components/ui/sheet";
 import { Typography } from "@/components/typography";
 import { formatEther } from "viem";
 import { useQuery } from "@tanstack/react-query";
+import type { FileRoutesByTo } from "../routeTree.gen";
 export const Route = createRootRoute({
   component: RootComponent,
 });
+
+const noFloatingBarRoutes: Array<(keyof FileRoutesByTo & (string & {}))> = ['/create-transaction', '/onboarding']
 
 function RootComponent() {
   const { pathname } = useLocation();
@@ -47,7 +50,9 @@ function RootComponent() {
         </div>
       )}
       <Outlet />
-      <FloatingTabBar onClickAccount={openSheet} />
+      {noFloatingBarRoutes.includes(pathname as any) ? null : (
+        <FloatingTabBar onClickAccount={openSheet} />
+      )}
       {pathname === "/onboarding" ? null : (
         <Sheet title="Account" backButton="Back" className="bg-white">
           <SheetContent className="flex flex-col justify-between ">
