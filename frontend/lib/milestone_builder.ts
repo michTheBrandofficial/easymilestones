@@ -24,14 +24,11 @@ interface TransactionPayload extends Pick<Transaction, "title"> {
 
 /**
  * @notice frontend milestone appender.
- * @throws MilestoneBuilderError if the total amount is not equal to the sum of the milestone amounts.
  * @moreinfo Solidity contract also handles these errors if they eventually bypass this frontend.
  */
 export class MilestoneBuilder {
   private transaction_title: string = "";
-  private milestone_amounts: bigint[] = [];
-  private milestone_titles: string[] = [];
-  private milestone_deadlines: bigint[] = [];
+  private milestones: MilestonePayload[] = [];
 
   setTransactionTitle(title: string) {
     if (title === "")
@@ -60,28 +57,28 @@ export class MilestoneBuilder {
       throw new MilestoneBuilderError("Milestone title cannot be empty");
     if (BigInt(amount) === 0n)
       throw new MilestoneBuilderError("Milestone amount cannot be 0");
-    this.milestone_amounts.push(amount);
-    this.milestone_deadlines.push(milestoneDeadline);
-    this.milestone_titles.push(milestone_title);
+    this.milestones.push({
+      amount,
+      deadline: milestoneDeadline,
+      title: milestone_title,
+    })
     return this;
   }
 
   // this is error prone
   removeMilestone(index: number): MilestoneBuilder {
-    this.milestone_amounts.splice(index, 1);
-    this.milestone_deadlines.splice(index, 1);
-    this.milestone_titles.splice(index, 1);
+    this.milestones.splice(index, 1);
     return this;
   }
 
   build(): TransactionPayload {
-    const milestones = this.milestone_amounts.map((amount, index) => {
-      const milestone_deadline = this.milestone_deadlines[index];
-      const milestone_title = this.milestone_titles[index];
+    const milestones = this.milestones.map((milestone, index) => {
+      // one more validation here
+      const { deadline: milestone_deadline, title: milestone_title, amount } = milestone
       if (milestone_title === "")
-        throw new MilestoneBuilderError("Milestone title cannot be empty");
+        throw new MilestoneBuilderError(`Milestone ${index + 1} title cannot be empty`);
       if (BigInt(amount) === 0n)
-        throw new MilestoneBuilderError("Milestone amount cannot be 0");
+        throw new MilestoneBuilderError(`Milestone ${index + 1} amount cannot be 0`);
       return {
         amount,
         deadline: milestone_deadline,
@@ -98,6 +95,9 @@ export class MilestoneBuilder {
   }
 
   getTotalAmount() {
-    return this.milestone_amounts.reduce((a, b) => a + b, 0n) as bigint;
+    if (this.milestones.length === 0)
+      return 0n;
+    const amounts = this.milestones.map((m) => m.amount);
+    return amounts.reduce((a, b) => a + b, 0n) as bigint;
   }
 }
