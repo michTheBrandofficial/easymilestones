@@ -16,7 +16,7 @@ const config: Config = {
       },
       colors: {
         em: {
-          primary: "#E7F8FD",
+          primary: '#ECF9FD', //"#E7F8FD",
           secondary: "#A3D5FA",
           dark: "#101010",
           text: "#808080",
