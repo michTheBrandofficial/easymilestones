@@ -18,6 +18,10 @@ declare global {
     amount: number;
     deadline: number;
     title: string;
+    /**
+     * This will only come after milestone is completed.
+     */
+    tx_hash?: `0x${string}`;
     status: Status;
   }
 

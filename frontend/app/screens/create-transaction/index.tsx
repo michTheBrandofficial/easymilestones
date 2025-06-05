@@ -22,7 +22,7 @@ function CreateTransaction() {
   const milestones = [1, 2, 3];
   const milestoneContainerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    
+
   }, [milestones])
   return (
     <PageScreen className="flex flex-col gap-y-4 w-full flex-grow pb-8">
@@ -213,7 +213,10 @@ const Milestone = () => {
         <input className="w-full font-Bricolage_Grotesque font-semibold text-xl bg-transparent text-em-dark focus:outline-none" placeholder="0.1" />
         <p className="font-semibold text-em-text" >ETH</p>
       </div>
+      {/* milestone title */}
       {/* icons */}
+      {/* show date in formatted here, else red 😡 no date */}
+      {/* message must vibrate with haptic feedback */}
       <div className="flex gap-x-4 h-fit">
         <Button variant="icon" className="px-0 h-fit bg-transparent !py-0" >
           <Calendar03Icon size={26} className="text-em-dark" />
@@ -221,6 +224,7 @@ const Milestone = () => {
         <Button variant="icon" className="px-0 h-fit bg-transparent !py-0" >
           <AddCircleIcon size={26} className="text-em-dark rotate-45" />
         </Button>
+        {/* save button will show before this plus shows */}
         <Button variant="icon" className="px-0 h-fit bg-transparent !py-0" >
           <AddCircleIcon size={26} className="text-em-dark" />
         </Button>
