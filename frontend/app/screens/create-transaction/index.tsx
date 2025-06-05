@@ -1,21 +1,29 @@
 import { Button } from "@/components/buttons";
 import { Typography } from "@/components/typography";
-import { MilestoneCreationSVGs } from "./-components/milestone-creation-svgs";
-import { Calendar04Icon, MoneyExchange03Icon } from "hugeicons-react";
-import AddCircle from "@/components/icons/add-circle";
+import { AddCircleIcon, Calendar03Icon, MoneyExchange03Icon } from "hugeicons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import PageScreen from "@/components/ui/screen";
 import { noop } from "@/lib/utils";
 import WaterBodySVG from "../-components/water-body-svg";
+import { useEffect, useRef } from "react";
 
 export const Route = createFileRoute("/create-transaction/")({
   component: CreateTransaction,
 });
 
+const screenMessage = {
+  1: 'Create a Transaction Title',
+  2: 'Break down your transaction into milestones for secure, step-by-step payments.',
+}
+
 function CreateTransaction() {
   // add modals variable here for controlling sheet
   const navigate = useNavigate();
-  const milestones = [1, 2, 3, 4, 5, 6, 7];
+  const milestones = [1, 2, 3];
+  const milestoneContainerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    
+  }, [milestones])
   return (
     <PageScreen className="flex flex-col gap-y-4 w-full flex-grow pb-8">
       <div className="flex flex-col gap-y-3">
@@ -35,8 +43,8 @@ function CreateTransaction() {
           payments.
         </Typography>
       </div>
-      <div className="w-full flex-grow max-h-[50vh] relative z-20 overflow-y-auto no-scrollbar">
-        <div className="h-full grid grid-cols-[20%_80%] gap-x-4  overflow-y-auto no-scrollbar">
+      <div className="w-full flex-grow max-h-[40vh] relative z-40 overflow-y-auto no-scrollbar">
+        <div className="h-full grid grid-cols-[20%_80%] gap-x-0  overflow-y-auto no-scrollbar">
           <div className="flex flex-col ">
             {milestones.map((_, index) => {
               const sanePeoplesIndex = index + 1;
@@ -174,10 +182,15 @@ function CreateTransaction() {
               }
             })}
           </div>
+          <div className="flex flex-col ">
+            {milestones.map((_, index) => (
+              <Milestone key={index} />
+            ))}
+          </div>
         </div>
       </div>
       <WaterBodySVG />
-      <div className="w-full flex relative z-20 items-center gap-x-2 mt-auto">
+      <div ref={milestoneContainerRef} className="w-screen px-4 fixed z-30 bottom-8 left-0 flex items-center gap-x-2">
         <Button
           onTap={() => navigate({ to: "/transactions" })}
           variant="ghost"
@@ -195,18 +208,21 @@ function CreateTransaction() {
 
 const Milestone = () => {
   return (
-    <div className="w-full flex items-end pl-3 ">
-      <MilestoneCreationSVGs.Branch />
+    <div className="w-full flex flex-col gap-y-3 justify-end h-[140px] -mt-1 first:mt-0 ">
+      <div className="w-full rounded-2xl pl-4 pr-3 py-2.5 bg-gray-400/20 backdrop-blur-[12px] flex items-center">
+        <input className="w-full font-Bricolage_Grotesque font-semibold text-xl bg-transparent text-em-dark focus:outline-none" placeholder="0.1" />
+        <p className="font-semibold text-em-text" >ETH</p>
+      </div>
       {/* icons */}
-      <div className="flex gap-x-2">
-        <Button>
-          <Calendar04Icon />
+      <div className="flex gap-x-4 h-fit">
+        <Button variant="icon" className="px-0 h-fit bg-transparent !py-0" >
+          <Calendar03Icon size={26} className="text-em-dark" />
         </Button>
-        <Button>
-          <AddCircle fill="#FF6467" className="rotate-45 w-6 h-6" />
+        <Button variant="icon" className="px-0 h-fit bg-transparent !py-0" >
+          <AddCircleIcon size={26} className="text-em-dark rotate-45" />
         </Button>
-        <Button>
-          <AddCircle fill="#00D492" className="w-6 h-6" />
+        <Button variant="icon" className="px-0 h-fit bg-transparent !py-0" >
+          <AddCircleIcon size={26} className="text-em-dark" />
         </Button>
       </div>
     </div>
