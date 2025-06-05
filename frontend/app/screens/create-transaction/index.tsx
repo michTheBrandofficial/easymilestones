@@ -6,6 +6,7 @@ import AddCircle from "@/components/icons/add-circle";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import PageScreen from "@/components/ui/screen";
 import { noop } from "@/lib/utils";
+import WaterBodySVG from "../-components/water-body-svg";
 
 export const Route = createFileRoute("/create-transaction/")({
   component: CreateTransaction,
@@ -19,10 +20,11 @@ function CreateTransaction() {
       <Typography variant={"h1"} className="!text-[40px]  ">
         Steps to spending better
       </Typography>
-      <div className="w-full flex flex-col gap-y-0">
+      <div className="w-full flex relative z-20">
         <Milestone />
       </div>
-      <div className="w-full flex items-center gap-x-2 mt-auto">
+      <WaterBodySVG />
+      <div className="w-full flex relative z-20 items-center gap-x-2 mt-auto">
         <Button onTap={() => navigate({ to: "/transactions" })} variant="ghost" className="w-full ">
           Cancel
         </Button>
