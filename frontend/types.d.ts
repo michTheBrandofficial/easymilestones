@@ -44,6 +44,11 @@ declare global {
       Current extends N 
         ? Current 
         : Current | Steps<N, Add1<Current>>;
+
+    // make a prettify type
+    type Prettify<T> = {
+      [K in keyof T]: T[K];
+    } & {}
   }
 
   namespace Utilities {

@@ -11,6 +11,10 @@ import { inlineSwitch, noop } from "@/lib/utils";
 import WaterBodySVG from "../-components/water-body-svg";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import {
+  MilestonePayloadWithDate,
+  useMilestoneBuilder,
+} from "@/lib/milestone_builder";
 
 export const Route = createFileRoute("/create-transaction/")({
   component: CreateTransaction,
@@ -24,25 +28,29 @@ const screenMessage = {
 function CreateTransaction() {
   // add modals variable here for controlling sheet
   const navigate = useNavigate();
-  const milestones = [1, 2, 3];
   const MAX_STEP = 2;
   const [step, setStep] = useState<Helpers.Steps<typeof MAX_STEP>>(1);
   const milestoneContainerRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    // find the last milestone and scroll to it
-    const lastMilestone = milestoneContainerRef.current?.lastElementChild;
-    if (lastMilestone) {
-      lastMilestone.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
-  }, [milestones]);
+  // const lastMilestone = milestoneContainerRef.current?.lastElementChild;
+  // if (lastMilestone) {
+  //   lastMilestone.scrollIntoView({ behavior: "smooth", block: "end" });
+  // }
   const txTitleRef = useRef<HTMLInputElement>(null);
+  const milestoneBuilder = useMilestoneBuilder();
   const [txTitle, setTxTitle] = useState("");
   useEffect(() => {
     if (step === 1) txTitleRef.current?.focus();
   }, [step]);
   function handleNext() {
     if (step === MAX_STEP) noop();
-    else setStep((p) => (p + 1) as 2);
+    else if (step === 1) {
+      if (txTitle === "") return;
+      milestoneBuilder.setTxTitle(txTitle);
+      // add a new milestone here
+      if (milestoneBuilder.milestones.length === 0)
+        milestoneBuilder.addEmptyMilestone(0);
+      setStep((p) => (p + 1) as 2);
+    } else setStep((p) => (p + 1) as 2);
   }
 
   return (
@@ -97,7 +105,7 @@ function CreateTransaction() {
           <motion.form
             key={"tx_title"}
             onSubmit={(e) => {
-              e.preventDefault()
+              e.preventDefault();
               if (txTitle === "") return;
               handleNext();
             }}
@@ -113,7 +121,10 @@ function CreateTransaction() {
               className="w-full font-Bricolage_Grotesque font-medium text-xl bg-transparent text-em-dark focus:outline-none"
               placeholder="Transaction title"
             />
-            <button type="submit" className="hidden cursor-not-allowed pointer-events-none" ></button>
+            <button
+              type="submit"
+              className="hidden cursor-not-allowed pointer-events-none"
+            ></button>
           </motion.form>
         )}
         {step === 2 && (
@@ -126,7 +137,7 @@ function CreateTransaction() {
           >
             <div className="h-full grid grid-cols-[20%_80%] gap-x-0  overflow-y-auto no-scrollbar">
               <div className="flex flex-col ">
-                {milestones.map((_, index) => {
+                {milestoneBuilder.milestones.map((_, index) => {
                   const sanePeoplesIndex = index + 1;
                   {
                     /* first milestone */
@@ -263,8 +274,21 @@ function CreateTransaction() {
                 })}
               </div>
               <div className="flex flex-col ">
-                {milestones.map((_, index) => (
-                  <Milestone index={index} key={index} />
+                {milestoneBuilder.milestones.map((_, index) => (
+                  <Milestone
+                    index={index}
+                    key={index}
+                    onSave={(payload) => {
+                      milestoneBuilder.saveMilestone(payload);
+                    }}
+                    onUpdate={(payload) => {
+                      milestoneBuilder.updateMilestone(index, payload);
+                    }}
+                    onAdd={() => milestoneBuilder.addEmptyMilestone(index)}
+                    onRemove={() =>
+                      milestoneBuilder.removeMilestone(index)
+                    }
+                  />
                 ))}
               </div>
             </div>
@@ -345,6 +369,10 @@ function CreateTransaction() {
 
 type MilestoneProps = {
   index: number;
+  onSave: (payload: MilestonePayloadWithDate) => void;
+  onUpdate: (payload: MilestonePayloadWithDate) => void;
+  onAdd: () => void;
+  onRemove: () => void;
 };
 
 const Milestone = ({ index, ...props }: MilestoneProps) => {
