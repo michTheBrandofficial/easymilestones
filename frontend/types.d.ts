@@ -31,6 +31,19 @@ declare global {
     type Mutable<T extends Record<string, any>> = {
       -readonly [key in keyof T]: T[key];
     };
+
+    // Helper type to create a range union from 1 to N
+    type BuildTuple<N extends number, Acc extends unknown[] = []> = 
+      Acc['length'] extends N 
+        ? Acc 
+        : BuildTuple<N, [...Acc, unknown]>;
+        
+    type Add1<N extends number> = [...BuildTuple<N>, unknown]['length'];
+    
+    type Steps<N extends number, Current extends number = 1> = 
+      Current extends N 
+        ? Current 
+        : Current | Steps<N, Add1<Current>>;
   }
 
   namespace Utilities {
