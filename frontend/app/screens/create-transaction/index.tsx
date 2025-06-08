@@ -15,6 +15,7 @@ import {
   MilestonePayloadWithDate,
   useMilestoneBuilder,
 } from "@/lib/milestone_builder";
+import { formatEther } from "viem";
 
 export const Route = createFileRoute("/create-transaction/")({
   component: CreateTransaction,
@@ -145,6 +146,7 @@ function CreateTransaction() {
                   if (sanePeoplesIndex === 1)
                     return (
                       <svg
+                        key={index}
                         width="36"
                         height="140"
                         viewBox="0 0 36 163"
@@ -154,7 +156,7 @@ function CreateTransaction() {
                         <path
                           d="M19.9591 1.37759C-39.047 55.8487 63.6376 68.9745 25.0158 136.11"
                           stroke="#4CABEF"
-                          stroke-width="2.3949"
+                          strokeWidth="2.3949"
                         />
                         <circle
                           cx="5.32201"
@@ -169,13 +171,14 @@ function CreateTransaction() {
                           r="13.3009"
                           transform="matrix(0.0375053 0.999296 0.999296 -0.0375053 5.84314 134.164)"
                           stroke="#4CABEF"
-                          stroke-width="1.78225"
+                          strokeWidth="1.78225"
                         />
                       </svg>
                     );
                   if (sanePeoplesIndex === 2)
                     return (
                       <svg
+                        key={index}
                         width="36"
                         height="140"
                         viewBox="0 0 36 163"
@@ -186,7 +189,7 @@ function CreateTransaction() {
                         <path
                           d="M15.3683 1.83251C74.3744 56.3036 -28.3102 69.4295 10.3116 136.565"
                           stroke="#4CABEF"
-                          stroke-width="2.3949"
+                          strokeWidth="2.3949"
                         />
                         <circle
                           cx="14.77"
@@ -201,7 +204,7 @@ function CreateTransaction() {
                           r="13.3009"
                           transform="rotate(92.1494 14.7699 148.268)"
                           stroke="#4CABEF"
-                          stroke-width="1.78225"
+                          strokeWidth="1.78225"
                         />
                       </svg>
                     );
@@ -209,6 +212,7 @@ function CreateTransaction() {
                     case 1:
                       return (
                         <svg
+                          key={index}
                           width="36"
                           height="140"
                           viewBox="0 0 36 163"
@@ -219,7 +223,7 @@ function CreateTransaction() {
                           <path
                             d="M19.9591 1.37759C-39.047 55.8487 63.6376 68.9745 25.0158 136.11"
                             stroke="#4CABEF"
-                            stroke-width="2.3949"
+                            strokeWidth="2.3949"
                           />
                           <circle
                             cx="5.32201"
@@ -234,13 +238,14 @@ function CreateTransaction() {
                             r="13.3009"
                             transform="matrix(0.0375053 0.999296 0.999296 -0.0375053 5.84314 134.164)"
                             stroke="#4CABEF"
-                            stroke-width="1.78225"
+                            strokeWidth="1.78225"
                           />
                         </svg>
                       );
                     case 0:
                       return (
                         <svg
+                          key={index}
                           width="36"
                           height="140"
                           viewBox="0 0 36 163"
@@ -251,7 +256,7 @@ function CreateTransaction() {
                           <path
                             d="M15.3683 1.83251C74.3744 56.3036 -28.3102 69.4295 10.3116 136.565"
                             stroke="#4CABEF"
-                            stroke-width="2.3949"
+                            strokeWidth="2.3949"
                           />
                           <circle
                             cx="14.77"
@@ -266,7 +271,7 @@ function CreateTransaction() {
                             r="13.3009"
                             transform="rotate(92.1494 14.7699 148.268)"
                             stroke="#4CABEF"
-                            stroke-width="1.78225"
+                            strokeWidth="1.78225"
                           />
                         </svg>
                       );
@@ -274,10 +279,11 @@ function CreateTransaction() {
                 })}
               </div>
               <div className="flex flex-col ">
-                {milestoneBuilder.milestones.map((_, index) => (
+                {milestoneBuilder.milestones.map((milestone, index) => (
                   <Milestone
                     index={index}
                     key={index}
+                    milestone={milestone}
                     onSave={(payload) => {
                       milestoneBuilder.saveMilestone(payload);
                     }}
@@ -285,9 +291,7 @@ function CreateTransaction() {
                       milestoneBuilder.updateMilestone(index, payload);
                     }}
                     onAdd={() => milestoneBuilder.addEmptyMilestone(index)}
-                    onRemove={() =>
-                      milestoneBuilder.removeMilestone(index)
-                    }
+                    onRemove={() => milestoneBuilder.removeMilestone(index)}
                   />
                 ))}
               </div>
@@ -367,15 +371,27 @@ function CreateTransaction() {
   );
 }
 
+type NonNullableMilestonePayloadWithDate = Helpers.NonNullableKey<
+  MilestonePayloadWithDate,
+  "deadline"
+>;
+
 type MilestoneProps = {
   index: number;
-  onSave: (payload: MilestonePayloadWithDate) => void;
-  onUpdate: (payload: MilestonePayloadWithDate) => void;
+  milestone: MilestonePayloadWithDate;
+  onSave: (payload: NonNullableMilestonePayloadWithDate) => void;
+  onUpdate: (payload: NonNullableMilestonePayloadWithDate) => void;
   onAdd: () => void;
   onRemove: () => void;
 };
 
 const Milestone = ({ index, ...props }: MilestoneProps) => {
+  const [milestone, setMilestone] = useState<
+    Omit<MilestonePayloadWithDate, "amount"> & { amount: string }
+  >({
+    ...props.milestone,
+    amount: formatEther(props.milestone.amount),
+  });
   return (
     <div
       data-index={index}
@@ -383,6 +399,24 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
     >
       <div className="w-full rounded-2xl pl-4 pr-3 py-2.5 bg-gray-400/20 backdrop-blur-[12px] flex items-center">
         <input
+          value={milestone.amount}
+          onInput={(e) => {
+            const { value = "" } = e.target as unknown as { value: string };
+            if (!value) setMilestone((p) => ({ ...p, amount: "" }));
+            const newValue = value.replace(/[^0-9.]/g, ""); // Remove non-numeric chars except decimal
+            // Prevent multiple decimal points
+            const parts = newValue.split(".");
+            const sanitizedValue =
+              parts.length > 2
+                ? `${parts[0]}.${parts.slice(1).join("")}`
+                : newValue;
+            if (/^\d+(\.\d{0,18})?$/.test(value))
+              setMilestone((p) => ({
+                ...p,
+                // parse amount to be bigint with 18 decimals
+                amount: sanitizedValue,
+              }));
+          }}
           className="w-full font-Bricolage_Grotesque font-semibold text-xl bg-transparent text-em-dark focus:outline-none"
           placeholder="0.1"
         />

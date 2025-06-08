@@ -31,7 +31,7 @@ const WaterBodySVG = ({
           <path
             d="M216.738 53.3178C154.901 30.8011 47.0221 55.9784 0.812378 71.3816L5.43335 358.722L476.353 354.521C486.715 250.479 493.996 35.422 440.225 7.52816C373.011 -27.3392 294.034 81.4638 216.738 53.3178Z"
             fill="url(#paint0_linear_519_140)"
-            fill-opacity="0.62"
+            fillOpacity="0.62"
             stroke="white"
             stroke-width="0.840177"
           />
@@ -44,8 +44,8 @@ const WaterBodySVG = ({
               y2="266.058"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#3AA3F0" />
-              <stop offset="1" stop-color="#093F66" />
+              <stop stopColor="#3AA3F0" />
+              <stop offset="1" stopColor="#093F66" />
             </linearGradient>
           </defs>
         </svg>
@@ -77,7 +77,7 @@ const WaterBodySVG = ({
             data-figma-bg-blur-radius="3.36071"
             d="M280.352 55.4428C345.235 31.7794 458.428 58.2389 506.914 74.4265L502.066 376.399L7.94815 371.985C-2.9245 262.645 -10.5648 36.6357 45.8555 7.3214C116.381 -29.3215 199.248 85.022 280.352 55.4428Z"
             fill="#45B1FF"
-            fill-opacity="0.66"
+            fillOpacity="0.66"
           />
           <defs>
             <clipPath
@@ -102,13 +102,12 @@ const WaterBodySVG = ({
             y="-2.87682"
             width="606.721"
             height="364.822"
-          >
-          </foreignObject>
+          ></foreignObject>
           <path
             data-figma-bg-blur-radius="3.36071"
             d="M229.902 3.18978C303.824 -19.3116 538.667 106.952 600 71.4409L594.476 358.585L31.5259 354.387C19.1387 250.416 -32.7538 59.2105 31.5259 31.3357C111.876 -3.50775 137.5 31.3165 229.902 3.18978Z"
             fill="#43ACF7"
-            fill-opacity="0.46"
+            fillOpacity="0.46"
           />
           <defs>
             <clipPath

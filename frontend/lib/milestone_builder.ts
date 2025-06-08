@@ -84,7 +84,7 @@ class MilestoneBuilder {
 
   // this is error prone
   removeMilestone(index: number): MilestoneBuilder {
-    this.milestones.splice(index, 1);
+    this.milestones = this.milestones.filter((_, i) => i !== index);
     return this;
   }
 
@@ -153,7 +153,7 @@ class MilestoneBuilder {
 }
 
 export type MilestonePayloadWithDate = Helpers.Prettify<
-  Omit<MilestonePayload, "deadline"> & { deadline: Date }
+  Omit<MilestonePayload, "deadline"> & { deadline: Date | null }
 >;
 
 export const useMilestoneBuilder = () => {
@@ -178,14 +178,16 @@ export const useMilestoneBuilder = () => {
           {
             title: "",
             amount: 0n,
-            deadline: new Date(),
+            deadline: null,
           } as MilestonePayloadWithDate,
           ...p.slice(2 + 1),
         ];
         return newMilestones;
       });
     },
-    saveMilestone(milestone: MilestonePayloadWithDate) {
+    saveMilestone(
+      milestone: Omit<MilestonePayloadWithDate, "deadline"> & { deadline: Date }
+    ) {
       milestoneBuilder.saveMilestone(
         milestone.title,
         milestone.amount,
@@ -197,7 +199,10 @@ export const useMilestoneBuilder = () => {
       milestoneBuilder.removeMilestone(index);
       set_milestones((p) => p.filter((_, i) => i !== index));
     },
-    updateMilestone(index: number, milestone: MilestonePayloadWithDate) {
+    updateMilestone(
+      index: number,
+      milestone: Omit<MilestonePayloadWithDate, "deadline"> & { deadline: Date }
+    ) {
       milestoneBuilder.updateMilestone(
         index,
         milestone.title,

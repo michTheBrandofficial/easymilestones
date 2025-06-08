@@ -25,6 +25,11 @@ declare global {
     status: Status;
   }
 
+  /**
+   * Construct a type with the properties of T except for those in type K.
+   */
+  type Omit<T, K extends keyof T> = Helpers.Prettify<Pick<T, Exclude<keyof T, K>>>;
+
   namespace Helpers {
     type Keyof<T extends Record<any, any>> = keyof T;
 
@@ -33,22 +38,33 @@ declare global {
     };
 
     // Helper type to create a range union from 1 to N
-    type BuildTuple<N extends number, Acc extends unknown[] = []> = 
-      Acc['length'] extends N 
-        ? Acc 
-        : BuildTuple<N, [...Acc, unknown]>;
-        
-    type Add1<N extends number> = [...BuildTuple<N>, unknown]['length'];
-    
-    type Steps<N extends number, Current extends number = 1> = 
-      Current extends N 
-        ? Current 
-        : Current | Steps<N, Add1<Current>>;
+    type BuildTuple<
+      N extends number,
+      Acc extends unknown[] = [],
+    > = Acc["length"] extends N ? Acc : BuildTuple<N, [...Acc, unknown]>;
+
+    type Add1<N extends number> = [...BuildTuple<N>, unknown]["length"];
+
+    type Steps<N extends number, Current extends number = 1> = Current extends N
+      ? Current
+      : Current | Steps<N, Add1<Current>>;
 
     // make a prettify type
     type Prettify<T> = {
       [K in keyof T]: T[K];
-    } & {}
+    } & {};
+
+    type NonNullableKey<T extends {}, K extends keyof T> = Prettify<
+      Omit<T, K> & {
+        [index in K]: NonNullable<T[K]>;
+      }
+    >;
+
+    type NullableKey<T extends {}, K extends keyof T> = Prettify<
+      Omit<T, K> & {
+        [index in K]: T[K] | null;
+      }
+    >;
   }
 
   namespace Utilities {
