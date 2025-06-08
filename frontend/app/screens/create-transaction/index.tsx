@@ -3,7 +3,6 @@ import { Typography } from "@/components/typography";
 import {
   AddCircleIcon,
   Calendar03Icon,
-  CheckmarkBadge01Icon,
   MoneyExchange03Icon,
   TickDouble03Icon,
 } from "hugeicons-react";
@@ -167,7 +166,10 @@ function CreateTransaction() {
               if (definition === "visible") focusOnLastMilestone();
             }}
           >
-            <div className="h-full grid grid-cols-[20%_80%] gap-x-0  overflow-y-auto no-scrollbar">
+            <div
+              ref={milestoneContainerRef}
+              className="h-full grid grid-cols-[20%_80%] gap-x-0 overflow-y-auto no-scrollbar"
+            >
               <div className="flex flex-col ">
                 {milestoneBuilder.milestones.map((_, index) => {
                   const sanePeoplesIndex = index + 1;
@@ -306,7 +308,7 @@ function CreateTransaction() {
                   }
                 })}
               </div>
-              <div ref={milestoneContainerRef} className="flex flex-col ">
+              <div className="flex flex-col relative ">
                 {milestoneBuilder.milestones.map((milestone, index) => (
                   <Milestone
                     index={index}
@@ -327,15 +329,22 @@ function CreateTransaction() {
                           `[data-milestone='${index + 1}']`
                         );
                       if (nextMilestone) {
-                        nextMilestone.scrollIntoView({
+                        // temp4.scroll({ top: (temp6.offsetTop + temp6.getBoundingClientRect().height) - temp4.getBoundingClientRect().height, behavior: 'smooth' })
+                        milestoneContainerRef.current?.scroll({
+                          top:
+                            nextMilestone.offsetTop +
+                            nextMilestone.getBoundingClientRect().height -
+                            milestoneContainerRef.current.getBoundingClientRect()
+                              .height,
                           behavior: "smooth",
-                          block: "end",
                         });
-                        const input =
-                          nextMilestone.querySelector<HTMLInputElement>(
-                            "input[name='title']"
-                          );
-                        if (input) input.focus();
+                        setTimeout(() => {
+                          const input =
+                            nextMilestone.querySelector<HTMLInputElement>(
+                              "input[name='title']"
+                            );
+                          if (input) input.focus();
+                        }, 300);
                       }
                     }}
                     onRemove={() => {
@@ -445,6 +454,16 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
     ...props.milestone,
     amount: formatEther(props.milestone.amount),
   });
+  useEffect(() => {
+    setMilestone({
+      ...props.milestone,
+      amount: formatEther(props.milestone.amount),
+    });
+  }, [
+    ...Object.values(
+      pick(props.milestone, "title", "deadline", "amount", "title")
+    ),
+  ]);
   const [hasChanges, setHasChanges] = useState(false);
   const showToast = useToast();
   return (
