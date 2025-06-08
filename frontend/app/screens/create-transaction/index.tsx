@@ -316,12 +316,12 @@ function CreateTransaction() {
                     }}
                     onAdd={() => {
                       milestoneBuilder.addEmptyMilestone(index);
-                      const nextMilestone = milestoneContainerRef.current?.querySelector<HTMLDivElement>(`[data-milestone='${index + 1}']`);
-                      if (nextMilestone) {
-                        nextMilestone.scrollIntoView({ behavior: "smooth", block: "end" });
-                        const input = nextMilestone.querySelector<HTMLInputElement>("input[name='title']");
-                        if (input) input.focus();
-                      }
+                      // const nextMilestone = milestoneContainerRef.current?.querySelector<HTMLDivElement>(`[data-milestone='${index + 1}']`);
+                      // if (nextMilestone) {
+                      //   nextMilestone.scrollIntoView({ behavior: "smooth", block: "end" });
+                      //   const input = nextMilestone.querySelector<HTMLInputElement>("input[name='title']");
+                      //   if (input) input.focus();
+                      // }
                     }}
                     onRemove={() => {
                       if (milestoneBuilder.milestones.length === 1) return showToast('info', 'At least one milestone must be provided');
@@ -468,7 +468,7 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
           <AddCircleIcon size={26} className="text-em-dark rotate-45" />
         </Button>
         {/* save button will show before this plus shows */}
-        <Button variant="icon" className="px-0 h-fit bg-transparent !py-0">
+        <Button onTap={props.onAdd} variant="icon" className="px-0 h-fit bg-transparent !py-0">
           <AddCircleIcon size={26} className="text-em-dark" />
         </Button>
         <Button onTap={() => {
