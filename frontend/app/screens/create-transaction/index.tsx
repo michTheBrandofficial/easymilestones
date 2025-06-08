@@ -9,7 +9,7 @@ import {
 } from "hugeicons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import PageScreen from "@/components/ui/screen";
-import { inlineSwitch, noop } from "@/lib/utils";
+import { inlineSwitch, noop, pick } from "@/lib/utils";
 import WaterBodySVG from "../-components/water-body-svg";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -38,16 +38,21 @@ function CreateTransaction() {
   const txTitleRef = useRef<HTMLInputElement>(null);
   const milestoneBuilder = useMilestoneBuilder();
   const [txTitle, setTxTitle] = useState("");
-  const showToast = useToast()
+  const showToast = useToast();
   function focusOnTxTitle() {
     if (step === 1) txTitleRef.current?.focus();
-  };
+  }
   function focusOnLastMilestone() {
     if (step === 2) {
-      const lastMilestone = milestoneContainerRef.current?.querySelector<HTMLDivElement>(`[data-milestone='${milestoneBuilder.milestones.length - 1}']`);
+      const lastMilestone =
+        milestoneContainerRef.current?.querySelector<HTMLDivElement>(
+          `[data-milestone='${milestoneBuilder.milestones.length - 1}']`
+        );
       if (lastMilestone) {
         lastMilestone.scrollIntoView({ behavior: "smooth", block: "end" });
-        const input = lastMilestone.querySelector<HTMLInputElement>("input[name='title']");
+        const input = lastMilestone.querySelector<HTMLInputElement>(
+          "input[name='title']"
+        );
         if (input) input.focus();
       }
     }
@@ -124,11 +129,11 @@ function CreateTransaction() {
               hidden: { opacity: 0, y: -40 },
               visible: { opacity: 1, y: 0 },
             }}
-            initial={'hidden'}
-            animate={'visible'}
+            initial={"hidden"}
+            animate={"visible"}
             exit={{ opacity: 0, y: -40, transition: { delay: -0.3 } }}
             onAnimationComplete={(definition) => {
-              if (definition === 'visible') focusOnTxTitle()
+              if (definition === "visible") focusOnTxTitle();
             }}
             className="w-full rounded-2xl pl-4 pr-3 py-2.5 bg-gray-400/20 backdrop-blur-[12px] flex items-center"
           >
@@ -152,12 +157,12 @@ function CreateTransaction() {
               hidden: { opacity: 0, y: 40 },
               visible: { opacity: 1, y: 0 },
             }}
-            initial={'hidden'}
-            animate={'visible'}
+            initial={"hidden"}
+            animate={"visible"}
             exit={{ opacity: 0, y: 40, transition: { delay: -0.3 } }}
             className="w-full flex-grow max-h-[40vh] relative z-40 overflow-y-auto no-scrollbar"
             onAnimationComplete={(definition) => {
-              if (definition === 'visible') focusOnLastMilestone()
+              if (definition === "visible") focusOnLastMilestone();
             }}
           >
             <div className="h-full grid grid-cols-[20%_80%] gap-x-0  overflow-y-auto no-scrollbar">
@@ -308,23 +313,33 @@ function CreateTransaction() {
                     index={index}
                     key={index}
                     milestone={milestone}
-                    onSave={(payload) => {
-                      milestoneBuilder.saveMilestone(payload);
-                    }}
                     onUpdate={(payload) => {
                       milestoneBuilder.updateMilestone(index, payload);
                     }}
                     onAdd={() => {
                       milestoneBuilder.addEmptyMilestone(index);
-                      const nextMilestone = milestoneContainerRef.current?.querySelector<HTMLDivElement>(`[data-milestone='${index + 1}']`);
+                      const nextMilestone =
+                        milestoneContainerRef.current?.querySelector<HTMLDivElement>(
+                          `[data-milestone='${index + 1}']`
+                        );
                       if (nextMilestone) {
-                        nextMilestone.scrollIntoView({ behavior: "smooth", block: "end" });
-                        const input = nextMilestone.querySelector<HTMLInputElement>("input[name='title']");
+                        nextMilestone.scrollIntoView({
+                          behavior: "smooth",
+                          block: "end",
+                        });
+                        const input =
+                          nextMilestone.querySelector<HTMLInputElement>(
+                            "input[name='title']"
+                          );
                         if (input) input.focus();
                       }
                     }}
                     onRemove={() => {
-                      if (milestoneBuilder.milestones.length === 1) return showToast('info', 'At least one milestone must be provided');
+                      if (milestoneBuilder.milestones.length === 1)
+                        return showToast(
+                          "info",
+                          "At least one milestone must be provided"
+                        );
                       milestoneBuilder.removeMilestone(index);
                     }}
                   />
@@ -411,7 +426,6 @@ type NonNullableMilestonePayloadWithDate = Helpers.NonNullableKey<
 type MilestoneProps = {
   index: number;
   milestone: MilestonePayloadWithDate;
-  onSave: (payload: NonNullableMilestonePayloadWithDate) => void;
   onUpdate: (payload: NonNullableMilestonePayloadWithDate) => void;
   onAdd: () => void;
   onRemove: () => void;
@@ -424,6 +438,18 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
     ...props.milestone,
     amount: formatEther(props.milestone.amount),
   });
+  const [hasChanges, setHasChanges] = useState(false);
+  useEffect(() => {
+    // dont set has changes on first render
+    if (
+      milestone.amount !== formatEther(props.milestone.amount) ||
+      milestone.title !== props.milestone.title ||
+      milestone.deadline !== props.milestone.deadline
+    ) {
+      setHasChanges(true);
+    }
+  }, [pick(milestone, "amount", "deadline", "title")]);
+
   return (
     <div
       data-milestone={index}
@@ -439,7 +465,7 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
           }}
           autoComplete="off"
           className="w-full font-Bricolage_Grotesque font-semibold text-xl bg-transparent text-em-dark focus:outline-none"
-          placeholder="Cake fees"
+          placeholder="E.g Birthday Cake"
         />
       </div>
       <div className="w-full rounded-2xl pl-4 pr-3 py-2.5 bg-gray-400/20 backdrop-blur-[12px] flex items-center">
@@ -469,31 +495,46 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
         />
         <p className="font-semibold text-em-text">ETH</p>
       </div>
-      {/* milestone title */}
       {/* icons */}
       {/* show date in formatted here, else red 😡 no date */}
       {/* message must vibrate with haptic feedback */}
       <div className="flex gap-x-4 pr-1 h-fit">
+        {/* set has changes here */}
         <Button variant="icon" className="px-0 h-fit bg-transparent !py-0">
           <Calendar03Icon size={26} className="text-em-dark" />
         </Button>
-        <Button onTap={props.onRemove} variant="icon" className="px-0 h-fit bg-transparent !py-0">
+        <Button
+          onTap={props.onRemove}
+          variant="icon"
+          className="px-0 h-fit bg-transparent !py-0"
+        >
           <AddCircleIcon size={26} className="text-em-dark rotate-45" />
         </Button>
         {/* save button will show before this plus shows */}
-        <Button onTap={props.onAdd} variant="icon" className="px-0 h-fit bg-transparent !py-0">
+        <Button
+          onTap={props.onAdd}
+          variant="icon"
+          className="px-0 h-fit bg-transparent !py-0"
+        >
           <AddCircleIcon size={26} className="text-em-dark" />
         </Button>
-        <Button onTap={() => {
-            props.onSave({
-              ...milestone,
-              amount: BigInt((parseFloat(milestone.amount) || 0) * 10 ** 18),
-              // 
-              deadline: new Date(),
-            });
-          }} variant="icon" className="px-0 ml-auto h-fit bg-transparent !py-0">
-          <TickDouble03Icon size={26} className="text-em-dark" />
-        </Button>
+        {hasChanges && (
+          <Button
+            onTap={() => {
+              props.onUpdate({
+                ...milestone,
+                amount: BigInt((parseFloat(milestone.amount) || 0) * 10 ** 18),
+                //
+                deadline: new Date(),
+              });
+              setHasChanges(false);
+            }}
+            variant="icon"
+            className="px-0 ml-auto h-fit bg-transparent !py-0"
+          >
+            <TickDouble03Icon size={26} className="text-em-dark" />
+          </Button>
+        )}
       </div>
     </div>
   );
