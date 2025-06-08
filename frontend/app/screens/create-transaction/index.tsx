@@ -446,9 +446,10 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
     amount: formatEther(props.milestone.amount),
   });
   const [hasChanges, setHasChanges] = useState(false);
-  const showToast = useToast()
+  const showToast = useToast();
   return (
     <div
+      key={index}
       data-milestone={index}
       className="w-full flex flex-col gap-y-3 justify-end h-[220px] -mt-1 first:mt-0 "
     >
@@ -512,7 +513,9 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
           onTap={() => {
             setMilestone((p) => ({
               ...p,
-              deadline: new Date(Date.now() + 24 * 60 * 60 * 1000 + 24 * 60 * 60 * 1000),
+              deadline: new Date(
+                Date.now() + 24 * 60 * 60 * 1000 + 24 * 60 * 60 * 1000
+              ),
             }));
             setHasChanges(true);
           }}
@@ -553,7 +556,7 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
                 })
                 .then(() => {
                   setHasChanges(false);
-                  showToast('info', 'Milestone updated');
+                  showToast("info", "Milestone updated");
                 });
             }}
             variant="icon"

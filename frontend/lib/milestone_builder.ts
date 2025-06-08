@@ -1,6 +1,6 @@
 // should inherit DescriptiveError
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { last } from "./utils";
 import { ErrorMatcher } from "./error-matcher";
 import { useToast } from "@/components/ui/toast-context";
@@ -61,9 +61,14 @@ class MilestoneBuilder {
     ];
   }
 
-  removeMilestone(index: number): MilestoneBuilder {
+  /**
+   * @dev this returns the milestones left
+   */
+  removeMilestone(index: number) {
+    console.log('milestones:', this.milestones)
     this.milestones = this.milestones.filter((_, i) => i !== index);
-    return this;
+    console.log('milestones:', this.milestones)
+    return this.milestones;
   }
 
   /**
@@ -147,7 +152,7 @@ export type MilestonePayloadWithDate = Helpers.Prettify<
 >;
 
 export const useMilestoneBuilder = () => {
-  const milestoneBuilder = new MilestoneBuilder();
+  const milestoneBuilderRef = useRef(new MilestoneBuilder());
   const [tx_title, set_tx_title] = useState<string>();
   const showToast = useToast();
   const [milestones, set_milestones] = useState<MilestonePayloadWithDate[]>([]);
@@ -155,7 +160,7 @@ export const useMilestoneBuilder = () => {
     tx_title,
     milestones,
     setTxTitle(title: string) {
-      milestoneBuilder.setTransactionTitle(title);
+      milestoneBuilderRef.current.setTransactionTitle(title);
       set_tx_title(title);
     },
     /**
@@ -163,7 +168,7 @@ export const useMilestoneBuilder = () => {
      */
     addEmptyMilestone(index: number) {
       try {
-        milestoneBuilder.addEmptyMilestone(index);
+        milestoneBuilderRef.current.addEmptyMilestone(index);
         set_milestones((p) => {
           const newMilestones = [
             ...p.slice(0, index + 1),
@@ -184,7 +189,7 @@ export const useMilestoneBuilder = () => {
       }
     },
     removeMilestone(index: number) {
-      milestoneBuilder.removeMilestone(index);
+      milestoneBuilderRef.current.removeMilestone(index);
       set_milestones((p) => p.filter((_, i) => i !== index));
     },
     updateMilestone(
@@ -192,7 +197,7 @@ export const useMilestoneBuilder = () => {
       milestone: Omit<MilestonePayloadWithDate, "deadline"> & { deadline: Date }
     ) {
       try {
-        milestoneBuilder.updateMilestone(
+        milestoneBuilderRef.current.updateMilestone(
           index,
           milestone.title,
           milestone.amount,
@@ -209,7 +214,7 @@ export const useMilestoneBuilder = () => {
       }
     },
     build() {
-      return milestoneBuilder.build();
+      return milestoneBuilderRef.current.build();
     },
   };
 };
