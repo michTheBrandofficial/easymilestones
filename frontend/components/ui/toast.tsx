@@ -85,7 +85,7 @@ const ToastMessage = ({
           type: "keyframes",
           times: [0, 0.8, 1],
         }}
-        className="origin-center select-none cursor-pointer fixed bottom-12 mx-auto w-full flex justify-center"
+        className="origin-center select-none cursor-pointer fixed z-50 bottom-12 mx-auto w-full flex justify-center"
       >
         <div
           className={`flex items-center gap-x-3 w-fit bg-em-dark backdrop-blur-3xl rounded-full pl-6 pr-2 py-2 ${

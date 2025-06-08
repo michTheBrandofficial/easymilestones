@@ -3,7 +3,9 @@ import { Typography } from "@/components/typography";
 import {
   AddCircleIcon,
   Calendar03Icon,
+  CheckmarkBadge01Icon,
   MoneyExchange03Icon,
+  TickDouble03Icon,
 } from "hugeicons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import PageScreen from "@/components/ui/screen";
@@ -16,6 +18,7 @@ import {
   useMilestoneBuilder,
 } from "@/lib/milestone_builder";
 import { formatEther } from "viem";
+import { useToast } from "@/components/ui/toast-context";
 
 export const Route = createFileRoute("/create-transaction/")({
   component: CreateTransaction,
@@ -35,6 +38,7 @@ function CreateTransaction() {
   const txTitleRef = useRef<HTMLInputElement>(null);
   const milestoneBuilder = useMilestoneBuilder();
   const [txTitle, setTxTitle] = useState("");
+  const showToast = useToast()
   function focusOnTxTitle() {
     if (step === 1) txTitleRef.current?.focus();
   };
@@ -319,7 +323,10 @@ function CreateTransaction() {
                         if (input) input.focus();
                       }
                     }}
-                    onRemove={() => milestoneBuilder.removeMilestone(index)}
+                    onRemove={() => {
+                      if (milestoneBuilder.milestones.length === 1) return showToast('info', 'At least one milestone must be provided');
+                      milestoneBuilder.removeMilestone(index);
+                    }}
                   />
                 ))}
               </div>
@@ -443,6 +450,7 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
                 amount: sanitizedValue,
               }));
           }}
+          autoComplete="off"
           className="w-full font-Bricolage_Grotesque font-semibold text-xl bg-transparent text-em-dark focus:outline-none"
           placeholder="0.1"
         />
@@ -452,16 +460,26 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
       {/* icons */}
       {/* show date in formatted here, else red 😡 no date */}
       {/* message must vibrate with haptic feedback */}
-      <div className="flex gap-x-4 h-fit">
+      <div className="flex gap-x-4 pr-1 h-fit">
         <Button variant="icon" className="px-0 h-fit bg-transparent !py-0">
           <Calendar03Icon size={26} className="text-em-dark" />
         </Button>
-        <Button variant="icon" className="px-0 h-fit bg-transparent !py-0">
+        <Button onTap={props.onRemove} variant="icon" className="px-0 h-fit bg-transparent !py-0">
           <AddCircleIcon size={26} className="text-em-dark rotate-45" />
         </Button>
         {/* save button will show before this plus shows */}
         <Button variant="icon" className="px-0 h-fit bg-transparent !py-0">
           <AddCircleIcon size={26} className="text-em-dark" />
+        </Button>
+        <Button onTap={() => {
+            props.onSave({
+              ...milestone,
+              amount: BigInt((parseFloat(milestone.amount) || 0) * 10 ** 18),
+              // 
+              deadline: new Date(),
+            });
+          }} variant="icon" className="px-0 ml-auto h-fit bg-transparent !py-0">
+          <TickDouble03Icon size={26} className="text-em-dark" />
         </Button>
       </div>
     </div>

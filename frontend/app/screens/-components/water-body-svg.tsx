@@ -33,7 +33,7 @@ const WaterBodySVG = ({
             fill="url(#paint0_linear_519_140)"
             fillOpacity="0.62"
             stroke="white"
-            stroke-width="0.840177"
+            strokeWidth="0.840177"
           />
           <defs>
             <linearGradient
