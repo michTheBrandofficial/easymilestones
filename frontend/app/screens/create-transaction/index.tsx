@@ -172,7 +172,7 @@ function CreateTransaction() {
                       <svg
                         key={index}
                         width="36"
-                        height="140"
+                        height="160"
                         viewBox="0 0 36 163"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
@@ -204,7 +204,7 @@ function CreateTransaction() {
                       <svg
                         key={index}
                         width="36"
-                        height="140"
+                        height="160"
                         viewBox="0 0 36 163"
                         fill="none"
                         className="-mt-1 ml-2 "
@@ -238,7 +238,7 @@ function CreateTransaction() {
                         <svg
                           key={index}
                           width="36"
-                          height="140"
+                          height="160"
                           viewBox="0 0 36 163"
                           fill="none"
                           className="-mt-[3px] "
@@ -271,7 +271,7 @@ function CreateTransaction() {
                         <svg
                           key={index}
                           width="36"
-                          height="140"
+                          height="160"
                           viewBox="0 0 36 163"
                           fill="none"
                           className="-mt-[3px] ml-2 "
@@ -316,12 +316,12 @@ function CreateTransaction() {
                     }}
                     onAdd={() => {
                       milestoneBuilder.addEmptyMilestone(index);
-                      // const nextMilestone = milestoneContainerRef.current?.querySelector<HTMLDivElement>(`[data-milestone='${index + 1}']`);
-                      // if (nextMilestone) {
-                      //   nextMilestone.scrollIntoView({ behavior: "smooth", block: "end" });
-                      //   const input = nextMilestone.querySelector<HTMLInputElement>("input[name='title']");
-                      //   if (input) input.focus();
-                      // }
+                      const nextMilestone = milestoneContainerRef.current?.querySelector<HTMLDivElement>(`[data-milestone='${index + 1}']`);
+                      if (nextMilestone) {
+                        nextMilestone.scrollIntoView({ behavior: "smooth", block: "end" });
+                        const input = nextMilestone.querySelector<HTMLInputElement>("input[name='title']");
+                        if (input) input.focus();
+                      }
                     }}
                     onRemove={() => {
                       if (milestoneBuilder.milestones.length === 1) return showToast('info', 'At least one milestone must be provided');
@@ -427,11 +427,24 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
   return (
     <div
       data-milestone={index}
-      className="w-full flex flex-col gap-y-3 justify-end h-[140px] -mt-1 first:mt-0 "
+      className="w-full flex flex-col gap-y-3 justify-end h-[160px] -mt-1 first:mt-0 "
     >
       <div className="w-full rounded-2xl pl-4 pr-3 py-2.5 bg-gray-400/20 backdrop-blur-[12px] flex items-center">
         <input
           name="title"
+          value={milestone.title}
+          onInput={(e) => {
+            const { value = "" } = e.target as unknown as { value: string };
+            setMilestone((p) => ({ ...p, title: value || "" }));
+          }}
+          autoComplete="off"
+          className="w-full font-Bricolage_Grotesque font-semibold text-xl bg-transparent text-em-dark focus:outline-none"
+          placeholder="Cake fees"
+        />
+      </div>
+      <div className="w-full rounded-2xl pl-4 pr-3 py-2.5 bg-gray-400/20 backdrop-blur-[12px] flex items-center">
+        <input
+          name="amount"
           value={milestone.amount}
           onInput={(e) => {
             const { value = "" } = e.target as unknown as { value: string };

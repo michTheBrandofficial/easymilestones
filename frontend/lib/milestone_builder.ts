@@ -180,7 +180,7 @@ export const useMilestoneBuilder = () => {
             amount: 0n,
             deadline: null,
           } as MilestonePayloadWithDate,
-          ...p.slice(2 + 1),
+          ...p.slice(index + 1),
         ];
         return newMilestones;
       });
