@@ -19,6 +19,8 @@ import {
 } from "@/lib/milestone_builder";
 import { formatEther } from "viem";
 import { useToast } from "@/components/ui/toast-context";
+import { formatDate } from "date-fns";
+import { cn } from "@/lib/shadcn-utils";
 
 export const Route = createFileRoute("/create-transaction/")({
   component: CreateTransaction,
@@ -176,10 +178,10 @@ function CreateTransaction() {
                     return (
                       <svg
                         key={index}
-                        width="36"
-                        height="160"
+                        height="220"
                         viewBox="0 0 36 163"
                         fill="none"
+                        className="w-fit"
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
@@ -208,11 +210,10 @@ function CreateTransaction() {
                     return (
                       <svg
                         key={index}
-                        width="36"
-                        height="160"
+                        height="220"
                         viewBox="0 0 36 163"
                         fill="none"
-                        className="-mt-1 ml-2 "
+                        className="-mt-1 ml-2 w-fit "
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
@@ -242,11 +243,10 @@ function CreateTransaction() {
                       return (
                         <svg
                           key={index}
-                          width="36"
-                          height="160"
+                          height="220"
                           viewBox="0 0 36 163"
                           fill="none"
-                          className="-mt-[3px] "
+                          className="-mt-[3px] w-fit "
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
@@ -275,11 +275,10 @@ function CreateTransaction() {
                       return (
                         <svg
                           key={index}
-                          width="36"
-                          height="160"
+                          height="220"
                           viewBox="0 0 36 163"
                           fill="none"
-                          className="-mt-[3px] ml-2 "
+                          className="-mt-[3px] ml-2 w-fit "
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
@@ -447,11 +446,11 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
     amount: formatEther(props.milestone.amount),
   });
   const [hasChanges, setHasChanges] = useState(false);
-
+  const showToast = useToast()
   return (
     <div
       data-milestone={index}
-      className="w-full flex flex-col gap-y-3 justify-end h-[160px] -mt-1 first:mt-0 "
+      className="w-full flex flex-col gap-y-3 justify-end h-[220px] -mt-1 first:mt-0 "
     >
       <div className="w-full rounded-2xl pl-4 pr-3 py-2.5 bg-gray-400/20 backdrop-blur-[12px] flex items-center">
         <input
@@ -498,9 +497,28 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
       {/* icons */}
       {/* show date in formatted here, else red 😡 no date */}
       {/* message must vibrate with haptic feedback */}
+      <motion.p
+        className={cn("font-medium text-em-text text-sm", {
+          "text-red-500": !milestone.deadline,
+        })}
+      >
+        {milestone.deadline
+          ? `Deadline: ${formatDate(milestone.deadline, "dd MMMM, yyyy")}`
+          : "Set a deadline"}
+      </motion.p>
       <div className="flex gap-x-4 pr-1 h-fit">
         {/* set has changes here */}
-        <Button variant="icon" className="px-0 h-fit bg-transparent !py-0">
+        <Button
+          onTap={() => {
+            setMilestone((p) => ({
+              ...p,
+              deadline: new Date(Date.now() + 24 * 60 * 60 * 1000 + 24 * 60 * 60 * 1000),
+            }));
+            setHasChanges(true);
+          }}
+          variant="icon"
+          className="px-0 h-fit bg-transparent !py-0"
+        >
           <Calendar03Icon size={26} className="text-em-dark" />
         </Button>
         <Button
@@ -510,17 +528,20 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
         >
           <AddCircleIcon size={26} className="text-em-dark rotate-45" />
         </Button>
-        {/* save button will show before this plus shows */}
-        <Button
-          onTap={props.onAdd}
-          variant="icon"
-          className="px-0 h-fit bg-transparent !py-0"
-        >
-          <AddCircleIcon size={26} className="text-em-dark" />
-        </Button>
+        {/* only verified milestones can create new ones */}
+        {props.milestone.isVerified && (
+          <Button
+            onTap={props.onAdd}
+            variant="icon"
+            className="px-0 h-fit bg-transparent !py-0"
+          >
+            <AddCircleIcon size={26} className="text-em-dark" />
+          </Button>
+        )}
         {hasChanges && (
           <Button
             onTap={() => {
+              if (!milestone.deadline) return;
               props
                 .onUpdate({
                   ...milestone,
@@ -528,10 +549,11 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
                     (parseFloat(milestone.amount) || 0) * 10 ** 18
                   ),
                   //
-                  deadline: new Date(),
+                  deadline: milestone.deadline,
                 })
                 .then(() => {
                   setHasChanges(false);
+                  showToast('info', 'Milestone updated');
                 });
             }}
             variant="icon"
