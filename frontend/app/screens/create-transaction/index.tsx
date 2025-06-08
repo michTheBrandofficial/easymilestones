@@ -32,16 +32,22 @@ function CreateTransaction() {
   const MAX_STEP = 2;
   const [step, setStep] = useState<Helpers.Steps<typeof MAX_STEP>>(1);
   const milestoneContainerRef = useRef<HTMLDivElement>(null);
-  // const lastMilestone = milestoneContainerRef.current?.lastElementChild;
-  // if (lastMilestone) {
-  //   lastMilestone.scrollIntoView({ behavior: "smooth", block: "end" });
-  // }
   const txTitleRef = useRef<HTMLInputElement>(null);
   const milestoneBuilder = useMilestoneBuilder();
   const [txTitle, setTxTitle] = useState("");
-  useEffect(() => {
+  function focusOnTxTitle() {
     if (step === 1) txTitleRef.current?.focus();
-  }, [step]);
+  };
+  function focusOnLastMilestone() {
+    if (step === 2) {
+      const lastMilestone = milestoneContainerRef.current?.querySelector<HTMLDivElement>(`[data-milestone='${milestoneBuilder.milestones.length - 1}']`);
+      if (lastMilestone) {
+        lastMilestone.scrollIntoView({ behavior: "smooth", block: "end" });
+        const input = lastMilestone.querySelector<HTMLInputElement>("input[name='title']");
+        if (input) input.focus();
+      }
+    }
+  }
   function handleNext() {
     if (step === MAX_STEP) noop();
     else if (step === 1) {
@@ -110,9 +116,16 @@ function CreateTransaction() {
               if (txTitle === "") return;
               handleNext();
             }}
-            initial={{ opacity: 0, y: -40 }}
-            animate={{ opacity: 1, y: 0 }}
+            variants={{
+              hidden: { opacity: 0, y: -40 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            initial={'hidden'}
+            animate={'visible'}
             exit={{ opacity: 0, y: -40, transition: { delay: -0.3 } }}
+            onAnimationComplete={(definition) => {
+              if (definition === 'visible') focusOnTxTitle()
+            }}
             className="w-full rounded-2xl pl-4 pr-3 py-2.5 bg-gray-400/20 backdrop-blur-[12px] flex items-center"
           >
             <input
@@ -131,10 +144,17 @@ function CreateTransaction() {
         {step === 2 && (
           <motion.div
             key={"tx_milestones"}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
+            variants={{
+              hidden: { opacity: 0, y: 40 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            initial={'hidden'}
+            animate={'visible'}
             exit={{ opacity: 0, y: 40, transition: { delay: -0.3 } }}
             className="w-full flex-grow max-h-[40vh] relative z-40 overflow-y-auto no-scrollbar"
+            onAnimationComplete={(definition) => {
+              if (definition === 'visible') focusOnLastMilestone()
+            }}
           >
             <div className="h-full grid grid-cols-[20%_80%] gap-x-0  overflow-y-auto no-scrollbar">
               <div className="flex flex-col ">
@@ -278,7 +298,7 @@ function CreateTransaction() {
                   }
                 })}
               </div>
-              <div className="flex flex-col ">
+              <div ref={milestoneContainerRef} className="flex flex-col ">
                 {milestoneBuilder.milestones.map((milestone, index) => (
                   <Milestone
                     index={index}
@@ -290,7 +310,15 @@ function CreateTransaction() {
                     onUpdate={(payload) => {
                       milestoneBuilder.updateMilestone(index, payload);
                     }}
-                    onAdd={() => milestoneBuilder.addEmptyMilestone(index)}
+                    onAdd={() => {
+                      milestoneBuilder.addEmptyMilestone(index);
+                      const nextMilestone = milestoneContainerRef.current?.querySelector<HTMLDivElement>(`[data-milestone='${index + 1}']`);
+                      if (nextMilestone) {
+                        nextMilestone.scrollIntoView({ behavior: "smooth", block: "end" });
+                        const input = nextMilestone.querySelector<HTMLInputElement>("input[name='title']");
+                        if (input) input.focus();
+                      }
+                    }}
                     onRemove={() => milestoneBuilder.removeMilestone(index)}
                   />
                 ))}
@@ -300,10 +328,7 @@ function CreateTransaction() {
         )}
       </AnimatePresence>
       <WaterBodySVG />
-      <div
-        ref={milestoneContainerRef}
-        className="w-screen px-4 fixed z-30 bottom-8 left-0 flex items-center gap-x-2"
-      >
+      <div className="w-screen px-4 fixed z-30 bottom-8 left-0 flex items-center gap-x-2">
         <Button
           onTap={() => {
             if (step === 1) navigate({ to: "/transactions" });
@@ -394,11 +419,12 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
   });
   return (
     <div
-      data-index={index}
+      data-milestone={index}
       className="w-full flex flex-col gap-y-3 justify-end h-[140px] -mt-1 first:mt-0 "
     >
       <div className="w-full rounded-2xl pl-4 pr-3 py-2.5 bg-gray-400/20 backdrop-blur-[12px] flex items-center">
         <input
+          name="title"
           value={milestone.amount}
           onInput={(e) => {
             const { value = "" } = e.target as unknown as { value: string };
