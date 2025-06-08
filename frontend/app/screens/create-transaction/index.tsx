@@ -313,8 +313,13 @@ function CreateTransaction() {
                     index={index}
                     key={index}
                     milestone={milestone}
-                    onUpdate={(payload) => {
-                      milestoneBuilder.updateMilestone(index, payload);
+                    onUpdate={async (payload) => {
+                      return new Promise<boolean>((resolve, reject) => {
+                        const { success: didMilestoneUpdate } =
+                          milestoneBuilder.updateMilestone(index, payload);
+                        if (didMilestoneUpdate) resolve(didMilestoneUpdate);
+                        else reject(didMilestoneUpdate);
+                      });
                     }}
                     onAdd={() => {
                       milestoneBuilder.addEmptyMilestone(index);
@@ -426,7 +431,10 @@ type NonNullableMilestonePayloadWithDate = Helpers.NonNullableKey<
 type MilestoneProps = {
   index: number;
   milestone: MilestonePayloadWithDate;
-  onUpdate: (payload: NonNullableMilestonePayloadWithDate) => void;
+  /**
+   * this is async to set has changes only if the update is verified
+   */
+  onUpdate: (payload: NonNullableMilestonePayloadWithDate) => Promise<boolean>;
   onAdd: () => void;
   onRemove: () => void;
 };
@@ -439,16 +447,6 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
     amount: formatEther(props.milestone.amount),
   });
   const [hasChanges, setHasChanges] = useState(false);
-  useEffect(() => {
-    // dont set has changes on first render
-    if (
-      milestone.amount !== formatEther(props.milestone.amount) ||
-      milestone.title !== props.milestone.title ||
-      milestone.deadline !== props.milestone.deadline
-    ) {
-      setHasChanges(true);
-    }
-  }, [pick(milestone, "amount", "deadline", "title")]);
 
   return (
     <div
@@ -462,6 +460,7 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
           onInput={(e) => {
             const { value = "" } = e.target as unknown as { value: string };
             setMilestone((p) => ({ ...p, title: value || "" }));
+            setHasChanges(true);
           }}
           autoComplete="off"
           className="w-full font-Bricolage_Grotesque font-semibold text-xl bg-transparent text-em-dark focus:outline-none"
@@ -488,6 +487,7 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
                 // parse amount to be bigint with 18 decimals
                 amount: sanitizedValue,
               }));
+            setHasChanges(true);
           }}
           autoComplete="off"
           className="w-full font-Bricolage_Grotesque font-semibold text-xl bg-transparent text-em-dark focus:outline-none"
@@ -521,13 +521,18 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
         {hasChanges && (
           <Button
             onTap={() => {
-              props.onUpdate({
-                ...milestone,
-                amount: BigInt((parseFloat(milestone.amount) || 0) * 10 ** 18),
-                //
-                deadline: new Date(),
-              });
-              setHasChanges(false);
+              props
+                .onUpdate({
+                  ...milestone,
+                  amount: BigInt(
+                    (parseFloat(milestone.amount) || 0) * 10 ** 18
+                  ),
+                  //
+                  deadline: new Date(),
+                })
+                .then(() => {
+                  setHasChanges(false);
+                });
             }}
             variant="icon"
             className="px-0 ml-auto h-fit bg-transparent !py-0"

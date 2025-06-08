@@ -77,11 +77,11 @@ class MilestoneBuilder {
     amount: bigint,
     deadline: Date
   ): MilestoneBuilder {
-    const milestoneDeadline = BigInt(deadline.getTime() / 1000);
-    const tomorrow = BigInt(
-      new Date(Date.now() + 24 * 60 * 60 * 1000).getTime() / 1000
+    const milestoneDeadline_BigInt = BigInt(deadline.getTime());
+    const tomorrow_BigInt = BigInt(
+      new Date(Date.now() + 24 * 60 * 60 * 1000).getTime()
     );
-    if (milestoneDeadline >= tomorrow)
+    if (milestoneDeadline_BigInt >= tomorrow_BigInt)
       undefined; // do nothing, this is for devs to easily understand
     else
       throw new MilestoneBuilderError(
@@ -93,32 +93,36 @@ class MilestoneBuilder {
       throw new MilestoneBuilderError("Milestone amount cannot be 0");
     this.milestones[index] = {
       amount,
-      deadline: milestoneDeadline,
+      deadline: milestoneDeadline_BigInt,
       title: milestone_title,
       isVerified: true,
     };
     return this;
   }
 
+  /**
+   * @dev this is the only block where the convertion of milliseconds to seconds happens
+   */
   build(): TransactionPayload {
     const milestones = this.milestones.map((milestone, index) => {
       // one more validation here
       const {
-        deadline: milestone_deadline,
+        deadline: milestone_deadline_BigInt,
         title: milestone_title,
-        amount,
+        amount: amount_BigInt,
       } = milestone;
       if (milestone_title === "")
         throw new MilestoneBuilderError(
           `Milestone ${index + 1} title cannot be empty`
         );
-      if (BigInt(amount) === 0n)
+      if (BigInt(amount_BigInt) === 0n)
         throw new MilestoneBuilderError(
           `Milestone ${index + 1} amount cannot be 0`
         );
       return {
-        amount,
-        deadline: milestone_deadline,
+        amount: amount_BigInt,
+        // the only place the conversion from milliseconds to seconds happens
+        deadline: milestone_deadline_BigInt / 1000n,
         title: milestone_title,
       };
     });
@@ -196,10 +200,12 @@ export const useMilestoneBuilder = () => {
         );
         // verify the milestone for the ui
         set_milestones((p) => p.map((m, i) => (i === index ? { ...milestone, isVerified: true } : m)));
+        return { success: true }
       } catch (error) {
         ErrorMatcher.use(error).match(MilestoneBuilderError, (error) => {
           showToast("info", error.message);
         });
+        return { success: false }
       }
     },
     build() {
