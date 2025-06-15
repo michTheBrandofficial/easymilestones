@@ -8,7 +8,7 @@ import {
 } from "hugeicons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import PageScreen from "@/components/ui/screen";
-import { inlineSwitch, noop, pick } from "@/lib/utils";
+import { inlineSwitch, noop, pick, truncate } from "@/lib/utils";
 import WaterBodySVG from "../-components/water-body-svg";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -20,6 +20,8 @@ import { formatEther } from "viem";
 import { useToast } from "@/components/ui/toast-context";
 import { formatDate } from "date-fns";
 import { cn } from "@/lib/shadcn-utils";
+import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
+import DatePicker from "@/components/ui/calendar";
 
 export const Route = createFileRoute("/create-transaction/")({
   component: CreateTransaction,
@@ -464,6 +466,7 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
       pick(props.milestone, "title", "deadline", "amount", "title")
     ),
   ]);
+  const DatePickerSheet = useVariableHeightSheet(`milestone-date-${index}`)
   const [hasChanges, setHasChanges] = useState(false);
   const showToast = useToast();
   return (
@@ -514,9 +517,6 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
         />
         <p className="font-semibold text-em-text">ETH</p>
       </div>
-      {/* icons */}
-      {/* show date in formatted here, else red 😡 no date */}
-      {/* message must vibrate with haptic feedback */}
       <motion.p
         className={cn("font-medium text-em-text text-sm", {
           "text-red-500": !milestone.deadline,
@@ -530,13 +530,14 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
         {/* set has changes here */}
         <Button
           onTap={() => {
-            setMilestone((p) => ({
-              ...p,
-              deadline: new Date(
-                Date.now() + 24 * 60 * 60 * 1000 + 24 * 60 * 60 * 1000
-              ),
-            }));
-            setHasChanges(true);
+            DatePickerSheet.openSheet()
+            // setMilestone((p) => ({
+            //   ...p,
+            //   deadline: new Date(
+            //     Date.now() + 24 * 60 * 60 * 1000 + 24 * 60 * 60 * 1000
+            //   ),
+            // }));
+            // setHasChanges(true);
           }}
           variant="icon"
           className="px-0 h-fit bg-transparent !py-0"
@@ -585,6 +586,13 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
           </Button>
         )}
       </div>
+      <DatePickerSheet.VariableHeightSheet title={'Set a Deadline'} backButton={
+        "Back"
+      } >
+        <DatePickerSheet.VariableHeightSheetContent className="min-h-80 flex flex-col justify-end" >
+          <DatePicker disableOldDates  />
+        </DatePickerSheet.VariableHeightSheetContent>
+      </DatePickerSheet.VariableHeightSheet>
     </div>
   );
 };

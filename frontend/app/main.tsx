@@ -11,6 +11,7 @@ import { metaMask } from "wagmi/connectors";
 import WagmiContextProvider from "./screens/-contexts";
 import { AnimatePresence } from "motion/react";
 import { LocalAccountProvider } from "./screens/-contexts/local-account";
+import { VariableHeightSheetProvider } from "@/components/ui/variable-height-sheet";
 
 const queryClient = new QueryClient();
 
@@ -55,15 +56,17 @@ if (!rootElement.innerHTML) {
   root.render(
     <ToastProvider>
       <SheetProvider>
-        <WagmiContextProvider cookies={null}>
-          <LocalAccountProvider>
-            <QueryClientProvider client={queryClient}>
-              <AnimatePresence mode="popLayout">
-                <RouterProvider router={router}></RouterProvider>
-              </AnimatePresence>
-            </QueryClientProvider>
-          </LocalAccountProvider>
-        </WagmiContextProvider>
+        <VariableHeightSheetProvider>
+          <WagmiContextProvider cookies={null}>
+            <LocalAccountProvider>
+              <QueryClientProvider client={queryClient}>
+                <AnimatePresence mode="popLayout">
+                  <RouterProvider router={router}></RouterProvider>
+                </AnimatePresence>
+              </QueryClientProvider>
+            </LocalAccountProvider>
+          </WagmiContextProvider>
+        </VariableHeightSheetProvider>
       </SheetProvider>
     </ToastProvider>
   );
