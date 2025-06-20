@@ -275,11 +275,11 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
   ...props
 }) => {
   const [selectedDate, setSelectedDate] = useState(props.value ?? new Date());
-  const [calendarDays, setCalendarDays] = useState(getCalendarDays(new Date()));
+  const [calendarDays, setCalendarDays] = useState(getCalendarDays(props.value ?? new Date()));
   return (
     <section
       className={cn(
-        `w-fit h-fit py-6 px-5 select-none bg-[#EAEBE5] `,
+        `w-fit h-fit py-6 px-1.5 select-none /bg-[#EAEBE5] `,
         props.className
       )}
     >
@@ -292,6 +292,7 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
               selectedDate.getDate()
             );
             setSelectedDate(newDate);
+            props.onChange?.(newDate as Date);
             setCalendarDays(getCalendarDays(newDate));
           }}
           variant="icon"
@@ -316,6 +317,7 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
             const monthIndex = months.indexOf(option.value);
             newDate.setMonth(monthIndex);
             setSelectedDate(newDate);
+            props.onChange?.(newDate as Date);
           }}
         />
         <SearchableDropdown
@@ -334,6 +336,7 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
             const newDate = new Date(selectedDate);
             newDate.setFullYear(Number(option.value));
             setSelectedDate(newDate);
+            props.onChange?.(newDate as Date);
           }}
         />
         <Button
@@ -344,6 +347,8 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
               selectedDate.getDate()
             );
             setSelectedDate(newDate);
+            props.onChange?.(newDate as Date);
+
             setCalendarDays(getCalendarDays(newDate));
           }}
           variant="icon"
@@ -357,19 +362,13 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
           <Typography
             key={index}
             variant={"p"}
-            className="text-center text-base  !mt-0 font-semibold"
+            className="text-center text-sm !mt-0 font-semibold"
           >
             {day}
           </Typography>
         ))}
       </div>
-      <div
-        className={cn(
-          "w-full mt-5 grid grid-cols-7 gap-x-2 gap-y-3",
-          { "grid-rows-6": calendarDays.length === 6 },
-          { "grid-rows-5": calendarDays.length === 5 }
-        )}
-      >
+      <div className={cn("w-full mt-5 grid grid-cols-7 gap-x-2 gap-y-2.5")}>
         {calendarDays.flat(Infinity).map((date, index) => {
           const isOldDate = !isDateCurrentOrFuture(date as Date);
           let isDisabledDate: boolean;
@@ -398,9 +397,9 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
               <Typography
                 variant={"p"}
                 className={cn(
-                  "text-center text-base  !mt-0 font-semibold rounded-full w-10 h-10 flex flex-col items-center justify-center gap-y-0 relative hover: hover:bg-slate-100 ",
+                  "text-center text-sm !mt-0 font-semibold rounded-full min-w-10 min-h-10 flex flex-col items-center justify-center gap-y-0 relative hover:bg-slate-100 focus:hover:bg-em-tertiary transition-colors duration-200 ease-linear ",
                   {
-                    "bg-primary-100 ":
+                    "bg-em-tertiary ":
                       selectedDate.getTime() === (date as Date)?.getTime(),
                   },
                   { "!bg-transparent": !date },

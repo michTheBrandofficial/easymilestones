@@ -345,8 +345,8 @@ const useVariableHeightSheet = <S extends string>(sheetId: S) => {
         );
       }
     ),
-    VariableHeightSheetContent: VariableHeightSheetContentImpl,
-    VariableHeightSheetHeader: VariableHeightSheetHeaderImpl,
+    VariableHeightSheetContent: memo(VariableHeightSheetContentImpl),
+    VariableHeightSheetHeader: memo(VariableHeightSheetHeaderImpl),
     openSheet: () => sheetContext.openSheet(sheetId),
     closeSheet: () => sheetContext.closeSheet(sheetId),
   };

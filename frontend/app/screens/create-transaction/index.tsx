@@ -466,7 +466,7 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
       pick(props.milestone, "title", "deadline", "amount", "title")
     ),
   ]);
-  const DatePickerSheet = useVariableHeightSheet(`milestone-date-${index}`)
+  const DatePickerSheet = useVariableHeightSheet(`milestone-date-${index}`);
   const [hasChanges, setHasChanges] = useState(false);
   const showToast = useToast();
   return (
@@ -530,7 +530,7 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
         {/* set has changes here */}
         <Button
           onTap={() => {
-            DatePickerSheet.openSheet()
+            DatePickerSheet.openSheet();
             // setMilestone((p) => ({
             //   ...p,
             //   deadline: new Date(
@@ -586,14 +586,62 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
           </Button>
         )}
       </div>
-      <DatePickerSheet.VariableHeightSheet title={'Set a Deadline'} backButton={
-        "Back"
-      } >
-        <DatePickerSheet.VariableHeightSheetContent className="min-h-80 flex flex-col justify-end" >
-          <DatePicker disableOldDates  />
+      <DatePickerSheet.VariableHeightSheet
+        title={"Set a Deadline"}
+        backButton={"Back"}
+      >
+        <DatePickerSheet.VariableHeightSheetContent className="min-h-80 flex flex-col justify-end">
+          <DatePickerSheetContent
+            close={() => DatePickerSheet.closeSheet()}
+            saveDate={(selectedDate) => {
+              setMilestone((p) => ({
+                ...p,
+                deadline: selectedDate,
+              }));
+              DatePickerSheet.closeSheet();
+              setHasChanges(true);
+            }}
+            initialDate={milestone.deadline}
+          />
         </DatePickerSheet.VariableHeightSheetContent>
       </DatePickerSheet.VariableHeightSheet>
     </div>
+  );
+};
+
+type DatePickerSheetContentProps = {
+  close(): void;
+  saveDate(selectedDate: Date): void;
+  initialDate: Date | null;
+};
+
+const DatePickerSheetContent: React.FC<DatePickerSheetContentProps> = (
+  props
+) => {
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    props.initialDate || new Date()
+  );
+  return (
+    <>
+      <DatePicker
+        disableOldDates
+        value={selectedDate}
+        onChange={(date) => setSelectedDate(date)}
+        className="min-h-[454px]"
+      />
+      <div className="w-full flex gap-x-2 ">
+        <Button variant="ghost" className="w-full" onTap={props.close}>
+          Cancel
+        </Button>
+        <Button
+          variant="full"
+          className="w-full"
+          onTap={() => props.saveDate(selectedDate)}
+        >
+          Select
+        </Button>
+      </div>
+    </>
   );
 };
 
