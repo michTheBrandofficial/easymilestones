@@ -13,6 +13,8 @@ import { useEffect, useState } from "react";
 import { Button } from "../buttons";
 import { Typography } from "../typography";
 import Modal from "./modal";
+import SearchableDropdown from "./searchable-dropdown";
+import { noop } from "@/lib/utils";
 
 const months = [
   "January",
@@ -255,6 +257,15 @@ interface DatePickerProps {
   )[];
 }
 
+function getYearsFromNow(date: Date = new Date(), howManyYears = 12): number[] {
+  const currentYear = date.getFullYear();
+  const years = Array.from(
+    { length: howManyYears },
+    (_, index) => currentYear + index
+  );
+  return years;
+}
+
 /**
  * @dev the selectedDate should change to props;
  */
@@ -284,15 +295,45 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
             setCalendarDays(getCalendarDays(newDate));
           }}
           variant="icon"
-          className="bg-transparent text-em-dark"
+          className="bg-transparent px-0 text-em-dark"
         >
           <ChevronLeft className="size-5" />
         </Button>
-        <DatePickerModal
-          value={selectedDate}
-          onChange={(date) => {
-            setSelectedDate(date);
-            setCalendarDays(getCalendarDays(date));
+        <SearchableDropdown
+          className="w-24"
+          fullWidth
+          options={months.map((month) => ({
+            label: month.slice(0, 3),
+            value: month,
+          }))}
+          value={{
+            label: months[selectedDate.getMonth()].slice(0, 3),
+            value: months[selectedDate.getMonth()],
+          }}
+          onChange={(option) => {
+            if (!option) return;
+            const newDate = new Date(selectedDate);
+            const monthIndex = months.indexOf(option.value);
+            newDate.setMonth(monthIndex);
+            setSelectedDate(newDate);
+          }}
+        />
+        <SearchableDropdown
+          className="w-28"
+          fullWidth
+          options={getYearsFromNow().map((year) => ({
+            label: year.toString(),
+            value: year.toString(),
+          }))}
+          value={{
+            label: selectedDate.getFullYear().toString(),
+            value: selectedDate.getFullYear().toString(),
+          }}
+          onChange={(option) => {
+            if (!option) return;
+            const newDate = new Date(selectedDate);
+            newDate.setFullYear(Number(option.value));
+            setSelectedDate(newDate);
           }}
         />
         <Button
@@ -306,7 +347,7 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
             setCalendarDays(getCalendarDays(newDate));
           }}
           variant="icon"
-          className="bg-transparent text-em-dark"
+          className="bg-transparent px-0 text-em-dark"
         >
           <ChevronRight className="size-5" />
         </Button>

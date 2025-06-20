@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
-import { ChevronDown, X } from "lucide-react";
+import { cn } from "@/lib/shadcn-utils";
+import { ChevronDown } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 export interface Option {
   value: string;
@@ -129,7 +129,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
           name={name}
           required={required}
           className={cn(
-            "w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent pr-20 focus:outline-none text-[#080808] font-medium text-sm ",
+            "w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent focus:outline-none text-[#080808] font-medium text-sm ",
             rest.inputProps?.className
           )}
           placeholder={placeholder}
@@ -143,16 +143,6 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
           aria-autocomplete="list"
         />
         <div className="absolute right-0 top-0 h-full flex items-center pr-2 space-x-1">
-          {(value || searchTerm) && (
-            <button
-              type="button"
-              onClick={handleClearClick}
-              className="p-1 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600"
-              aria-label="Clear selection"
-            >
-              <X size={16} />
-            </button>
-          )}
           <button
             type="button"
             onClick={() => {
@@ -162,14 +152,16 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
               setDropDownPosition(positionRatio >= 0.5 ? "top" : "bottom");
               setIsOpen(!isOpen);
             }}
-            className="p-1 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600"
+            className="p-1 rounded-full text-gray-400 hover:text-gray-600"
             aria-label={isOpen ? "Close dropdown" : "Open dropdown"}
           >
             <ChevronDown
-              size={16}
-              className={`transform transition-transform duration-200 ${
-                isOpen ? "rotate-180" : ""
-              }`}
+              size={14}
+              className="rotate-180 translate-y-0.5"
+            />
+            <ChevronDown
+              size={14}
+              className="-translate-y-0.5"
             />
           </button>
         </div>
