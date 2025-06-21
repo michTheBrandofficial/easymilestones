@@ -7,7 +7,8 @@ import { Set } from "./Libs.sol";
 contract EasyMilestones {
   struct Transaction {
     uint256 amount;
-    uint256 deadline;
+    uint256 final_deadline;
+    strin
     Milestone[] milestones;
   }
 
