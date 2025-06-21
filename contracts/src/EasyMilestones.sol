@@ -8,7 +8,7 @@ contract EasyMilestones {
   struct Transaction {
     uint256 amount;
     uint256 final_deadline;
-    strin
+    string title;
     Milestone[] milestones;
   }
 
@@ -20,12 +20,14 @@ contract EasyMilestones {
   struct Milestone {
     uint256 amount;
     uint256 deadline;
+    string title;
     Status status;
   }
 
   struct MilestoneWithoutStatus {
     uint256 amount;
     uint256 deadline;
+    string title;
   }
 
   // Track unique transaction owners using a set
@@ -38,9 +40,9 @@ contract EasyMilestones {
     _;
   }
 
-  event TransactionCreated(address indexed owner, uint256 amount, Milestone[] milestones);
+  event TransactionCreated(address indexed owner, uint256 amount, string title, Milestone[] milestones);
 
-  function createTransaction(uint256 _deadline, MilestoneWithoutStatus[] memory _milestones)
+  function createTransaction(uint256 _final_deadline, string memory title, MilestoneWithoutStatus[] memory _milestones)
     public
     payable
     nonZeroValue
@@ -49,14 +51,13 @@ contract EasyMilestones {
     transactionOwnersSet.add(newTransactionOwner);
     Milestone[] memory _milestonesWithStatus = new Milestone[](_milestones.length);
     for (uint256 i = 0; i < _milestones.length; i++) {
-      _milestonesWithStatus[i] = Milestone(_milestones[i].amount, _milestones[i].deadline, Status.unpaid);
+      _milestonesWithStatus[i] = Milestone(_milestones[i].amount, _milestones[i].deadline, _milestones[i].title, Status.unpaid);
     }
     // deadline here refers to final deadline, which is equal to the deadline of the last milestone in the array.
-    transactions[newTransactionOwner].push(Transaction(msg.value, _deadline, _milestonesWithStatus));
-    emit TransactionCreated(newTransactionOwner, msg.value, _milestonesWithStatus);
+    transactions[newTransactionOwner].push(Transaction(msg.value, _final_deadline, title, _milestonesWithStatus));
+    emit TransactionCreated(newTransactionOwner, msg.value, title, _milestonesWithStatus);
   }
 
-  /// @notice anybody can view anybody's transactions
   function getTransactions(address owner) external view returns (Transaction[] memory txn) {
     if (transactionOwnersSet.has(owner)) {
       txn = transactions[owner];
@@ -64,7 +65,7 @@ contract EasyMilestones {
     return txn;
   }
 
-  event FundsTransferred(address indexed owner, uint256 amount, uint256 timestamp);
+  event FundsTransferred(address indexed owner, uint256 amount, string milestone_title, uint256 timestamp);
 
   function payTransactionOwner(address payable transaction_owner, Milestone memory milestone, uint256 block_timestamp)
     internal
@@ -73,8 +74,9 @@ contract EasyMilestones {
       (bool success,) = transaction_owner.call{ value: milestone.amount }("");
       require(success, "Failed to transfer funds");
       milestone.status = Status.paid;
-      emit FundsTransferred(transaction_owner, milestone.amount, block_timestamp);
-    } // no need to check for else case here.
+      // append tx_hash for blockchain scanner here
+      emit FundsTransferred(transaction_owner, milestone.amount, milestone.title, block_timestamp);
+    }
   }
 
   /// @notice this function will use block.timestamp to check if the milestone is due.
