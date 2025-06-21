@@ -384,7 +384,12 @@ const SheetContentImpl: React.FC<{
   );
 };
 
-const useSheet = <S extends string>(sheetId: S) => {
+const useSheet = <S extends string>(
+  sheetId: S,
+  options?: {
+    onClose?: (close: VoidFunction) => void;
+  }
+) => {
   const sheetContext = useContext(SheetContext);
   if (!sheetContext) {
     throw new Error("useSheet must be used within a SheetProvider");
@@ -398,7 +403,10 @@ const useSheet = <S extends string>(sheetId: S) => {
             {...props}
             // defaults to false
             open={sheetContext.sheetMap[sheetId]?.open ?? false}
-            onClose={() => sheetContext.closeSheet(sheetId)}
+            onClose={() => {
+              if (!options?.onClose) sheetContext.closeSheet(sheetId);
+              else options.onClose?.(() => sheetContext.closeSheet(sheetId));
+            }}
             sheetId={sheetId}
           />
         );
@@ -407,7 +415,10 @@ const useSheet = <S extends string>(sheetId: S) => {
     SheetContent: memo(SheetContentImpl),
     SheetHeader: memo(SheetHeaderImpl),
     openSheet: () => sheetContext.openSheet(sheetId),
-    closeSheet: () => sheetContext.closeSheet(sheetId),
+    closeSheet: () => {
+      if (!options?.onClose) sheetContext.closeSheet(sheetId);
+      else options.onClose?.(() => sheetContext.closeSheet(sheetId));
+    },
   };
 };
 

@@ -53,8 +53,6 @@ type VariableHeightSheetUnderlayProps = Pick<Props, "children">;
 const VariableHeightSheetContext =
   createContext<VariableHeightSheetContextType | null>(null);
 
-const FIXED_SHEET_UNDERLAY_TOP_OFFSET = 48;
-
 /**
  * @dev this one to be mounted at top most of app
  */
@@ -131,8 +129,6 @@ type Props = {
   children?: React.ReactNode;
   className?: string;
 };
-
-const FIXED_SHEET_TOP_OFFSET = FIXED_SHEET_UNDERLAY_TOP_OFFSET + 6;
 
 type VariableHeightSheetProps<SheetId extends string> = Pick<
   Props,
@@ -345,7 +341,12 @@ const VariableHeightSheetContentImpl: React.FC<{
   );
 };
 
-const useVariableHeightSheet = <S extends string>(sheetId: S) => {
+const useVariableHeightSheet = <S extends string>(
+  sheetId: S,
+  options?: {
+    onClose?: (close: VoidFunction) => void;
+  }
+) => {
   const sheetContext = useContext(VariableHeightSheetContext);
   if (!sheetContext) {
     throw new Error("useSheet must be used within a SheetProvider");
@@ -361,7 +362,10 @@ const useVariableHeightSheet = <S extends string>(sheetId: S) => {
             {...props}
             // defaults to false
             open={sheetContext.sheetMap[sheetId]?.open ?? false}
-            onClose={() => sheetContext.closeSheet(sheetId)}
+            onClose={() => {
+              if (!options?.onClose) sheetContext.closeSheet(sheetId);
+              else options.onClose?.(() => sheetContext.closeSheet(sheetId));
+            }}
             sheetId={sheetId}
           />
         );
@@ -370,7 +374,10 @@ const useVariableHeightSheet = <S extends string>(sheetId: S) => {
     VariableHeightSheetContent: memo(VariableHeightSheetContentImpl),
     VariableHeightSheetHeader: memo(VariableHeightSheetHeaderImpl),
     openSheet: () => sheetContext.openSheet(sheetId),
-    closeSheet: () => sheetContext.closeSheet(sheetId),
+    closeSheet: () => {
+      if (!options?.onClose) sheetContext.closeSheet(sheetId);
+      else options.onClose?.(() => sheetContext.closeSheet(sheetId));
+    },
   };
 };
 

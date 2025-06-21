@@ -23,7 +23,7 @@ export interface MilestonePayload extends Pick<Milestone, "title"> {
   isVerified?: boolean;
 }
 
-interface TransactionPayload extends Pick<Transaction, "title"> {
+export interface TransactionPayload extends Pick<Transaction, "title"> {
   milestones: MilestonePayload[];
   amount: bigint;
   final_deadline: bigint;
