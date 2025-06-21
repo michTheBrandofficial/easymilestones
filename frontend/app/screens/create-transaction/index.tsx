@@ -2,13 +2,16 @@ import { Button } from "@/components/buttons";
 import { Typography } from "@/components/typography";
 import {
   AddCircleIcon,
+  Calendar01Icon,
+  Calendar02Icon,
   Calendar03Icon,
   MoneyExchange03Icon,
+  MoneySendSquareIcon,
   TickDouble03Icon,
 } from "hugeicons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import PageScreen from "@/components/ui/screen";
-import { inlineSwitch, noop, pick, truncate } from "@/lib/utils";
+import { inlineSwitch, noop, pick } from "@/lib/utils";
 import WaterBodySVG from "../-components/water-body-svg";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -22,6 +25,9 @@ import { formatDate } from "date-fns";
 import { cn } from "@/lib/shadcn-utils";
 import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
 import DatePicker from "@/components/ui/calendar";
+import { useSheet } from "@/components/ui/sheet";
+import { useLocalAccount } from "../-contexts/local-account";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/create-transaction/")({
   component: CreateTransaction,
@@ -40,6 +46,17 @@ function CreateTransaction() {
   const milestoneContainerRef = useRef<HTMLDivElement>(null);
   const txTitleRef = useRef<HTMLInputElement>(null);
   const milestoneBuilder = useMilestoneBuilder();
+  const ConfirmationSheet = useSheet("transaction-confirmation");
+  const { privateKeyAccount, publicClient } = useLocalAccount();
+  const { data: balance } = useQuery({
+    queryKey: ["account-balance"],
+    queryFn: async () =>
+      publicClient.getBalance({
+        address: privateKeyAccount.address,
+        blockTag: "latest",
+      }),
+    refetchOnWindowFocus: false,
+  });
   const [txTitle, setTxTitle] = useState("");
   const showToast = useToast();
   function focusOnTxTitle() {
@@ -61,7 +78,7 @@ function CreateTransaction() {
     }
   }
   function handleNext() {
-    if (step === MAX_STEP) noop();
+    if (step === MAX_STEP) ConfirmationSheet.openSheet();
     else if (step === 1) {
       if (txTitle === "") return;
       milestoneBuilder.setTxTitle(txTitle);
@@ -429,6 +446,202 @@ function CreateTransaction() {
           </AnimatePresence>
         </Button>
       </div>
+      <ConfirmationSheet.Sheet
+        title="Confirm Transaction"
+        backButton={"Back"}
+        action={{
+          title: "Continue",
+          do(closeSheet) {
+            closeSheet;
+          },
+        }}
+      >
+        <ConfirmationSheet.SheetHeader>
+          <div className="w-full px-1.5 py-2 flex flex-col gap-y-3">
+            <div className="w-full flex items-center justify-between gap-x-2">
+              <Typography className="text-em-text text-sm">Address:</Typography>
+              <Typography className="text-em-dark flex-grow pl-3 font-medium font-Bricolage_Grotesque overflow-ellipsis overflow-hidden">
+                {privateKeyAccount?.address}
+              </Typography>
+            </div>
+            <div className="w-full flex items-center justify-between gap-x-2">
+              <Typography className="text-em-text text-sm">Balance:</Typography>
+              <Typography className="text-em-dark font-medium font-Bricolage_Grotesque text-lg overflow-ellipsis overflow-hidden">
+                {formatEther(balance || 0n)} ETH
+              </Typography>
+            </div>
+          </div>
+        </ConfirmationSheet.SheetHeader>
+        <ConfirmationSheet.SheetContent className="flex flex-col pt-6">
+          <div className="h-full grid grid-cols-[20%_80%] gap-x-0 px-2 overflow-y-auto no-scrollbar">
+            <div className="flex flex-col ">
+              {milestoneBuilder.milestones.map((_, index) => {
+                const sanePeoplesIndex = index + 1;
+                {
+                  /* first milestone */
+                }
+                if (sanePeoplesIndex === 1)
+                  return (
+                    <svg
+                      key={index}
+                      height="160"
+                      viewBox="0 0 36 163"
+                      fill="none"
+                      className="w-fit"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M19.9591 1.37759C-39.047 55.8487 63.6376 68.9745 25.0158 136.11"
+                        stroke="#4CABEF"
+                        strokeWidth="2.3949"
+                      />
+                      <circle
+                        cx="5.32201"
+                        cy="5.32201"
+                        r="5.32201"
+                        transform="matrix(0.0375053 0.999296 0.999296 -0.0375053 15.0396 142.695)"
+                        fill="#4CABEF"
+                      />
+                      <circle
+                        cx="14.192"
+                        cy="14.192"
+                        r="13.3009"
+                        transform="matrix(0.0375053 0.999296 0.999296 -0.0375053 5.84314 134.164)"
+                        stroke="#4CABEF"
+                        strokeWidth="1.78225"
+                      />
+                    </svg>
+                  );
+                if (sanePeoplesIndex === 2)
+                  return (
+                    <svg
+                      key={index}
+                      height="160"
+                      viewBox="0 0 36 163"
+                      fill="none"
+                      className="-mt-1 ml-2 w-fit "
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M15.3683 1.83251C74.3744 56.3036 -28.3102 69.4295 10.3116 136.565"
+                        stroke="#4CABEF"
+                        strokeWidth="2.3949"
+                      />
+                      <circle
+                        cx="14.77"
+                        cy="148.268"
+                        r="5.32201"
+                        transform="rotate(92.1494 14.77 148.268)"
+                        fill="#4CABEF"
+                      />
+                      <circle
+                        cx="14.7699"
+                        cy="148.268"
+                        r="13.3009"
+                        transform="rotate(92.1494 14.7699 148.268)"
+                        stroke="#4CABEF"
+                        strokeWidth="1.78225"
+                      />
+                    </svg>
+                  );
+                switch (sanePeoplesIndex % 2) {
+                  case 1:
+                    return (
+                      <svg
+                        key={index}
+                        height="160"
+                        viewBox="0 0 36 163"
+                        fill="none"
+                        className="-mt-[3px] w-fit "
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M19.9591 1.37759C-39.047 55.8487 63.6376 68.9745 25.0158 136.11"
+                          stroke="#4CABEF"
+                          strokeWidth="2.3949"
+                        />
+                        <circle
+                          cx="5.32201"
+                          cy="5.32201"
+                          r="5.32201"
+                          transform="matrix(0.0375053 0.999296 0.999296 -0.0375053 15.0396 142.695)"
+                          fill="#4CABEF"
+                        />
+                        <circle
+                          cx="14.192"
+                          cy="14.192"
+                          r="13.3009"
+                          transform="matrix(0.0375053 0.999296 0.999296 -0.0375053 5.84314 134.164)"
+                          stroke="#4CABEF"
+                          strokeWidth="1.78225"
+                        />
+                      </svg>
+                    );
+                  case 0:
+                    return (
+                      <svg
+                        key={index}
+                        height="160"
+                        viewBox="0 0 36 163"
+                        fill="none"
+                        className="-mt-[3px] ml-2 w-fit "
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M15.3683 1.83251C74.3744 56.3036 -28.3102 69.4295 10.3116 136.565"
+                          stroke="#4CABEF"
+                          strokeWidth="2.3949"
+                        />
+                        <circle
+                          cx="14.77"
+                          cy="148.268"
+                          r="5.32201"
+                          transform="rotate(92.1494 14.77 148.268)"
+                          fill="#4CABEF"
+                        />
+                        <circle
+                          cx="14.7699"
+                          cy="148.268"
+                          r="13.3009"
+                          transform="rotate(92.1494 14.7699 148.268)"
+                          stroke="#4CABEF"
+                          strokeWidth="1.78225"
+                        />
+                      </svg>
+                    );
+                }
+              })}
+            </div>
+            <div className="flex flex-col relative ">
+              {milestoneBuilder.milestones.map((milestone, index) => (
+                <div key={index} className="h-[160px] space-y-3">
+                  <Typography className="font-bold font-Bricolage_Grotesque rounded-xl pl-4 pr-3 py-2.5 bg-gray-400/10 backdrop-blur-[12px]">
+                    {milestone.title}
+                  </Typography>
+                  <div className="w-full flex items-center gap-x-3">
+                    <Calendar01Icon />
+                    <Typography className="font-bold font-Bricolage_Grotesque bg-orange-200 px-3 py-1 rounded-lg">
+                      {formatDate(
+                        new Date(milestone.deadline || new Date()),
+                        "do MMMM, yyyy"
+                      )}
+                    </Typography>
+                  </div>
+                  <div className="w-full flex items-center gap-x-3">
+                    <MoneySendSquareIcon />
+                    <Typography className="font-bold bg-lime-200 px-3 py-1 rounded-lg">
+                      {formatEther(milestone.amount)} ETH
+                    </Typography>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Button variant="full" className="w-full mt-auto" onTap={noop}>
+            Confirm
+          </Button>
+        </ConfirmationSheet.SheetContent>
+      </ConfirmationSheet.Sheet>
     </PageScreen>
   );
 }

@@ -213,6 +213,9 @@ export const useMilestoneBuilder = () => {
         return { success: false }
       }
     },
+    /**
+     * @dev this is the only block where conversion of milliseconds to seconds happens
+     */
     build() {
       return milestoneBuilderRef.current.build();
     },
