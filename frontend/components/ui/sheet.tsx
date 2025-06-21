@@ -59,7 +59,7 @@ type SheetUnderlayProps = Pick<Props, "children">;
 
 const SheetContext = createContext<SheetContextType | null>(null);
 
-const SHEET_UNDERLAY_TOP_OFFSET = 48
+const SHEET_UNDERLAY_TOP_OFFSET = 48;
 
 /**
  * @dev this one to be mounted at top most of app
@@ -181,7 +181,7 @@ const SHEET_TOP_OFFSET = SHEET_UNDERLAY_TOP_OFFSET + 6;
 
 type SheetProps<SheetId extends string> = Pick<Props, "children"> & {
   sheetId: SheetId;
-  className?: string
+  className?: string;
 } & SheetContextType["sheetMap"][string];
 
 const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
@@ -295,46 +295,48 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
             onDragEnd={handleDragEnd}
             data-isdragging={isDragging}
             className={cn(
-              `w-full bg-white rounded-t-[16px] absolute z-[100000000] left-0 bottom-0 overflow-y-auto  transition-[height] duration-200 data-[isdragging=true]:cursor-grabbing `,
+              `w-full bg-white rounded-t-[16px] absolute z-[100000000] left-0 bottom-0 overflow-y-auto  transition-[height] duration-200 data-[isdragging=true]:cursor-grabbing `
             )}
           >
             <div className={cn("w-full h-full flex flex-col", props.className)}>
-            <div className="w-full pt-1.5 hidden items-center justify-center">
-              <div className="w-[46px] h-[4px] bg-[#D9D9D9] rounded-full"></div>
-            </div>
-            <div className="w-full py-0 grid items-center grid-cols-[1fr_auto_1fr] gap-x-2 px-1">
-              <div className="mt-1 text-em-secondary">
-                {typeof backButton === "string" && (
-                  <Button
-                    whileHover={""}
-                    onTap={onClose}
-                    variant="ghost"
-                    className="!px-0 flex items-center justify-center text-em-secondary"
-                  >
-                    <ArrowLeft01Icon width={26} height={26} />{" "}
-                    <span className="font-medium inline-block -ml-0.5">{backButton}</span>
-                  </Button>
-                )}
+              <div className="w-full pt-1.5 flex items-center justify-center">
+                <div className="w-[40px] h-[4px] bg-[#D9D9D9] rounded-full"></div>
               </div>
-              <Typography className="font-extrabold text-[17px] ">
-                {title}
-              </Typography>
-              <div className="flex justify-end pr-1.5">
-                {action && (
-                  <Button
-                    whileHover={""}
-                    onTap={() => {
-                      action.do(onClose);
-                    }}
-                    variant="ghost"
-                    className="!px-0 flex font-medium items-center justify-center text-em-secondary"
-                  >
-                    <span className="font-medium" >{action.title}</span>
-                  </Button>
-                )}
+              <div className="w-full py-0 grid items-center grid-cols-[1fr_auto_1fr] gap-x-2 px-1">
+                <div className="mt-1 text-em-secondary">
+                  {typeof backButton === "string" && (
+                    <Button
+                      whileHover={""}
+                      onTap={onClose}
+                      variant="ghost"
+                      className="!px-0 flex items-center justify-center text-em-secondary"
+                    >
+                      <ArrowLeft01Icon width={26} height={26} />{" "}
+                      <span className="font-medium inline-block -ml-0.5">
+                        {backButton}
+                      </span>
+                    </Button>
+                  )}
+                </div>
+                <Typography className="font-extrabold text-[17px] ">
+                  {title}
+                </Typography>
+                <div className="flex justify-end pr-1.5">
+                  {action && (
+                    <Button
+                      whileHover={""}
+                      onTap={() => {
+                        action.do(onClose);
+                      }}
+                      variant="ghost"
+                      className="!px-0 flex font-medium items-center justify-center text-em-secondary"
+                    >
+                      <span className="font-medium">{action.title}</span>
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-            {children}
+              {children}
             </div>
           </motion.section>
         </>
@@ -360,9 +362,10 @@ const SheetHeaderImpl: React.FC<{ children?: React.ReactNode }> = ({
   );
 };
 
-const SheetContentImpl: React.FC<{ children?: React.ReactNode, className?: string }> = ({
-  children, className
-}) => {
+const SheetContentImpl: React.FC<{
+  children?: React.ReactNode;
+  className?: string;
+}> = ({ children, className }) => {
   return (
     <motion.div
       layout
@@ -371,7 +374,10 @@ const SheetContentImpl: React.FC<{ children?: React.ReactNode, className?: strin
         stiffness: 300,
         damping: 30,
       }}
-      className={cn("w-full px-2.5 pb-6 overflow-y-auto no-scrollbar flex-grow ", className)}
+      className={cn(
+        "w-full px-2.5 pb-6 overflow-y-auto no-scrollbar flex-grow ",
+        className
+      )}
     >
       {children}
     </motion.div>
@@ -398,12 +404,11 @@ const useSheet = <S extends string>(sheetId: S) => {
         );
       }
     ),
-    SheetContent: SheetContentImpl,
-    SheetHeader: SheetHeaderImpl,
+    SheetContent: memo(SheetContentImpl),
+    SheetHeader: memo(SheetHeaderImpl),
     openSheet: () => sheetContext.openSheet(sheetId),
     closeSheet: () => sheetContext.closeSheet(sheetId),
   };
 };
 
 export { SheetProvider, useSheet };
-

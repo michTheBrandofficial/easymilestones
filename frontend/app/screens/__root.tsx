@@ -5,21 +5,23 @@ import Logo from "../android-chrome-512x512.png";
 import { formatEthAddress, noop } from "@/lib/utils";
 import Ethereum from "@/components/icons/ethereum";
 import FloatingTabBar from "./-components/floating-tab-bar";
-import { useSheet } from "@/components/ui/sheet";
 import { Typography } from "@/components/typography";
 import { formatEther } from "viem";
 import { useQuery } from "@tanstack/react-query";
 import type { FileRoutesByTo } from "../routeTree.gen";
+import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
 export const Route = createRootRoute({
   component: RootComponent,
 });
 
-const noFloatingBarRoutes: Array<(keyof FileRoutesByTo & (string & {}))> = ['/create-transaction', '/onboarding']
+const noFloatingBarRoutes: Array<keyof FileRoutesByTo & (string & {})> = [
+  "/create-transaction",
+  "/onboarding",
+];
 
 function RootComponent() {
   const { pathname } = useLocation();
-  const { Sheet, SheetContent, openSheet, closeSheet } =
-    useSheet("account");
+  const AccountSheet = useVariableHeightSheet("account");
   const { privateKeyAccount, publicClient } = useLocalAccount();
   const { data: balance } = useQuery({
     queryKey: ["account-balance"],
@@ -41,7 +43,7 @@ function RootComponent() {
             className="w-11 h-11 rounded-full shadow-sm"
           />
           <Button
-            onTap={openSheet}
+            onTap={AccountSheet.openSheet}
             className="flex items-center gap-x-2 px-4 py-2.5 bg-em-dark text-white rounded-full text-sm"
           >
             {formatEthAddress(privateKeyAccount?.address)}
@@ -51,11 +53,15 @@ function RootComponent() {
       )}
       <Outlet />
       {noFloatingBarRoutes.includes(pathname as any) ? null : (
-        <FloatingTabBar onClickAccount={openSheet} />
+        <FloatingTabBar onClickAccount={AccountSheet.openSheet} />
       )}
       {pathname === "/onboarding" ? null : (
-        <Sheet title="Account" backButton="Back" className="bg-white">
-          <SheetContent className="flex flex-col justify-between ">
+        <AccountSheet.VariableHeightSheet
+          title="Account"
+          backButton="Back"
+          className="bg-white"
+        >
+          <AccountSheet.VariableHeightSheetContent className="flex flex-col justify-between gap-y-10">
             <div className="w-full px-1 5 py-2 flex flex-col gap-y-3">
               <div className="w-full flex items-center gap-x-2">
                 <Typography className="text-em-text">Address:</Typography>
@@ -74,12 +80,16 @@ function RootComponent() {
               <Button variant="ghost" className="w-full" onTap={noop}>
                 Disconnect
               </Button>
-              <Button variant="full" className="w-full" onTap={closeSheet}>
+              <Button
+                variant="full"
+                className="w-full"
+                onTap={AccountSheet.closeSheet}
+              >
                 OK
               </Button>
             </div>
-          </SheetContent>
-        </Sheet>
+          </AccountSheet.VariableHeightSheetContent>
+        </AccountSheet.VariableHeightSheet>
       )}
     </div>
   );
