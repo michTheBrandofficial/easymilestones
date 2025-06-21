@@ -74,7 +74,6 @@ contract EasyMilestones {
       (bool success,) = transaction_owner.call{ value: milestone.amount }("");
       require(success, "Failed to transfer funds");
       milestone.status = Status.paid;
-      // append tx_hash for blockchain scanner here
       emit FundsTransferred(transaction_owner, milestone.amount, milestone.title, block_timestamp);
     }
   }
