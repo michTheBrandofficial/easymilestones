@@ -32,20 +32,20 @@ contract EasyMilestonesTest is Test {
   function setUp() public {
     // this is to make sure that the contract has enough ether to pay for the transaction;
     vm.deal(address(this), 1000 ether);
-    milestones1.push(EasyMilestones.MilestoneWithoutStatus(1 ether, FIRST_NOVEMBER));
-    milestones1.push(EasyMilestones.MilestoneWithoutStatus(1 ether, FIFTH_NOVEMBER));
-    milestones2.push(EasyMilestones.MilestoneWithoutStatus(1 ether, THIRTEENTH_NOVEMBER));
+    milestones1.push(EasyMilestones.MilestoneWithoutStatus(1 ether, FIRST_NOVEMBER, "Birthday Cake"));
+    milestones1.push(EasyMilestones.MilestoneWithoutStatus(1 ether, FIFTH_NOVEMBER, "Food stuff"));
+    milestones2.push(EasyMilestones.MilestoneWithoutStatus(1 ether, THIRTEENTH_NOVEMBER, "Battery change"));
     easyMilestones = new EasyMilestones();
-    easyMilestones.createTransaction{ value: 2 ether }(milestones1.last().deadline, milestones1);
-    easyMilestones.createTransaction{ value: 1 ether }(milestones2.last().deadline, milestones2);
+    easyMilestones.createTransaction{ value: 2 ether }(milestones1.last().deadline, "Foodstuff Fees", milestones1);
+    easyMilestones.createTransaction{ value: 1 ether }(milestones2.last().deadline,"Vehicle Expenses",  milestones2);
   }
 
-  function test_UserHas_2_Transactions() public view {
+  function test_User_Has_2_Transactions() public view {
     EasyMilestones.Transaction[] memory transactions = easyMilestones.getTransactions(address(this));
     assertEq(transactions.length, 2);
   }
 
-  function test_UserHas_3_MilestonesInTotal() public {
+  function test_User_Has_3_MilestonesInTotal() public {
     vm.skip(true);
     uint256 totalMilestones = 0;
     EasyMilestones.Transaction[] memory transactions = easyMilestones.getTransactions(address(this));
@@ -61,7 +61,7 @@ contract EasyMilestonesTest is Test {
     vm.warp(THIRTEENTH_NOVEMBER);
     // Check for the event match
     vm.expectEmit(true, false, false, true);
-    emit EasyMilestones.FundsTransferred(address(this), 1 ether, block.timestamp);
+    emit EasyMilestones.FundsTransferred(address(this), 1 ether, "Vehicle Expenses", block.timestamp);
     easyMilestones.processDueMilestones();
   }
 
