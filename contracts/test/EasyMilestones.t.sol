@@ -3,11 +3,10 @@ pragma solidity ^0.8.24;
 
 import { Test, console } from "forge-std/Test.sol";
 import { EasyMilestones } from "../src/EasyMilestones.sol";
-
 library LibArray {
-  function last(EasyMilestones.MilestoneWithoutStatus[] storage arr)
+  function last(EasyMilestones.MilestoneWithoutStatus[] memory arr)
     internal
-    view
+    pure
     returns (EasyMilestones.MilestoneWithoutStatus memory)
   {
     require(arr.length > 0, "Array is empty");

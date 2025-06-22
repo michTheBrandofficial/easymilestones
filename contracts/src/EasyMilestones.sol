@@ -4,7 +4,20 @@ pragma solidity ^0.8.24;
 import "forge-std/console.sol";
 import { Set } from "./Libs.sol";
 
+library LibArray {
+  function last(EasyMilestones.MilestoneWithoutStatus[] memory arr)
+    internal
+    pure
+    returns (EasyMilestones.MilestoneWithoutStatus memory)
+  {
+    require(arr.length > 0, "Array is empty");
+    return arr[arr.length - 1];
+  }
+}
+
 contract EasyMilestones {
+  using LibArray for MilestoneWithoutStatus[];
+
   struct Transaction {
     uint256 amount;
     uint256 final_deadline;
@@ -48,6 +61,8 @@ contract EasyMilestones {
     nonZeroValue
   {
     address newTransactionOwner = msg.sender;
+    // Check if the final deadline is equal to the deadline of the last milestone in the array
+    require(_milestones.last().deadline == _final_deadline, "Last milestone deadline must be equal to final deadline");
     transactionOwnersSet.add(newTransactionOwner);
     Milestone[] memory _milestonesWithStatus = new Milestone[](_milestones.length);
     for (uint256 i = 0; i < _milestones.length; i++) {
