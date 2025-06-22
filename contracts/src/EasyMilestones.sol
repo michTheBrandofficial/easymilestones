@@ -5,13 +5,22 @@ import "forge-std/console.sol";
 import { Set } from "./Libs.sol";
 
 library LibArray {
-  function last(EasyMilestones.MilestoneWithoutStatus[] memory arr)
+  function last(EasyMilestones.MilestoneWithoutStatus[] memory self)
     internal
     pure
     returns (EasyMilestones.MilestoneWithoutStatus memory)
   {
-    require(arr.length > 0, "Array is empty");
-    return arr[arr.length - 1];
+    require(self.length > 0, "Index out of bounds");
+    return self[self.length - 1];
+  }
+
+  // Helper function to get total amount directly
+  function getTotalAmount(EasyMilestones.MilestoneWithoutStatus[] memory self) internal pure returns (uint256) {
+    uint256 total = 0;
+    for (uint256 i = 0; i < self.length; i++) {
+      total += self[i].amount;
+    }
+    return total;
   }
 }
 
@@ -23,6 +32,7 @@ contract EasyMilestones {
     uint256 final_deadline;
     string title;
     Milestone[] milestones;
+    uint256 created_at;
   }
 
   enum Status {
@@ -55,22 +65,25 @@ contract EasyMilestones {
 
   event TransactionCreated(address indexed owner, uint256 amount, string title, Milestone[] milestones);
 
-  function createTransaction(uint256 _final_deadline, string memory title, MilestoneWithoutStatus[] memory _milestones)
+  function createTransaction(uint256 final_deadline, string memory title, MilestoneWithoutStatus[] memory _milestones)
     public
     payable
     nonZeroValue
   {
     address newTransactionOwner = msg.sender;
+    uint256 total_amount = msg.value;
     // Check if the final deadline is equal to the deadline of the last milestone in the array
-    require(_milestones.last().deadline == _final_deadline, "Last milestone deadline must be equal to final deadline");
+    require(_milestones.last().deadline == final_deadline, "Last milestone deadline must be equal to final deadline");
     transactionOwnersSet.add(newTransactionOwner);
+    require(_milestones.getTotalAmount() == total_amount, "Total amount must be equal to the sum of milestones");
+
     Milestone[] memory _milestonesWithStatus = new Milestone[](_milestones.length);
     for (uint256 i = 0; i < _milestones.length; i++) {
-      _milestonesWithStatus[i] = Milestone(_milestones[i].amount, _milestones[i].deadline, _milestones[i].title, Status.unpaid);
+      _milestonesWithStatus[i] =
+        Milestone(_milestones[i].amount, _milestones[i].deadline, _milestones[i].title, Status.unpaid);
     }
-    // deadline here refers to final deadline, which is equal to the deadline of the last milestone in the array.
-    transactions[newTransactionOwner].push(Transaction(msg.value, _final_deadline, title, _milestonesWithStatus));
-    emit TransactionCreated(newTransactionOwner, msg.value, title, _milestonesWithStatus);
+    transactions[newTransactionOwner].push(Transaction(total_amount, final_deadline, title, _milestonesWithStatus, block.timestamp));
+    emit TransactionCreated(newTransactionOwner, total_amount, title, _milestonesWithStatus);
   }
 
   function getTransactions(address owner) external view returns (Transaction[] memory txn) {
