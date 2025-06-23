@@ -115,14 +115,12 @@ contract EasyMilestonesTest is Test {
     );
   }
 
-  function test_User_Has_2_Transactions() public {
-    vm.skip(true);
+  function test_User_Has_2_Transactions() public view {
     EasyMilestones.Transaction[] memory transactions = easyMilestones.getTransactions(address(this));
     assertEq(transactions.length, 2);
   }
 
-  function test_User_Has_3_MilestonesInTotal() public {
-    vm.skip(true);
+  function test_User_Has_3_MilestonesInTotal() public view {
     uint256 totalMilestones = 0;
     EasyMilestones.Transaction[] memory transactions = easyMilestones.getTransactions(address(this));
     for (uint256 i = 0; i < transactions.length; i++) {
