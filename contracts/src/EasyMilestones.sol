@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL 3.0
 pragma solidity ^0.8.24;
 
-import "forge-std/console.sol";
+import { console } from "forge-std/console.sol";
 import { Set } from "./Libs.sol";
 
 library LibArray {
@@ -97,7 +97,7 @@ contract EasyMilestones {
 
   event FundsTransferred(address indexed owner, uint256 amount, string milestone_title, uint256 timestamp);
 
-  function payTransactionOwner(address payable transaction_owner, Milestone memory milestone, uint256 block_timestamp)
+  function payTransactionOwner(address payable transaction_owner, Milestone storage milestone, uint256 block_timestamp)
     internal
   {
     if (block_timestamp >= milestone.deadline && milestone.status == Status.unpaid) {
@@ -112,13 +112,14 @@ contract EasyMilestones {
   function processDueMilestones() external {
     uint256 timestamp = block.timestamp;
     address[] memory transactionOwnersList = transactionOwnersSet.toArray();
-    for (uint256 i = 0; i < transactionOwnersList.length; i++) {
-      address payable transaction_owner = payable(transactionOwnersList[i]);
-      Transaction[] memory txns = transactions[transaction_owner];
-      for (uint256 j = 0; j < txns.length; j++) {
-        Transaction memory txn = txns[j];
-        for (uint256 m = 0; m < txn.milestones.length; m++) {
-          payTransactionOwner(transaction_owner, txn.milestones[m], timestamp);
+    for (uint256 index = 0; index < transactionOwnersList.length; index++) {
+      // for each transaction owner that has transactions. we get all the transactions
+      address payable transaction_owner = payable(transactionOwnersList[index]);
+      Transaction[] storage txns = transactions[transaction_owner];
+      for (uint256 transaction_index = 0; transaction_index < txns.length; transaction_index++) {
+        Milestone[] storage txn_milestones = txns[transaction_index].milestones;
+        for (uint256 milestone_index = 0; milestone_index < txn_milestones.length; milestone_index++) {
+          payTransactionOwner(transaction_owner, txn_milestones[milestone_index], timestamp);
         }
       }
     }

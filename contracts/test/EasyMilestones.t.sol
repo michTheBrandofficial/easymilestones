@@ -24,14 +24,13 @@ library LibArray {
   }
 }
 
-// 
 contract EasyMilestonesTest is Test {
   using LibArray for EasyMilestones.MilestoneWithoutStatus[];
   using LibArray for EasyMilestones.Milestone[];
 
   EasyMilestones private easyMilestones;
 
-  /// @dev all dates here are between Jul 2025 - Dec 2025
+  // all dates here are between Jul 2025 - Dec 2025
   uint256 private TWELVETH_JULY = 1752274800;
   uint256 private SECOND_AUGUST = 1754089200;
   uint256 private FIRST_SEPTEMBER = 1756681200;
@@ -99,9 +98,7 @@ contract EasyMilestonesTest is Test {
     EasyMilestones.MilestoneWithoutStatus[] memory fourth_transaction = new EasyMilestones.MilestoneWithoutStatus[](1);
     fourth_transaction[0] = EasyMilestones.MilestoneWithoutStatus(0.4 ether, FIRST_SEPTEMBER, "Derma Roller");
     vm.expectRevert("Total amount must be equal to the sum of milestones");
-    easyMilestones.createTransaction{ value: 2 ether }(
-      FIRST_SEPTEMBER, "Grooming", fourth_transaction
-    );
+    easyMilestones.createTransaction{ value: 2 ether }(FIRST_SEPTEMBER, "Grooming", fourth_transaction);
   }
 
   // test that TransactionCreate event is emitted when a transaction is created.
@@ -109,7 +106,9 @@ contract EasyMilestonesTest is Test {
     EasyMilestones.MilestoneWithoutStatus[] memory third_transaction = new EasyMilestones.MilestoneWithoutStatus[](1);
     third_transaction[0] = EasyMilestones.MilestoneWithoutStatus(0.4 ether, FIRST_SEPTEMBER, "Derma Roller");
     vm.expectEmit(true, false, false, true);
-    emit EasyMilestones.TransactionCreated(address(this), third_transaction.getTotalAmount(), "Grooming", block.timestamp);
+    emit EasyMilestones.TransactionCreated(
+      address(this), third_transaction.getTotalAmount(), "Grooming", block.timestamp
+    );
     easyMilestones.createTransaction{ value: third_transaction.getTotalAmount() }(
       FIRST_SEPTEMBER, "Grooming", third_transaction
     );
@@ -129,6 +128,24 @@ contract EasyMilestonesTest is Test {
     }
     assertEq(totalMilestones, 3);
   }
+
+  enum MyAddresses {
+    Ifite,
+    Lokogoma
+  }
+  // test that milestone after process due milestones have paid status
+
+  function test_Milestone_Status_IsPaid_After_Processing() public {
+    // go to 15 minutes after the first milestone deadline (twelveth july of 2025)
+    vm.warp(TWELVETH_JULY + uint256(15 minutes));
+    easyMilestones.processDueMilestones();
+    EasyMilestones.Transaction[] memory transactions = easyMilestones.getTransactions(address(this));
+    EasyMilestones.Milestone memory firstTransaction_FirstMilestone = transactions[0].milestones[0];
+    assertEq(uint256(firstTransaction_FirstMilestone.status), uint256(EasyMilestones.Status.paid));
+  }
+
+  // test that funds have been transferred to address(this)
+  // test that FundsTransferred event is emitted after being paid
 
   // function test_FundsTransferred_EventEmitted_When_MilestoneProcessed() public {
   //   vm.skip(true);
