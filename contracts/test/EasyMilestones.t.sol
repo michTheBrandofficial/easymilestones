@@ -129,12 +129,7 @@ contract EasyMilestonesTest is Test {
     assertEq(totalMilestones, 3);
   }
 
-  enum MyAddresses {
-    Ifite,
-    Lokogoma
-  }
   // test that milestone after process due milestones have paid status
-
   function test_Milestone_Status_IsPaid_After_Processing() public {
     // go to 15 minutes after the first milestone deadline (twelveth july of 2025)
     vm.warp(TWELVETH_JULY + uint256(15 minutes));
@@ -145,24 +140,24 @@ contract EasyMilestonesTest is Test {
   }
 
   // test that funds have been transferred to address(this)
+  function test_User_Balance_Is_Paid_Back() public {
+    vm.warp(TWELVETH_JULY + uint256(15 minutes));
+    easyMilestones.processDueMilestones();
+    vm.warp(SECOND_AUGUST + uint256(15 minutes));
+    easyMilestones.processDueMilestones();
+    vm.warp(FIRST_SEPTEMBER + uint256(15 minutes));
+    easyMilestones.processDueMilestones();
+    assertEq(address(this).balance, 6 ether);
+  }
+
   // test that FundsTransferred event is emitted after being paid
-
-  // function test_FundsTransferred_EventEmitted_When_MilestoneProcessed() public {
-  //   vm.skip(true);
-  //   vm.warp(THIRTEENTH_NOVEMBER);
-  //   // Check for the event match
-  //   vm.expectEmit(true, false, false, true);
-  //   emit EasyMilestones.FundsTransferred(address(this), 1 ether, "Vehicle Expenses", block.timestamp);
-  //   easyMilestones.processDueMilestones();
-  // }
-
-  // /// @notice run test with forge test -vvv for console.logs to show
-  // function test_Payment_Is_Made() public {
-  //   vm.skip(true);
-  //   vm.warp(THIRTEENTH_NOVEMBER);
-  //   console.log(address(this).balance);
-  //   // Check for the event match
-  //   easyMilestones.processDueMilestones();
-  //   console.log(address(this).balance);
-  // }
+  function test_FundsTransferred_EventEmitted_When_MilestoneProcessed() public {
+    vm.warp(TWELVETH_JULY + uint256(15 minutes));
+    EasyMilestones.Transaction memory first_created_transaction = easyMilestones.getTransactions(address(this))[0];
+    EasyMilestones.Milestone memory firstTransaction_FirstMilestone =
+      first_created_transaction.milestones[0];
+    vm.expectEmit(true, false, false, true);
+    emit EasyMilestones.FundsTransferred(address(this), firstTransaction_FirstMilestone.amount, firstTransaction_FirstMilestone.title, block.timestamp);
+    easyMilestones.processDueMilestones();
+  }
 }
