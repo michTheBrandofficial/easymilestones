@@ -24,6 +24,7 @@ library LibArray {
   }
 }
 
+// 
 contract EasyMilestonesTest is Test {
   using LibArray for EasyMilestones.MilestoneWithoutStatus[];
   using LibArray for EasyMilestones.Milestone[];
@@ -47,7 +48,7 @@ contract EasyMilestonesTest is Test {
   /// @dev this is called just before each test case
   function setUp() public {
     // make sure that the contract has enough ether to pay for the transactions;
-    vm.deal(address(this), 3 ether);
+    vm.deal(address(this), 6 ether);
     easyMilestones = new EasyMilestones();
 
     // first transacion
@@ -85,12 +86,21 @@ contract EasyMilestonesTest is Test {
 
   // - sending in incorrect _final_deadline and correct last milestone deadline ⛔ and seeing the require fail
   function testRevert_LastMilestoneDeadline_IsNot_FinalDeadline() public {
-    vm.skip(true);
     EasyMilestones.MilestoneWithoutStatus[] memory third_transaction = new EasyMilestones.MilestoneWithoutStatus[](1);
     third_transaction[0] = EasyMilestones.MilestoneWithoutStatus(0.4 ether, FIRST_SEPTEMBER, "Derma Roller");
     vm.expectRevert("Last milestone deadline must be equal to final deadline");
     easyMilestones.createTransaction{ value: third_transaction.getTotalAmount() }(
       THIRTY_FIRST_OCTOBER, "Grooming", third_transaction
+    );
+  }
+
+  // - sending in incorrect _final_deadline and correct last milestone deadline ⛔ and seeing the require fail
+  function testRevert_TotalAmount_IsNot_Equal_To_MilestonesTotal() public {
+    EasyMilestones.MilestoneWithoutStatus[] memory fourth_transaction = new EasyMilestones.MilestoneWithoutStatus[](1);
+    fourth_transaction[0] = EasyMilestones.MilestoneWithoutStatus(0.4 ether, FIRST_SEPTEMBER, "Derma Roller");
+    vm.expectRevert("Total amount must be equal to the sum of milestones");
+    easyMilestones.createTransaction{ value: 2 ether }(
+      FIRST_SEPTEMBER, "Grooming", fourth_transaction
     );
   }
 
