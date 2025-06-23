@@ -24,9 +24,6 @@ library LibArray {
   }
 }
 
-// - sending in incorrect _final_deadline and correct last milestone deadline ⛔ and seeing the require fail
-// test that TransactionCreate event is emitted when a transaction is created.
-
 contract EasyMilestonesTest is Test {
   using LibArray for EasyMilestones.MilestoneWithoutStatus[];
   using LibArray for EasyMilestones.Milestone[];
@@ -68,18 +65,44 @@ contract EasyMilestonesTest is Test {
   }
 
   // test last method on EasyMilestones.MilestoneWithoutStatus[] to get a milestone by having the correct deadline
-  function test_First_Transaction_LastMilestone_IsON_SecondAugust() public {
-    vm.skip(true);
-    EasyMilestones.Transaction[] memory transactions = easyMilestones.getTransactions(address(this));
-    assertEq(transactions[0].milestones[transactions[0].milestones.length - 1].deadline, SECOND_AUGUST);
+  function test_First_Transaction_LastMilestone_IsON_SecondAugust() public view {
+    EasyMilestones.Transaction memory first_created_transaction = easyMilestones.getTransactions(address(this))[0];
+    EasyMilestones.Milestone memory firstTransaction_LastMilestone =
+      first_created_transaction.milestones[first_created_transaction.milestones.length - 1];
+    assertEq(firstTransaction_LastMilestone.deadline, SECOND_AUGUST);
   }
 
   // test createTransaction function by
   // - sending in correct value and ✅ checking that the details of one transaction are correct
-  function test_() public {
+  function test_First_Transaction_Details_Are_Correct() public view {
+    EasyMilestones.Transaction memory second_created_transaction = easyMilestones.getTransactions(address(this))[1];
+    EasyMilestones.Milestone memory secondTransaction_LastMilestone =
+      second_created_transaction.milestones[second_created_transaction.milestones.length - 1];
+    assertEq(secondTransaction_LastMilestone.deadline, FIRST_SEPTEMBER);
+    assertEq(secondTransaction_LastMilestone.deadline, second_created_transaction.final_deadline);
+    assertEq(second_created_transaction.amount, 1 ether);
+  }
+
+  // - sending in incorrect _final_deadline and correct last milestone deadline ⛔ and seeing the require fail
+  function testRevert_LastMilestoneDeadline_IsNot_FinalDeadline() public {
     vm.skip(true);
-    EasyMilestones.Transaction[] memory transactions = easyMilestones.getTransactions(address(this));
-    assertEq(transactions[0].milestones[transactions[0].milestones.length - 1].deadline, SECOND_AUGUST);
+    EasyMilestones.MilestoneWithoutStatus[] memory third_transaction = new EasyMilestones.MilestoneWithoutStatus[](1);
+    third_transaction[0] = EasyMilestones.MilestoneWithoutStatus(0.4 ether, FIRST_SEPTEMBER, "Derma Roller");
+    vm.expectRevert("Last milestone deadline must be equal to final deadline");
+    easyMilestones.createTransaction{ value: third_transaction.getTotalAmount() }(
+      THIRTY_FIRST_OCTOBER, "Grooming", third_transaction
+    );
+  }
+
+  // test that TransactionCreate event is emitted when a transaction is created.
+  function test_TransactionCreated_Ev_Emitting() public {
+    EasyMilestones.MilestoneWithoutStatus[] memory third_transaction = new EasyMilestones.MilestoneWithoutStatus[](1);
+    third_transaction[0] = EasyMilestones.MilestoneWithoutStatus(0.4 ether, FIRST_SEPTEMBER, "Derma Roller");
+    vm.expectEmit(true, false, false, true);
+    emit EasyMilestones.TransactionCreated(address(this), third_transaction.getTotalAmount(), "Grooming", block.timestamp);
+    easyMilestones.createTransaction{ value: third_transaction.getTotalAmount() }(
+      FIRST_SEPTEMBER, "Grooming", third_transaction
+    );
   }
 
   function test_User_Has_2_Transactions() public {
