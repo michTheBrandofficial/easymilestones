@@ -1,9 +1,9 @@
-import { createStyles, percentage, sec } from "@/lib/utils";
+import { percentage, sec } from "@/lib/utils";
 
 const IOSSpinner: React.FC<{ color?: string }> = ({ color }) => {
   return (
-    <div style={styles.spinnerWrapper}>
-      <div style={styles.spinner}>
+    <div className="w-full flex justify-center items-center py-24">
+      <div className="flex relative w-fit h-fit">
         {Array(8)
           .fill("")
           .map((_, i) => {
@@ -11,7 +11,7 @@ const IOSSpinner: React.FC<{ color?: string }> = ({ color }) => {
             if (color) styles.backgroundColor = color;
             return (
               <div
-              key={i}
+                key={i}
                 className="w-[3px] h-1.5 bg-[#A3A3AB] rounded-full fade-animation "
                 style={{
                   transform: `rotate(${45 * i}deg) translateY(${percentage(
@@ -30,21 +30,5 @@ const IOSSpinner: React.FC<{ color?: string }> = ({ color }) => {
     </div>
   );
 };
-
-const styles = createStyles({
-  spinner: {
-    position: "relative",
-    width: "fit-content",
-    height: "fit-content",
-    display: "flex",
-  },
-  spinnerWrapper: {
-    width: percentage(100),
-    height: percentage(100),
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
 
 export default IOSSpinner;

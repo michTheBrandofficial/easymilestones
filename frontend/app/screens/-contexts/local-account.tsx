@@ -45,7 +45,7 @@ export const LocalAccountProvider = ({
   children?: React.ReactNode;
 }) => {
   const localAccount = privateKeyToAccount(
-    import.meta.env.VITE_PUBLIC_DEPLOYER_PRIVATE_KEY! as `0x${string}`
+    import.meta.env.VITE_PUBLIC_USER_PRIVATE_KEY! as `0x${string}`
   );
   const walletClient = createWalletClient({
     chain: anvil,

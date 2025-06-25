@@ -13,9 +13,9 @@ import React, {
 } from "react";
 import { Button } from "../buttons";
 import { Typography } from "../typography";
-import { ArrowLeft01Icon } from "hugeicons-react";
 import { percentage, px } from "@/lib/utils";
 import { createPortal } from "react-dom";
+import { ChevronLeft } from "lucide-react";
 
 type SheetContextType = {
   sheetMap: {
@@ -299,7 +299,7 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
             )}
           >
             <div className={cn("w-full h-full flex flex-col", props.className)}>
-              <div className="w-full pt-1.5 flex items-center justify-center">
+              <div className="w-full pt-1.5 hidden items-center justify-center">
                 <div className="w-[40px] h-[4px] bg-[#D9D9D9] rounded-full"></div>
               </div>
               <div className="w-full py-0 grid items-center grid-cols-[1fr_auto_1fr] gap-x-2 px-1">
@@ -311,7 +311,7 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
                       variant="ghost"
                       className="!px-0 flex items-center justify-center text-em-secondary"
                     >
-                      <ArrowLeft01Icon width={26} height={26} />{" "}
+                      <ChevronLeft width={24} height={24} />{" "}
                       <span className="font-medium inline-block -ml-0.5">
                         {backButton}
                       </span>
@@ -423,3 +423,4 @@ const useSheet = <S extends string>(
 };
 
 export { SheetProvider, useSheet };
+

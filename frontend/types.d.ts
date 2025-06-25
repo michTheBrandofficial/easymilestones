@@ -7,16 +7,16 @@ declare global {
     /**
      * @dev timestamp is the day when the transaction was created, this would be the block.timestamp, calculated by the contract not the frontend.
      */
-    created_at: number;
-    amount: number;
-    final_deadline: number;
+    created_at: bigint;
+    amount: bigint;
+    final_deadline: bigint;
     title: string;
     milestones: Milestone[];
   }
 
   interface Milestone {
-    amount: number;
-    deadline: number;
+    amount: bigint;
+    deadline: bigint;
     title: string;
     /**
      * This will only come after milestone is completed.
@@ -28,7 +28,9 @@ declare global {
   /**
    * Construct a type with the properties of T except for those in type K.
    */
-  type Omit<T, K extends keyof T> = Helpers.Prettify<Pick<T, Exclude<keyof T, K>>>;
+  type Omit<T, K extends keyof T> = Helpers.Prettify<
+    Pick<T, Exclude<keyof T, K>>
+  >;
 
   namespace Helpers {
     type Keyof<T extends Record<any, any>> = keyof T;
@@ -36,6 +38,17 @@ declare global {
     type Mutable<T extends Record<string, any>> = {
       -readonly [key in keyof T]: T[key];
     };
+
+    type DeepMutable<T extends Record<string, any> | any[]> = T extends any[]
+      ? Array<DeepMutable<T[number]>>
+      : {
+          -readonly [key in keyof T]: T[key] extends Record<
+            string | number,
+            any
+          >
+            ? DeepMutable<T[key]>
+            : T[key];
+        };
 
     // Helper type to create a range union from 1 to N
     type BuildTuple<
