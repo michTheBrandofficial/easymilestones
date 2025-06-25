@@ -1,4 +1,5 @@
 import { parseAbiItem, PublicClient } from 'viem';
+import easyMilestonesAbi from './abi';
 
 export async function getPastPayments(publicClient: PublicClient, contractAddress: `0x${string}`, fromBlock: bigint = 0n) {
   // use event filters here to filter by address, 
@@ -20,4 +21,9 @@ export async function getPastPayments(publicClient: PublicClient, contractAddres
   }));
   
   return payments;
+}
+
+export const wagmiContractConfig = {
+  address: import.meta.env.VITE_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
+  abi: easyMilestonesAbi
 }

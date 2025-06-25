@@ -3,24 +3,71 @@ import { cn } from "@/components/cn";
 import { LastLittleMilestoneSVG, LittleMilestoneSVG, MilestoneSVG } from "@/components/icons/transaction-list-svgs";
 import { Typography } from "@/components/typography";
 import PageScreen from "@/components/ui/screen";
-import FakeData from "@/lib/fake-data";
+import { wagmiContractConfig } from "@/lib/contract-utils";
 import { last, Status } from "@/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CheckmarkBadge01Icon, Clock04Icon } from "hugeicons-react";
+import { useLocalAccount } from "./-contexts/local-account";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { formatEther } from "viem";
 export const Route = createFileRoute("/")({
   component: Home,
 });
 
 function Home() {
   const navigate = useNavigate();
-  const transactions = FakeData.transactions;
+  // use wagmi to fetch transactions
+  const { publicClient, privateKeyAccount, deployedContractAddress } = useLocalAccount()
+  const { data: transactions = [] } = useQuery({
+    queryKey: ["transactions"],
+    queryFn: async () => {
+      const transactions = await publicClient.readContract({
+        address: deployedContractAddress,
+        abi: wagmiContractConfig.abi,
+        functionName: "getTransactions",
+        args: [privateKeyAccount.address]
+      });
+      console.log(transactions)
+      return transactions;
+    },
+  });
+  const investMentDataMemo = useMemo(() => {
+    return {
+      totalInvested: transactions.reduce((acc, tx) => {
+        return acc + tx.amount;
+      }, 0n),
+      remainingBalance: (() => {
+        let remainingBal = 0n;
+        transactions.forEach(tx => {
+          tx.milestones.forEach(m => {
+            if (m.status === Status.unpaid) {
+              remainingBal += m.amount;
+            }
+          })
+        })
+        return remainingBal
+      })(),
+      totalDisbursed: (() => {
+        let totalPaidOut = 0n;
+        transactions.forEach(tx => {
+          tx.milestones.forEach(m => {
+            if (m.status === Status.paid) {
+              totalPaidOut += m.amount;
+            }
+          })
+        })
+        return totalPaidOut
+      })()
+    }
+  }, [transactions])
   return (
     <PageScreen className="flex flex-col gap-y-5">
       <Typography variant="h1">GM, Mich</Typography>
       <div className="w-full">
         <div className="w-full rounded-t-3xl rounded-br-3xl bg-em-tertiary py-4 px-5 flex justify-between items-start">
           <div className="space-y-0">
-            <Typography variant={"h3"}>5.5 ETH</Typography>
+            <Typography variant={"h3"}>{formatEther(investMentDataMemo.remainingBalance)} ETH</Typography>
             <Typography className="text-white text-sm">
               Remaining Balance
             </Typography>
@@ -33,7 +80,7 @@ function Home() {
           <div className="bg-em-primary">
             <div className="w-full h-full rounded-b-3xl bg-em-tertiary py-4 px-5 flex justify-between items-start ">
               <div className="space-y-0">
-                <Typography variant={"h3"}>5.5 ETH</Typography>
+                <Typography variant={"h3"}>{formatEther(investMentDataMemo.totalInvested)} ETH</Typography>
                 <Typography className="text-white text-sm">
                   Total Invested
                 </Typography>
@@ -43,7 +90,7 @@ function Home() {
           <div className="pl-2 pt-2 bg-em-primary rounded-tl-3xl ">
             <div className="w-full rounded-3xl bg-em-green py-4 px-5 flex justify-between items-start">
               <div className="space-y-0">
-                <Typography variant={"h3"}>3.0 ETH</Typography>
+                <Typography variant={"h3"}>{formatEther(investMentDataMemo.totalDisbursed)} ETH</Typography>
                 <Typography className="text-white text-sm">
                   Total Disbursed
                 </Typography>
@@ -86,7 +133,7 @@ function Home() {
                           tx.milestones.length - 1
                         ),
                         lastMilestoneCompleted:
-                          last(tx.milestones).status === Status.paid,
+                          last(tx.milestones as Helpers.Mutable<typeof tx.milestones>).status === Status.paid,
                       }
                     : null,
               };
@@ -136,7 +183,7 @@ function Home() {
                 </div>
                 <div className="w-fit flex flex-col gap-y-1 items-end ml-auto">
                   <Typography className="font-semibold whitespace-nowrap">
-                    {tx.amount} ETH
+                    {formatEther(tx.amount)} ETH
                   </Typography>
                   <Typography className="font-medium text-em-text text-xs">
                     {isAllPaid ? "Completed" : "Ongoing"}
