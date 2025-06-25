@@ -235,7 +235,7 @@ function Home() {
           </div>
         </div>
       ) : (
-        <div className="w-full flex flex-col gap-y-6 px-1.5 pb-1.5 pt-6 bg-em-tertiary rounded-[28px]">
+        <div className="w-full flex flex-col gap-y-6 px-4 pb-4 pt-6 bg-em-tertiary rounded-[28px]">
           <Typography className="w-full font-Bricolage_Grotesque font-semibold text-center text-lg">
           No transactions yet
         </Typography>
