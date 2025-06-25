@@ -72,12 +72,16 @@ function RootComponent() {
               <div className="w-full flex items-center gap-x-2">
                 <Typography className="text-em-text">Balance:</Typography>
                 <Typography className="text-em-secondary bg-em-secondary/5 rounded-xl px-3 py-1 overflow-ellipsis overflow-hidden">
-                  {formatEther(balance || 0n)} ETH
+                  {parseFloat(formatEther(balance || 0n)).toFixed(2)} ETH
                 </Typography>
               </div>
             </div>
             <div className="w-full flex gap-x-2 ">
-              <Button variant="ghost" className="w-full" onTap={noop}>
+              <Button
+                variant="ghost"
+                className="w-full bg-gray-100"
+                onTap={noop}
+              >
                 Disconnect
               </Button>
               <Button

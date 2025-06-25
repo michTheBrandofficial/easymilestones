@@ -492,7 +492,7 @@ function CreateTransaction() {
                   Balance:
                 </Typography>
                 <Typography className="text-em-dark font-medium font-Bricolage_Grotesque text-lg overflow-ellipsis overflow-hidden">
-                  {formatEther(balance || 0n)} ETH
+                  {parseFloat(formatEther(balance || 0n)).toFixed(2)} ETH
                 </Typography>
               </div>
             </div>
@@ -876,7 +876,7 @@ const DatePickerSheetContent: React.FC<DatePickerSheetContentProps> = (
         className="min-h-[454px]"
       />
       <div className="w-full flex gap-x-2 ">
-        <Button variant="ghost" className="w-full" onTap={props.close}>
+        <Button variant="ghost" className="w-full bg-gray-100" onTap={props.close}>
           Cancel
         </Button>
         <Button
