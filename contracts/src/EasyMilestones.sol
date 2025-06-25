@@ -109,6 +109,7 @@ contract EasyMilestones {
   }
 
   /// @notice this function will use block.timestamp to check if the milestone is due.
+  /// @notice anybody can call this function to process due milestones, that is if you are ready to pay gas fees 😂
   function processDueMilestones() external {
     uint256 timestamp = block.timestamp;
     address[] memory transactionOwnersList = transactionOwnersSet.toArray();
