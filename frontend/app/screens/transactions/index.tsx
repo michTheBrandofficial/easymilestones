@@ -37,12 +37,24 @@ function Transactions() {
           <PlusSignIcon strokeWidth="2" size={20} />
         </Button>
       </div>
+      <div className="w-full flex flex-col gap-y-8 px-4 pb-4 pt-8 bg-em-tertiary rounded-[28px]">
+        <Typography className="w-full font-Bricolage_Grotesque font-semibold text-center text-lg">
+          No transactions yet
+        </Typography>
+        <Button
+          variant="full"
+          className="w-full"
+          onTap={() => navigate({ to: "/create-transaction" })}
+        >
+          Create Transaction
+        </Button>
+      </div>
       <Tabs
         onValueChange={() => {}}
         defaultValue="ongoing"
         className="w-full flex flex-col gap-y-4 flex-grow relative overflow-y-auto no-scrollbar pb-20 "
       >
-        <div className="w-full bg-em-primary rounded-b-xl sticky top-0">
+        <div className="w-full bg-em-tertiary rounded-xl sticky top-0">
           <Tabs.List className="grid w-full grid-cols-3 md:flex-grow ">
             <Tabs.Trigger
               value="all"
@@ -64,12 +76,18 @@ function Transactions() {
             </Tabs.Trigger>
           </Tabs.List>
         </div>
-        <Tabs.Content className="flex flex-col gap-y-6" value="all">
+        <Tabs.Content
+          className="flex data-[state=inactive]:hidden flex-col gap-y-6"
+          value="all"
+        >
           {FakeData.transactions.map((tx, index) => (
             <Transaction key={index} tx={tx} />
           ))}
         </Tabs.Content>
-        <Tabs.Content className="flex flex-col gap-y-6" value="ongoing">
+        <Tabs.Content
+          className="flex data-[state=inactive]:hidden flex-col gap-y-6"
+          value="ongoing"
+        >
           {FakeData.transactions
             .filter((tx) => {
               const isAllPaid = tx.milestones.every(
@@ -81,7 +99,10 @@ function Transactions() {
               <Transaction key={index} tx={tx} />
             ))}
         </Tabs.Content>
-        <Tabs.Content className="flex flex-col gap-y-6" value="completed">
+        <Tabs.Content
+          className="flex data-[state=inactive]:hidden flex-col gap-y-6"
+          value="completed"
+        >
           {FakeData.transactions
             .filter((tx) => {
               const isAllPaid = tx.milestones.every(
@@ -116,8 +137,9 @@ const Transaction = (props: { tx: Transaction }) => {
     };
   })();
   return (
-    <div className="w-full bg-gray-50 rounded-3xl max-h-96">
-      <div className="w-full px-[2px] pt-[2px] rounded-[inherit] ">
+    // change bg to em-tertiary
+    <div className="w-full bg-[#f1f1f1] rounded-[28px] max-h-96">
+      <div className="w-full px-[3px] pt-[3px] rounded-[inherit] ">
         <div className="w-full bg-white px-4 pt-4 pb-3 rounded-[inherit] ">
           <div className="w-full flex  gap-y-2  justify-between">
             <Typography className="font-bold text-lg whitespace-nowrap overflow-hidden overflow-ellipsis w-full">

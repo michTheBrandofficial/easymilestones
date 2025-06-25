@@ -47,7 +47,7 @@ const TabsList = (({ className, children, ...props }: React.ComponentPropsWithou
       <TabsPrimitive.List
         ref={tabsListRef}
         className={cn(
-          "inline-flex h-fit items-center justify-center rounded-xl bg-white border border-gray-50 p-1 relative",
+          "inline-flex h-fit items-center justify-center rounded-xl bg-white p-1 relative",
           className
         )}
         {...props}
@@ -65,7 +65,7 @@ const TabsCursor = ({ className, ...props }: HTMLMotionProps<"div">) => {
     <motion.div
       {...props}
       animate={cursorPosition}
-      className={cn("absolute z-10 rounded-lg bg-em-secondary", className)}
+      className={cn("absolute z-10 rounded-xl bg-[#f1f1f1]", className)}
     />
   );
 };
@@ -81,7 +81,7 @@ const TabsTrigger = React.forwardRef<
     <TabsPrimitive.Trigger
       ref={ref}
       className={cn(
-        "inline-flex items-center relative z-20 justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium ring-offset-white transition-colors duration-700 ease-[ease] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-em-text data-[state=active]:text-white",
+        "inline-flex items-center relative z-20 justify-center whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium ring-offset-white transition-colors duration-700 ease-[ease] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-em-text data-[state=active]:text-em-dark data-[state=active]:font-bold",
         className
       )}
       {...props}
@@ -98,7 +98,7 @@ const TabsTrigger = React.forwardRef<
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
 const TabsContent = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Content>,
+  React.ComponentRef<typeof TabsPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
