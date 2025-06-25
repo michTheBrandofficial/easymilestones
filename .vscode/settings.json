@@ -11,6 +11,7 @@
   "tailwindCSS.hovers": true,
   "tailwindCSS.suggestions": true,
   "tailwindcss-intellisense.trace.server": "verbose",
+  "editor.fontFamily": "Cartograph CF",
   "solidity.remappings": ["forge-std/=lib/forge-std/src/"],
   "solidity.compileUsingLocalVersion": "v0.8.28",
   "solidity.formatter": "forge",
