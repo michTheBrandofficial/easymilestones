@@ -17,6 +17,7 @@ import { anvil } from "viem/chains";
 type LocalAccountContextType = {
   walletClient: WalletClient;
   publicClient: PublicClient;
+  chain: typeof anvil;
   privateKeyAccount: PrivateKeyAccount;
   deployedContractAddress: `0x${string}`;
 };
@@ -61,6 +62,7 @@ export const LocalAccountProvider = ({
       value={{
         walletClient,
         publicClient,
+        chain: anvil,
         privateKeyAccount: localAccount,
         deployedContractAddress: import.meta.env
           .VITE_PUBLIC_CONTRACT_ADDRESS! as `0x${string}`,

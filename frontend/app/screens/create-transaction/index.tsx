@@ -1,37 +1,22 @@
 import { Button } from "@/components/buttons";
 import { Typography } from "@/components/typography";
-import {
-  AddCircleIcon,
-  Calendar01Icon,
-  Calendar03Icon,
-  MoneyExchange03Icon,
-  MoneySendSquareIcon,
-  TickDouble03Icon,
-} from "hugeicons-react";
+import { MoneyExchange03Icon } from "hugeicons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import PageScreen from "@/components/ui/screen";
-import { inlineSwitch, pick } from "@/lib/utils";
+import { inlineSwitch } from "@/lib/utils";
 import WaterBodySVG from "../-components/water-body-svg";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
   MilestoneBuilderError,
-  MilestonePayloadWithDate,
   TransactionPayload,
   useMilestoneBuilder,
 } from "@/lib/milestone_builder";
-import { formatEther } from "viem";
 import { useToast } from "@/components/ui/toast-context";
-import { formatDate } from "date-fns";
-import { cn } from "@/lib/shadcn-utils";
-import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
-import DatePicker from "@/components/ui/calendar";
 import { useSheet } from "@/components/ui/sheet";
-import { useLocalAccount } from "../-contexts/local-account";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ErrorMatcher } from "@/lib/error-matcher";
 import Milestone from "./-components/milestone";
-import IOSSpinner from "@/components/ui/ios-spinner";
+import ConfirmationSheetBody from "./-components/confirmation-sheet-body";
 
 export const Route = createFileRoute("/create-transaction/")({
   component: CreateTransaction,
@@ -57,19 +42,8 @@ function CreateTransaction() {
       close();
     },
   });
-  const { privateKeyAccount, publicClient } = useLocalAccount();
-  const { data: balance } = useQuery({
-    queryKey: ["account-balance"],
-    queryFn: async () =>
-      publicClient.getBalance({
-        address: privateKeyAccount.address,
-        blockTag: "latest",
-      }),
-    refetchOnWindowFocus: false,
-  });
   const [txTitle, setTxTitle] = useState("");
   const showToast = useToast();
-  const queryClient = useQueryClient();
   function focusOnTxTitle() {
     if (step === 1) txTitleRef.current?.focus();
   }
@@ -476,51 +450,15 @@ function CreateTransaction() {
           title="Confirm Transaction"
           backButton={"Back"}
         >
-          <ConfirmationSheet.SheetHeader>
-            <div className="w-full px-1.5 py-2 flex flex-col gap-y-3">
-              <div className="w-full flex items-center justify-between gap-x-2">
-                <Typography className="text-em-text text-sm">
-                  Address:
-                </Typography>
-                <Typography className="text-em-dark flex-grow pl-3 font-medium font-Bricolage_Grotesque overflow-ellipsis overflow-hidden">
-                  {privateKeyAccount?.address}
-                </Typography>
-              </div>
-              <div className="w-full flex items-center justify-between gap-x-2">
-                <Typography className="text-em-text text-sm">
-                  Balance:
-                </Typography>
-                <Typography className="text-em-dark font-medium font-Bricolage_Grotesque text-lg overflow-ellipsis overflow-hidden">
-                  {parseFloat(formatEther(balance || 0n)).toFixed(2)} ETH
-                </Typography>
-              </div>
-            </div>
-          </ConfirmationSheet.SheetHeader>
-          <ConfirmationSheet.SheetContent className="flex flex-col">
-            <section className="flex flex-col pt-6 flex-grow">
-              <IOSSpinner />
-              <div className="flex flex-col gap-y-3 mt-auto">
-                <Button
-                  variant="full"
-                  className="w-full"
-                  onTap={() => {
-                    // take tx_payload state and send to contract, wait for confirmation here and then show
-                    // change the milestone and show in the transactions page
-                  }}
-                >
-                  Close
-                </Button>
-                <Button
-                  initial={{ scaleX: 0, y: 100 }}
-                  animate={{ scaleX: 1, y: 0 }}
-                  variant="ghost-outline"
-                  className="w-full hidden"
-                  onTap={() => {}}
-                >
-                  View Transaction
-                </Button>
-              </div>
-            </section>
+          <ConfirmationSheet.SheetContent className="flex flex-col px-0">
+            <ConfirmationSheetBody
+              tx_payload={tx_payload}
+              close={() => ConfirmationSheet.closeSheet()}
+              onTransactionCreatedSuccessClose={() => {
+                ConfirmationSheet.closeSheet();
+                milestoneBuilder.clear();
+              }}
+            />
           </ConfirmationSheet.SheetContent>
         </ConfirmationSheet.Sheet>
       )}

@@ -91,7 +91,7 @@ function Transactions() {
       ) : (
         <Tabs
           onValueChange={() => {}}
-          defaultValue="ongoing"
+          defaultValue="all"
           className="w-full flex flex-col gap-y-4 flex-grow relative overflow-y-auto no-scrollbar pb-20 "
         >
           <div className="w-full bg-em-tertiary rounded-xl sticky top-0">

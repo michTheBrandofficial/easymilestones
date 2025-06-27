@@ -318,7 +318,7 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
                     </Button>
                   )}
                 </div>
-                <Typography className="font-extrabold text-[17px] ">
+                <Typography className="font-medium text-[17px] ">
                   {title}
                 </Typography>
                 <div className="flex justify-end pr-1.5">

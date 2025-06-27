@@ -145,6 +145,14 @@ class MilestoneBuilder {
     const amounts = this.milestones.map((m) => m.amount);
     return amounts.reduce((a, b) => a + b, 0n) as bigint;
   }
+
+  /**
+   * @dev this is called after a transaction is created successfully
+   */
+  clear() {
+    this.transaction_title = '';
+    this.milestones = []
+  }
 }
 
 export type MilestonePayloadWithDate = Helpers.Prettify<
@@ -218,6 +226,14 @@ export const useMilestoneBuilder = () => {
      */
     build() {
       return milestoneBuilderRef.current.build();
+    },
+    /**
+     * @dev called after a transaction is created successfully to clear the builder
+     */
+    clear() {
+      milestoneBuilderRef.current.clear();
+      set_tx_title(undefined);
+      set_milestones([]);
     },
   };
 };

@@ -275,7 +275,7 @@ const VariableHeightSheetImpl = <T extends string>({
                     </Button>
                   )}
                 </div>
-                <Typography className="font-extrabold text-[17px] ">
+                <Typography className="font-medium text-[17px] ">
                   {title}
                 </Typography>
                 <div className="flex justify-end pr-1.5">

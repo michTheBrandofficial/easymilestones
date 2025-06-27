@@ -4,15 +4,25 @@ import IOSSpinner from "@/components/ui/ios-spinner";
 import { TransactionPayload } from "@/lib/milestone_builder";
 import { useNavigate } from "@tanstack/react-router";
 import { formatDate } from "date-fns/format";
-import { Calendar01Icon, MoneySendSquareIcon } from "hugeicons-react";
+import {
+  Calendar01Icon,
+  MoneySendSquareIcon,
+  Tick02Icon,
+} from "hugeicons-react";
 import React, { useState } from "react";
 import { formatEther } from "viem";
+import { useLocalAccount } from "../../-contexts/local-account";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import easyMilestonesAbi from "@/lib/abi";
+import { useToast } from "@/components/ui/toast-context";
 
 type Props = {
   tx_payload: TransactionPayload;
-  is_Tx_Pending: boolean;
-  confirm(): void;
   close(): void;
+  /**
+   * used to clear the builder state and then close confirmation sheet
+   */
+  onTransactionCreatedSuccessClose(): void;
 };
 
 type TransactionState = "still_in_confirmation" | "pending" | "confirmed";
@@ -25,56 +35,142 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
   const [tx_state, set_tx_state] = useState<TransactionState>(
     "still_in_confirmation"
   );
+  const {
+    privateKeyAccount,
+    publicClient,
+    walletClient,
+    chain,
+    deployedContractAddress,
+  } = useLocalAccount();
+  const { data: balance } = useQuery({
+    queryKey: ["account-balance"],
+    queryFn: async () =>
+      publicClient.getBalance({
+        address: privateKeyAccount.address,
+        blockTag: "latest",
+      }),
+    refetchOnWindowFocus: false,
+  });
+  const showToast = useToast();
+  const createTransactionMutation = useMutation({
+    mutationFn: async () => {
+      const { request: simulatedContractRequest } = await publicClient.simulateContract({
+        address: deployedContractAddress,
+        abi: easyMilestonesAbi,
+        functionName: "createTransaction",
+        chain: chain,
+        account: privateKeyAccount,
+        args: [
+          tx_payload.final_deadline,
+          tx_payload.title,
+          tx_payload.milestones.map((m) => {
+            return {
+              amount: m.amount,
+              deadline: m.deadline,
+              title: m.title,
+            };
+          }),
+        ],
+        value: tx_payload.amount,
+      });
+      await walletClient.writeContract(simulatedContractRequest);
+    },
+    onSuccess: () => {
+      set_tx_state("confirmed");
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["account-balance"] });
+    },
+    onError(err) {
+      showToast("info", err.message);
+    },
+  });
+  const queryClient = useQueryClient();
   return (
     <section className="flex flex-col pt-6 flex-grow">
-      {tx_state === "pending" && <IOSSpinner />}
-      {tx_state === "pending" && <IOSSpinner />}  
-      <div className="h-full grid grid-cols-[20%_80%] gap-x-0 px-2 overflow-y-auto no-scrollbar">
-        <div className="flex flex-col ">
-          {tx_payload.milestones.map((_, index) => {
-            const sanePeoplesIndex = index + 1;
-            return (
-              <MilestoneBranch
-                sanePeoplesIndex={sanePeoplesIndex}
-                index={index}
-                key={index}
-              />
-            );
-          })}
-        </div>
-        <div className="flex flex-col relative ">
-          {tx_payload.milestones.map((milestone, index) => (
-            <div key={index} className="h-[160px] space-y-3">
-              <Typography className="font-bold font-Bricolage_Grotesque rounded-xl pl-4 pr-3 py-2.5 bg-gray-400/10 backdrop-blur-[12px]">
-                {milestone.title}
+      {/* this will act as sheet header */}
+      {tx_state !== "confirmed" && (
+        <div className="w-full pb-2 px-2.5 border-b-2 border-b-[#D3D3D3] ">
+          <div className="w-full px-1.5 py-2 flex flex-col gap-y-3">
+            <div className="w-full flex items-center justify-between gap-x-2">
+              <Typography className="text-em-text text-sm">Address:</Typography>
+              <Typography className="text-em-dark flex-grow pl-3 font-medium font-Bricolage_Grotesque overflow-ellipsis overflow-hidden">
+                {privateKeyAccount?.address}
               </Typography>
-              <div className="w-full flex items-center gap-x-3">
-                <Calendar01Icon />
-                <Typography className="font-bold font-Bricolage_Grotesque bg-orange-200 px-3 py-1 rounded-lg">
-                  {formatDate(
-                    new Date(Number(milestone.deadline * 1000n)),
-                    "do MMMM, yyyy"
-                  )}
-                </Typography>
-              </div>
-              <div className="w-full flex items-center gap-x-3">
-                <MoneySendSquareIcon />
-                <Typography className="font-bold bg-lime-200 px-3 py-1 rounded-lg">
-                  {formatEther(milestone.amount)} ETH
-                </Typography>
-              </div>
             </div>
-          ))}
+            <div className="w-full flex items-center justify-between gap-x-2">
+              <Typography className="text-em-text text-sm">Balance:</Typography>
+              <Typography className="text-em-dark font-medium font-Bricolage_Grotesque text-lg overflow-ellipsis overflow-hidden">
+                {parseFloat(formatEther(balance || 0n)).toFixed(2)} ETH
+              </Typography>
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col gap-y-3 mt-auto">
+      )}
+      {createTransactionMutation.isPending && <IOSSpinner />}
+      {tx_state === "confirmed" && (
+        <div className="w-full flex flex-col items-center gap-y-3 my-auto">
+          <div className="p-3 w-fit bg-green-100 text-green-700 rounded-full">
+            <Tick02Icon className="size-8" />
+          </div>
+          <div className="text-center">
+            <Typography className="text-em-text text-lg">
+              Successfully stored
+            </Typography>
+            <Typography className="text-em-dark font-Bricolage_Grotesque font-bold text-xl">
+              {parseFloat(formatEther(tx_payload.amount)).toFixed(2)} ETH
+            </Typography>
+          </div>
+        </div>
+      )}
+      {tx_state === "still_in_confirmation" && (
+        <div className="h-full grid grid-cols-[20%_80%] gap-x-0 px-[18px] overflow-y-auto no-scrollbar">
+          <div className="flex flex-col ">
+            {tx_payload.milestones.map((_, index) => {
+              const sanePeoplesIndex = index + 1;
+              return (
+                <MilestoneBranch
+                  sanePeoplesIndex={sanePeoplesIndex}
+                  index={index}
+                  key={index}
+                />
+              );
+            })}
+          </div>
+          <div className="flex flex-col relative ">
+            {tx_payload.milestones.map((milestone, index) => (
+              <div key={index} className="h-[160px] space-y-3">
+                <Typography className="font-bold font-Bricolage_Grotesque rounded-xl pl-4 pr-3 py-2.5 bg-gray-400/10 backdrop-blur-[12px]">
+                  {milestone.title}
+                </Typography>
+                <div className="w-full flex items-center gap-x-3">
+                  <Calendar01Icon />
+                  <Typography className="font-bold font-Bricolage_Grotesque bg-orange-200 px-3 py-1 rounded-lg">
+                    {formatDate(
+                      new Date(Number(milestone.deadline * 1000n)),
+                      "do MMMM, yyyy"
+                    )}
+                  </Typography>
+                </div>
+                <div className="w-full flex items-center gap-x-3">
+                  <MoneySendSquareIcon />
+                  <Typography className="font-bold bg-lime-200 px-3 py-1 rounded-lg">
+                    {formatEther(milestone.amount)} ETH
+                  </Typography>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="flex flex-col gap-y-3 mt-auto px-2.5">
         <Button
           variant="full"
           className="w-full"
+          disabled={createTransactionMutation.isPending}
           onTap={() => {
-            tx_state === "confirmed" ? props.close() : props.confirm();
-            // take tx_payload state and send to contract, wait for confirmation here and then show
-            // change the milestone and show in the transactions page
+            tx_state === "confirmed"
+              ? props.onTransactionCreatedSuccessClose()
+              : createTransactionMutation.mutateAsync();
           }}
         >
           {tx_state === "confirmed" ? "Close" : "Confirm"}
@@ -86,6 +182,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
             variant="ghost-outline"
             className="w-full"
             onTap={() => {
+              props.onTransactionCreatedSuccessClose()
               navigate({ to: "/transactions" });
             }}
           >

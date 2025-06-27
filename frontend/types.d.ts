@@ -39,6 +39,23 @@ declare global {
       -readonly [key in keyof T]: T[key];
     };
 
+    type ReadOnlyTransactionPayload =
+      | readonly [
+          bigint,
+          string,
+          readonly { amount: bigint; deadline: bigint; title: string }[],
+        ]
+      | (readonly [
+          bigint,
+          string,
+          readonly { amount: bigint; deadline: bigint; title: string }[],
+        ] &
+          readonly [
+            bigint,
+            string,
+            readonly { amount: bigint; deadline: bigint; title: string }[],
+          ]);
+
     type DeepMutable<T extends Record<string, any> | any[]> = T extends any[]
       ? Array<DeepMutable<T[number]>>
       : {
