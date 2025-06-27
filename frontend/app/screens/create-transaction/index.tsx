@@ -2,10 +2,11 @@ import { Button } from "@/components/buttons";
 import { Typography } from "@/components/typography";
 import {
   AddCircleIcon,
-  Calendar01Icon, Calendar03Icon,
+  Calendar01Icon,
+  Calendar03Icon,
   MoneyExchange03Icon,
   MoneySendSquareIcon,
-  TickDouble03Icon
+  TickDouble03Icon,
 } from "hugeicons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import PageScreen from "@/components/ui/screen";
@@ -27,8 +28,10 @@ import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
 import DatePicker from "@/components/ui/calendar";
 import { useSheet } from "@/components/ui/sheet";
 import { useLocalAccount } from "../-contexts/local-account";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ErrorMatcher } from "@/lib/error-matcher";
+import Milestone from "./-components/milestone";
+import IOSSpinner from "@/components/ui/ios-spinner";
 
 export const Route = createFileRoute("/create-transaction/")({
   component: CreateTransaction,
@@ -66,6 +69,7 @@ function CreateTransaction() {
   });
   const [txTitle, setTxTitle] = useState("");
   const showToast = useToast();
+  const queryClient = useQueryClient();
   function focusOnTxTitle() {
     if (step === 1) txTitleRef.current?.focus();
   }
@@ -88,6 +92,7 @@ function CreateTransaction() {
     if (step === MAX_STEP) {
       try {
         const tx_payload = milestoneBuilder.build();
+        console.log(tx_payload);
         setTx_Payload(tx_payload);
         ConfirmationSheet.openSheet();
       } catch (error) {
@@ -470,12 +475,6 @@ function CreateTransaction() {
         <ConfirmationSheet.Sheet
           title="Confirm Transaction"
           backButton={"Back"}
-          action={{
-            title: "Confirm",
-            do(closeSheet) {
-              closeSheet;
-            },
-          }}
         >
           <ConfirmationSheet.SheetHeader>
             <div className="w-full px-1.5 py-2 flex flex-col gap-y-3">
@@ -497,398 +496,36 @@ function CreateTransaction() {
               </div>
             </div>
           </ConfirmationSheet.SheetHeader>
-          <ConfirmationSheet.SheetContent className="flex flex-col pt-6">
-            <div className="h-full grid grid-cols-[20%_80%] gap-x-0 px-2 overflow-y-auto no-scrollbar">
-              <div className="flex flex-col ">
-                {tx_payload.milestones.map((_, index) => {
-                  const sanePeoplesIndex = index + 1;
-                  {
-                    /* first milestone */
-                  }
-                  if (sanePeoplesIndex === 1)
-                    return (
-                      <svg
-                        key={index}
-                        height="160"
-                        viewBox="0 0 36 163"
-                        fill="none"
-                        className="w-fit"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M19.9591 1.37759C-39.047 55.8487 63.6376 68.9745 25.0158 136.11"
-                          stroke="#4CABEF"
-                          strokeWidth="2.3949"
-                        />
-                        <circle
-                          cx="5.32201"
-                          cy="5.32201"
-                          r="5.32201"
-                          transform="matrix(0.0375053 0.999296 0.999296 -0.0375053 15.0396 142.695)"
-                          fill="#4CABEF"
-                        />
-                        <circle
-                          cx="14.192"
-                          cy="14.192"
-                          r="13.3009"
-                          transform="matrix(0.0375053 0.999296 0.999296 -0.0375053 5.84314 134.164)"
-                          stroke="#4CABEF"
-                          strokeWidth="1.78225"
-                        />
-                      </svg>
-                    );
-                  if (sanePeoplesIndex === 2)
-                    return (
-                      <svg
-                        key={index}
-                        height="160"
-                        viewBox="0 0 36 163"
-                        fill="none"
-                        className="-mt-1 ml-2 w-fit "
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M15.3683 1.83251C74.3744 56.3036 -28.3102 69.4295 10.3116 136.565"
-                          stroke="#4CABEF"
-                          strokeWidth="2.3949"
-                        />
-                        <circle
-                          cx="14.77"
-                          cy="148.268"
-                          r="5.32201"
-                          transform="rotate(92.1494 14.77 148.268)"
-                          fill="#4CABEF"
-                        />
-                        <circle
-                          cx="14.7699"
-                          cy="148.268"
-                          r="13.3009"
-                          transform="rotate(92.1494 14.7699 148.268)"
-                          stroke="#4CABEF"
-                          strokeWidth="1.78225"
-                        />
-                      </svg>
-                    );
-                  switch (sanePeoplesIndex % 2) {
-                    case 1:
-                      return (
-                        <svg
-                          key={index}
-                          height="160"
-                          viewBox="0 0 36 163"
-                          fill="none"
-                          className="-mt-[3px] w-fit "
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M19.9591 1.37759C-39.047 55.8487 63.6376 68.9745 25.0158 136.11"
-                            stroke="#4CABEF"
-                            strokeWidth="2.3949"
-                          />
-                          <circle
-                            cx="5.32201"
-                            cy="5.32201"
-                            r="5.32201"
-                            transform="matrix(0.0375053 0.999296 0.999296 -0.0375053 15.0396 142.695)"
-                            fill="#4CABEF"
-                          />
-                          <circle
-                            cx="14.192"
-                            cy="14.192"
-                            r="13.3009"
-                            transform="matrix(0.0375053 0.999296 0.999296 -0.0375053 5.84314 134.164)"
-                            stroke="#4CABEF"
-                            strokeWidth="1.78225"
-                          />
-                        </svg>
-                      );
-                    case 0:
-                      return (
-                        <svg
-                          key={index}
-                          height="160"
-                          viewBox="0 0 36 163"
-                          fill="none"
-                          className="-mt-[3px] ml-2 w-fit "
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M15.3683 1.83251C74.3744 56.3036 -28.3102 69.4295 10.3116 136.565"
-                            stroke="#4CABEF"
-                            strokeWidth="2.3949"
-                          />
-                          <circle
-                            cx="14.77"
-                            cy="148.268"
-                            r="5.32201"
-                            transform="rotate(92.1494 14.77 148.268)"
-                            fill="#4CABEF"
-                          />
-                          <circle
-                            cx="14.7699"
-                            cy="148.268"
-                            r="13.3009"
-                            transform="rotate(92.1494 14.7699 148.268)"
-                            stroke="#4CABEF"
-                            strokeWidth="1.78225"
-                          />
-                        </svg>
-                      );
-                  }
-                })}
+          <ConfirmationSheet.SheetContent className="flex flex-col">
+            <section className="flex flex-col pt-6 flex-grow">
+              <IOSSpinner />
+              <div className="flex flex-col gap-y-3 mt-auto">
+                <Button
+                  variant="full"
+                  className="w-full"
+                  onTap={() => {
+                    // take tx_payload state and send to contract, wait for confirmation here and then show
+                    // change the milestone and show in the transactions page
+                  }}
+                >
+                  Close
+                </Button>
+                <Button
+                  initial={{ scaleX: 0, y: 100 }}
+                  animate={{ scaleX: 1, y: 0 }}
+                  variant="ghost-outline"
+                  className="w-full hidden"
+                  onTap={() => {}}
+                >
+                  View Transaction
+                </Button>
               </div>
-              <div className="flex flex-col relative ">
-                {tx_payload.milestones.map((milestone, index) => (
-                  <div key={index} className="h-[160px] space-y-3">
-                    <Typography className="font-bold font-Bricolage_Grotesque rounded-xl pl-4 pr-3 py-2.5 bg-gray-400/10 backdrop-blur-[12px]">
-                      {milestone.title}
-                    </Typography>
-                    <div className="w-full flex items-center gap-x-3">
-                      <Calendar01Icon />
-                      <Typography className="font-bold font-Bricolage_Grotesque bg-orange-200 px-3 py-1 rounded-lg">
-                        {formatDate(
-                          new Date(Number(milestone.deadline * 1000n)),
-                          "do MMMM, yyyy"
-                        )}
-                      </Typography>
-                    </div>
-                    <div className="w-full flex items-center gap-x-3">
-                      <MoneySendSquareIcon />
-                      <Typography className="font-bold bg-lime-200 px-3 py-1 rounded-lg">
-                        {formatEther(milestone.amount)} ETH
-                      </Typography>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <Button
-              variant="full"
-              className="w-full mt-auto"
-              onTap={() => {
-                // take tx_payload state and send to contract, wait for confirmation here and then show
-                // change the milestone and show in the transactions page
-              }}
-            >
-              Confirm
-            </Button>
+            </section>
           </ConfirmationSheet.SheetContent>
         </ConfirmationSheet.Sheet>
       )}
     </PageScreen>
   );
 }
-
-type NonNullableMilestonePayloadWithDate = Helpers.NonNullableKey<
-  MilestonePayloadWithDate,
-  "deadline"
->;
-
-type MilestoneProps = {
-  index: number;
-  milestone: MilestonePayloadWithDate;
-  /**
-   * this is async to set has changes only if the update is verified
-   */
-  onUpdate: (payload: NonNullableMilestonePayloadWithDate) => Promise<boolean>;
-  onAdd: () => void;
-  onRemove: () => void;
-};
-
-const Milestone = ({ index, ...props }: MilestoneProps) => {
-  const [milestone, setMilestone] = useState<
-    Omit<MilestonePayloadWithDate, "amount"> & { amount: string }
-  >({
-    ...props.milestone,
-    amount: formatEther(props.milestone.amount),
-  });
-  useEffect(() => {
-    setMilestone({
-      ...props.milestone,
-      amount: formatEther(props.milestone.amount),
-    });
-  }, [
-    ...Object.values(
-      pick(props.milestone, "title", "deadline", "amount", "title")
-    ),
-  ]);
-  const DatePickerSheet = useVariableHeightSheet(`milestone-date-${index}`);
-  const [hasChanges, setHasChanges] = useState(false);
-  const showToast = useToast();
-  return (
-    <div
-      key={index}
-      data-milestone={index}
-      className="w-full flex flex-col gap-y-3 justify-end h-[220px] -mt-1 first:mt-0 "
-    >
-      <div className="w-full rounded-2xl pl-4 pr-3 py-2.5 bg-gray-400/20 backdrop-blur-[12px] flex items-center">
-        <input
-          name="title"
-          value={milestone.title}
-          onInput={(e) => {
-            const { value = "" } = e.target as unknown as { value: string };
-            setMilestone((p) => ({ ...p, title: value || "" }));
-            setHasChanges(true);
-          }}
-          autoComplete="off"
-          className="w-full font-Bricolage_Grotesque font-semibold text-xl bg-transparent text-em-dark focus:outline-none"
-          placeholder="E.g Birthday Cake"
-        />
-      </div>
-      <div className="w-full rounded-2xl pl-4 pr-3 py-2.5 bg-gray-400/20 backdrop-blur-[12px] flex items-center">
-        <input
-          name="amount"
-          value={milestone.amount}
-          onInput={(e) => {
-            const { value = "" } = e.target as unknown as { value: string };
-            if (!value) setMilestone((p) => ({ ...p, amount: "" }));
-            const newValue = value.replace(/[^0-9.]/g, ""); // Remove non-numeric chars except decimal
-            // Prevent multiple decimal points
-            const parts = newValue.split(".");
-            const sanitizedValue =
-              parts.length > 2
-                ? `${parts[0]}.${parts.slice(1).join("")}`
-                : newValue;
-            if (/^\d+(\.\d{0,18})?$/.test(value))
-              setMilestone((p) => ({
-                ...p,
-                // parse amount to be bigint with 18 decimals
-                amount: sanitizedValue,
-              }));
-            setHasChanges(true);
-          }}
-          autoComplete="off"
-          className="w-full font-Bricolage_Grotesque font-semibold text-xl bg-transparent text-em-dark focus:outline-none"
-          placeholder="0.1"
-        />
-        <p className="font-semibold text-em-text">ETH</p>
-      </div>
-      <motion.p
-        className={cn("font-medium text-em-text text-sm", {
-          "text-red-500": !milestone.deadline,
-        })}
-      >
-        {milestone.deadline
-          ? `Deadline: ${formatDate(milestone.deadline, "dd MMMM, yyyy")}`
-          : "Set a deadline"}
-      </motion.p>
-      <div className="flex gap-x-4 pr-1 h-fit">
-        {/* set has changes here */}
-        <Button
-          onTap={() => {
-            DatePickerSheet.openSheet();
-            // setMilestone((p) => ({
-            //   ...p,
-            //   deadline: new Date(
-            //     Date.now() + 24 * 60 * 60 * 1000 + 24 * 60 * 60 * 1000
-            //   ),
-            // }));
-            // setHasChanges(true);
-          }}
-          variant="icon"
-          className="px-0 h-fit bg-transparent !py-0"
-        >
-          <Calendar03Icon size={26} className="text-em-dark" />
-        </Button>
-        <Button
-          onTap={props.onRemove}
-          variant="icon"
-          className="px-0 h-fit bg-transparent !py-0"
-        >
-          <AddCircleIcon size={26} className="text-em-dark rotate-45" />
-        </Button>
-        {/* only verified milestones can create new ones */}
-        {props.milestone.isVerified && (
-          <Button
-            onTap={props.onAdd}
-            variant="icon"
-            className="px-0 h-fit bg-transparent !py-0"
-          >
-            <AddCircleIcon size={26} className="text-em-dark" />
-          </Button>
-        )}
-        {hasChanges && (
-          <Button
-            onTap={() => {
-              if (!milestone.deadline) return;
-              props
-                .onUpdate({
-                  ...milestone,
-                  amount: BigInt(
-                    (parseFloat(milestone.amount) || 0) * 10 ** 18
-                  ),
-                  //
-                  deadline: milestone.deadline,
-                })
-                .then(() => {
-                  setHasChanges(false);
-                  showToast("info", "Milestone updated");
-                });
-            }}
-            variant="icon"
-            className="px-0 ml-auto h-fit bg-transparent !py-0"
-          >
-            <TickDouble03Icon size={26} className="text-em-dark" />
-          </Button>
-        )}
-      </div>
-      <DatePickerSheet.VariableHeightSheet
-        title={"Set a Deadline"}
-        backButton={"Back"}
-      >
-        <DatePickerSheet.VariableHeightSheetContent className="min-h-80 flex flex-col justify-end">
-          <DatePickerSheetContent
-            close={() => DatePickerSheet.closeSheet()}
-            saveDate={(selectedDate) => {
-              setMilestone((p) => ({
-                ...p,
-                deadline: selectedDate,
-              }));
-              DatePickerSheet.closeSheet();
-              setHasChanges(true);
-            }}
-            initialDate={milestone.deadline}
-          />
-        </DatePickerSheet.VariableHeightSheetContent>
-      </DatePickerSheet.VariableHeightSheet>
-    </div>
-  );
-};
-
-type DatePickerSheetContentProps = {
-  close(): void;
-  saveDate(selectedDate: Date): void;
-  initialDate: Date | null;
-};
-
-const DatePickerSheetContent: React.FC<DatePickerSheetContentProps> = (
-  props
-) => {
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    props.initialDate || new Date()
-  );
-  return (
-    <>
-      <DatePicker
-        disableOldDates
-        value={selectedDate}
-        onChange={(date) => setSelectedDate(date)}
-        className="min-h-[454px]"
-      />
-      <div className="w-full flex gap-x-2 ">
-        <Button variant="ghost" className="w-full bg-gray-100" onTap={props.close}>
-          Cancel
-        </Button>
-        <Button
-          variant="full"
-          className="w-full"
-          onTap={() => props.saveDate(selectedDate)}
-        >
-          Select
-        </Button>
-      </div>
-    </>
-  );
-};
 
 export default CreateTransaction;

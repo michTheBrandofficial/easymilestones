@@ -3,7 +3,7 @@ import { cn } from "./cn";
 import { type HTMLMotionProps, motion } from "motion/react";
 import React, { PropsWithChildren } from "react";
 
-type Variants = "full" | "outline" | "icon" | "ghost";
+type Variants = "full" | "outline" | "icon" | "ghost" | "ghost-outline";
 
 type ButtonProps = Omit<
   PropsWithChildren<HTMLMotionProps<"button">>,
@@ -45,6 +45,7 @@ export const Button: React.FC<ButtonProps> = ({
             variant === "outline",
         },
         { "text-em-dark": variant === "ghost" },
+        { "text-em-dark bg-gray-100": variant === "ghost-outline" },
         { "bg-em-dark text-white px-2 py-2": variant === "icon" },
         { "cursor-not-allowed opacity-50": props.disabled },
         className

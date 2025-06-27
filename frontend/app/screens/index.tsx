@@ -34,7 +34,6 @@ function Home() {
         functionName: "getTransactions",
         args: [privateKeyAccount.address],
       });
-      console.log(transactions);
       return transactions;
     },
   });

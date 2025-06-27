@@ -42,7 +42,6 @@ function Transactions() {
         functionName: "getTransactions",
         args: [privateKeyAccount.address],
       });
-      console.log(transactions);
       return transactions;
     },
   });
@@ -164,6 +163,7 @@ const Transaction = (props: { tx: Transaction }) => {
           : null,
     };
   })();
+  // get search params and scroll to it using props.index
   return (
     // change bg to em-tertiary
     <div className="w-full bg-[#f1f1f1] rounded-[28px] max-h-96">

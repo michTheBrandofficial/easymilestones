@@ -78,8 +78,8 @@ function RootComponent() {
             </div>
             <div className="w-full flex gap-x-2 ">
               <Button
-                variant="ghost"
-                className="w-full bg-gray-100"
+                variant="ghost-outline"
+                className="w-full"
                 onTap={noop}
               >
                 Disconnect
