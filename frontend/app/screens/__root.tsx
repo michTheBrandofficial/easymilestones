@@ -65,13 +65,13 @@ function RootComponent() {
             <div className="w-full px-1 5 py-2 flex flex-col gap-y-3">
               <div className="w-full flex items-center gap-x-2">
                 <Typography className="text-em-text">Address:</Typography>
-                <Typography className="text-em-secondary flex-grow bg-em-secondary/5 rounded-xl px-3 py-1 overflow-ellipsis overflow-hidden">
+                <Typography className="text-em-tertiary font-bold flex-grow bg-em-primary/60 rounded-xl px-3 py-1 overflow-ellipsis overflow-hidden">
                   {privateKeyAccount?.address}
                 </Typography>
               </div>
               <div className="w-full flex items-center gap-x-2">
                 <Typography className="text-em-text">Balance:</Typography>
-                <Typography className="text-em-secondary bg-em-secondary/5 rounded-xl px-3 py-1 overflow-ellipsis overflow-hidden">
+                <Typography className="text-em-tertiary font-bold bg-em-primary/60 rounded-xl px-3 py-1 overflow-ellipsis overflow-hidden">
                   {parseFloat(formatEther(balance || 0n)).toFixed(2)} ETH
                 </Typography>
               </div>

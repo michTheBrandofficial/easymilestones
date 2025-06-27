@@ -12,6 +12,7 @@ import WagmiContextProvider from "./screens/-contexts";
 import { AnimatePresence } from "motion/react";
 import { LocalAccountProvider } from "./screens/-contexts/local-account";
 import { VariableHeightSheetProvider } from "@/components/ui/variable-height-sheet";
+import './test-client'
 
 const queryClient = new QueryClient();
 

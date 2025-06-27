@@ -54,25 +54,26 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
   const showToast = useToast();
   const createTransactionMutation = useMutation({
     mutationFn: async () => {
-      const { request: simulatedContractRequest } = await publicClient.simulateContract({
-        address: deployedContractAddress,
-        abi: easyMilestonesAbi,
-        functionName: "createTransaction",
-        chain: chain,
-        account: privateKeyAccount,
-        args: [
-          tx_payload.final_deadline,
-          tx_payload.title,
-          tx_payload.milestones.map((m) => {
-            return {
-              amount: m.amount,
-              deadline: m.deadline,
-              title: m.title,
-            };
-          }),
-        ],
-        value: tx_payload.amount,
-      });
+      const { request: simulatedContractRequest } =
+        await publicClient.simulateContract({
+          address: deployedContractAddress,
+          abi: easyMilestonesAbi,
+          functionName: "createTransaction",
+          chain: chain,
+          account: privateKeyAccount,
+          args: [
+            tx_payload.final_deadline,
+            tx_payload.title,
+            tx_payload.milestones.map((m) => {
+              return {
+                amount: m.amount,
+                deadline: m.deadline,
+                title: m.title,
+              };
+            }),
+          ],
+          value: tx_payload.amount,
+        });
       await walletClient.writeContract(simulatedContractRequest);
     },
     onSuccess: () => {
@@ -86,7 +87,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
   });
   const queryClient = useQueryClient();
   return (
-    <section className="flex flex-col pt-6 flex-grow">
+    <section className="flex flex-col flex-grow">
       {/* this will act as sheet header */}
       {tx_state !== "confirmed" && (
         <div className="w-full pb-2 px-2.5 border-b-2 border-b-[#D3D3D3] ">
@@ -101,6 +102,12 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
               <Typography className="text-em-text text-sm">Balance:</Typography>
               <Typography className="text-em-dark font-medium font-Bricolage_Grotesque text-lg overflow-ellipsis overflow-hidden">
                 {parseFloat(formatEther(balance || 0n)).toFixed(2)} ETH
+              </Typography>
+            </div>
+            <div className="w-full flex items-center justify-between gap-x-2">
+              <Typography className="text-em-text">Total:</Typography>
+              <Typography className="text-em-tertiary font-medium font-Bricolage_Grotesque text-lg overflow-ellipsis overflow-hidden bg-em-primary/60 rounded-xl px-3 py-1">
+                {parseFloat(formatEther(tx_payload.amount)).toFixed(2)} ETH
               </Typography>
             </div>
           </div>
@@ -123,7 +130,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
         </div>
       )}
       {tx_state === "still_in_confirmation" && (
-        <div className="h-full grid grid-cols-[20%_80%] gap-x-0 px-[18px] overflow-y-auto no-scrollbar">
+        <div className="h-full grid grid-cols-[20%_80%] gap-x-0 px-[18px] pt-5 overflow-y-auto no-scrollbar">
           <div className="flex flex-col ">
             {tx_payload.milestones.map((_, index) => {
               const sanePeoplesIndex = index + 1;
@@ -154,7 +161,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
                 <div className="w-full flex items-center gap-x-3">
                   <MoneySendSquareIcon />
                   <Typography className="font-bold bg-lime-200 px-3 py-1 rounded-lg">
-                    {formatEther(milestone.amount)} ETH
+                    {parseFloat(formatEther(milestone.amount)).toFixed(2)} ETH
                   </Typography>
                 </div>
               </div>
@@ -182,7 +189,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
             variant="ghost-outline"
             className="w-full"
             onTap={() => {
-              props.onTransactionCreatedSuccessClose()
+              props.onTransactionCreatedSuccessClose();
               navigate({ to: "/transactions" });
             }}
           >

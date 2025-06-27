@@ -174,7 +174,7 @@ const Transaction = (props: { tx: Transaction }) => {
               {tx.title}
             </Typography>
             <Typography className="font-bold text- text-em-text whitespace-nowrap">
-              {tx.amount} ETH
+              {parseFloat(formatEther(tx.amount)).toFixed(2)} ETH
             </Typography>
           </div>
           <div className="w-full mt-4 flex py-6">
@@ -260,7 +260,7 @@ const Transaction = (props: { tx: Transaction }) => {
               </div>
               <div className="w-fit flex flex-col gap-y-0.5 items-end ml-auto">
                 <Typography className="font-bold whitespace-nowrap">
-                  {formatEther(milestone.amount)} ETH
+                  {parseFloat(formatEther(milestone.amount)).toFixed(2)} ETH
                 </Typography>
                 <Typography className="font-medium text-em-text text-xs">
                   {milestone.status === Status.paid ? "Completed" : "Ongoing"}
@@ -273,3 +273,5 @@ const Transaction = (props: { tx: Transaction }) => {
     </div>
   );
 };
+
+// onclick milestone show view in sheet
