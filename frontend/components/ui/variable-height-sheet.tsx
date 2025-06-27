@@ -7,17 +7,15 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import { Button } from "../buttons";
 import { Typography } from "../typography";
-import { percentage, px } from "@/lib/utils";
 import { createPortal } from "react-dom";
 import { ChevronLeft } from "lucide-react";
 
-type SheetContextType = {
+type VariableHeightSheetContextType = {
   sheetMap: {
     [sheetId: string]: {
       open: boolean;
@@ -39,7 +37,7 @@ type SheetContextType = {
   };
   registerSheet: (
     sheetId: string,
-    config: SheetContextType["sheetMap"][string]
+    config: VariableHeightSheetContextType["sheetMap"][string]
   ) => void;
   unregisterSheet: (sheetId: string) => void;
   /**
@@ -48,33 +46,32 @@ type SheetContextType = {
   openSheets?: string[];
   openSheet(sheetId: string): void;
   closeSheet(sheetId: string): void;
-  /**
-   * @dev this is for the drag progress of the sheet 0 - 1
-   */
-  dragProgress: number;
-  setDragProgress: (progress: number) => void;
 };
 
-type SheetUnderlayProps = Pick<Props, "children">;
+type VariableHeightSheetUnderlayProps = Pick<Props, "children">;
 
-const SheetContext = createContext<SheetContextType | null>(null);
-
-const SHEET_UNDERLAY_TOP_OFFSET = 48;
+const VariableHeightSheetContext =
+  createContext<VariableHeightSheetContextType | null>(null);
 
 /**
  * @dev this one to be mounted at top most of app
  */
-const SheetProvider = ({ children }: SheetUnderlayProps) => {
-  const [sheetMap, setSheetMap] = useState<SheetContextType["sheetMap"]>({});
-  const sheetMapRef = useRef<SheetContextType["sheetMap"]>({});
+const VariableHeightSheetProvider = ({
+  children,
+}: VariableHeightSheetUnderlayProps) => {
+  const [sheetMap, setSheetMap] = useState<
+    VariableHeightSheetContextType["sheetMap"]
+  >({});
+  const sheetMapRef = useRef<VariableHeightSheetContextType["sheetMap"]>({});
   const [openSheets, setOpenSheets] = useState<string[]>([]);
-  const [dragProgress, setDragProgress] = useState(0);
-  const isFirstSheetOpen = useMemo(() => openSheets.length > 0, [openSheets]);
   useEffect(() => {
     sheetMapRef.current = sheetMap;
   }, [sheetMap]);
   const registerSheet = useCallback(
-    (sheetId: string, config: SheetContextType["sheetMap"][string]) => {
+    (
+      sheetId: string,
+      config: VariableHeightSheetContextType["sheetMap"][string]
+    ) => {
       if (sheetId in sheetMapRef.current) return;
       setSheetMap((prev) => ({
         ...prev,
@@ -85,18 +82,8 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
     },
     []
   );
-  /**
-   * @dev width: Controls the width percentage (100% initially, 95% when open)
-   * y: Controls vertical position (0px initially, 48px when open)
-   * borderRadius: Controls border radius (0px initially, 16px when open)
-   */
-  const positionMap = {
-    width: { initial: 100, final: 95 },
-    y: { initial: 0, final: SHEET_UNDERLAY_TOP_OFFSET },
-    borderRadius: { initial: 0, final: 16 },
-  } as const;
   return (
-    <SheetContext.Provider
+    <VariableHeightSheetContext.Provider
       value={{
         openSheets,
         sheetMap,
@@ -130,45 +117,11 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
             },
           }));
         },
-        dragProgress,
-        setDragProgress: (progress) => setDragProgress(progress),
       }}
     >
-      <div
-        id="app_sheet_container"
-        className="h-screen w-screen bg-black flex items-center justify-center relative overflow-y-auto no-scrollbar"
-      >
-        <motion.div
-          initial={{
-            width: percentage(positionMap.width.initial),
-          }}
-          animate={
-            isFirstSheetOpen
-              ? {
-                  // formula is ((initial - final) * progress) + final, when dragProgress is 0 final is 95;
-                  width: percentage(
-                    (positionMap.width.initial - positionMap.width.final) *
-                      dragProgress +
-                      positionMap.width.final
-                  ),
-                  y: px(SHEET_UNDERLAY_TOP_OFFSET),
-                  borderTopRightRadius: px(16),
-                  borderTopLeftRadius: px(16),
-                }
-              : {
-                  width: percentage(100),
-                  y: px(0),
-                }
-          }
-          transition={{
-            type: "keyframes",
-          }}
-          className="h-full no-scrollbar overflow-y-auto "
-        >
-          {children}
-        </motion.div>
-      </div>
-    </SheetContext.Provider>
+      {/* {app_sheet_container} */}
+      {children}
+    </VariableHeightSheetContext.Provider>
   );
 };
 
@@ -177,15 +130,19 @@ type Props = {
   className?: string;
 };
 
-const SHEET_TOP_OFFSET = SHEET_UNDERLAY_TOP_OFFSET + 6;
-
-type SheetProps<SheetId extends string> = Pick<Props, "children"> & {
+type VariableHeightSheetProps<SheetId extends string> = Pick<
+  Props,
+  "children"
+> & {
   sheetId: SheetId;
   className?: string;
-} & SheetContextType["sheetMap"][string];
+} & VariableHeightSheetContextType["sheetMap"][string];
 
-const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
-  const { registerSheet } = useContext(SheetContext)!;
+const VariableHeightSheetImpl = <T extends string>({
+  children,
+  ...props
+}: VariableHeightSheetProps<T>) => {
+  const { registerSheet } = useContext(VariableHeightSheetContext)!;
   const { onClose, title, action, backButton, open } = props;
   // Use a ref to track if we've already registered this sheet
   const registeredRef = useRef(false);
@@ -199,7 +156,6 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
     if (!props.sheetId || registeredRef.current) return;
     // Mark as registered
     registeredRef.current = true;
-
     // Extract only the needed properties to avoid unnecessary re-registrations
     const sheetConfig = {
       onClose: props.onClose,
@@ -274,7 +230,8 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
                 type: "keyframes",
               },
             }}
-            style={{ y, height: `calc(100% - ${SHEET_TOP_OFFSET}px)` }}
+            style={{ y, height: `fit-content` }}
+            // dont use this as this is a fixed height sheet style={{ y, height: `calc(100% - ${FIXED_SHEET_TOP_OFFSET}px)` }}
             drag="y"
             dragConstraints={{ top: 0 }}
             dragElastic={0.2}
@@ -352,9 +309,9 @@ const SheetImpl = <T extends string>({ children, ...props }: SheetProps<T>) => {
   );
 };
 
-const SheetHeaderImpl: React.FC<{ children?: React.ReactNode }> = ({
-  children,
-}) => {
+const VariableHeightSheetHeaderImpl: React.FC<{
+  children?: React.ReactNode;
+}> = ({ children }) => {
   return (
     <div className="w-full pb-2 px-2.5 border-b-2 border-b-[#D3D3D3] ">
       {children}
@@ -362,7 +319,7 @@ const SheetHeaderImpl: React.FC<{ children?: React.ReactNode }> = ({
   );
 };
 
-const SheetContentImpl: React.FC<{
+const VariableHeightSheetContentImpl: React.FC<{
   children?: React.ReactNode;
   className?: string;
 }> = ({ children, className }) => {
@@ -384,22 +341,24 @@ const SheetContentImpl: React.FC<{
   );
 };
 
-const useSheet = <S extends string>(
+const useVariableHeightSheet = <S extends string>(
   sheetId: S,
   options?: {
     onClose?: (close: VoidFunction) => void;
   }
 ) => {
-  const sheetContext = useContext(SheetContext);
+  const sheetContext = useContext(VariableHeightSheetContext);
   if (!sheetContext) {
     throw new Error("useSheet must be used within a SheetProvider");
   }
 
   return {
-    Sheet: memo(
-      (props: Omit<SheetProps<S>, "sheetId" | "onClose" | "open">) => {
+    VariableHeightSheet: memo(
+      (
+        props: Omit<VariableHeightSheetProps<S>, "sheetId" | "onClose" | "open">
+      ) => {
         return (
-          <SheetImpl
+          <VariableHeightSheetImpl
             {...props}
             // defaults to false
             open={sheetContext.sheetMap[sheetId]?.open ?? false}
@@ -412,8 +371,8 @@ const useSheet = <S extends string>(
         );
       }
     ),
-    SheetContent: memo(SheetContentImpl),
-    SheetHeader: memo(SheetHeaderImpl),
+    VariableHeightSheetContent: memo(VariableHeightSheetContentImpl),
+    VariableHeightSheetHeader: memo(VariableHeightSheetHeaderImpl),
     openSheet: () => sheetContext.openSheet(sheetId),
     closeSheet: () => {
       if (!options?.onClose) sheetContext.closeSheet(sheetId);
@@ -422,5 +381,5 @@ const useSheet = <S extends string>(
   };
 };
 
-export { SheetProvider, useSheet };
+export { useVariableHeightSheet, VariableHeightSheetProvider };
 

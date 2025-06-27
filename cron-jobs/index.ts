@@ -30,8 +30,8 @@ const processDueMilestones = async () => {
 };
 
 const job = new CronJob(
-  // make this into 30 mins later on, maybe in prod it should be 1 hour
-  "*/15 * * * * *",
+  // make this into every 15 mins
+  "0 */15 * * * *",
   processDueMilestones,
   null,
   null,

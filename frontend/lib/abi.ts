@@ -3,14 +3,24 @@ const easyMilestonesAbi = [
     type: "function",
     name: "createTransaction",
     inputs: [
-      { name: "_deadline", type: "uint256", internalType: "uint256" },
+      {
+        name: "final_deadline",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      { name: "title", type: "string", internalType: "string" },
       {
         name: "_milestones",
         type: "tuple[]",
         internalType: "struct EasyMilestones.MilestoneWithoutStatus[]",
         components: [
           { name: "amount", type: "uint256", internalType: "uint256" },
-          { name: "deadline", type: "uint256", internalType: "uint256" },
+          {
+            name: "deadline",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          { name: "title", type: "string", internalType: "string" },
         ],
       },
     ],
@@ -29,10 +39,11 @@ const easyMilestonesAbi = [
         components: [
           { name: "amount", type: "uint256", internalType: "uint256" },
           {
-            name: "deadline",
+            name: "final_deadline",
             type: "uint256",
             internalType: "uint256",
           },
+          { name: "title", type: "string", internalType: "string" },
           {
             name: "milestones",
             type: "tuple[]",
@@ -48,12 +59,18 @@ const easyMilestonesAbi = [
                 type: "uint256",
                 internalType: "uint256",
               },
+              { name: "title", type: "string", internalType: "string" },
               {
                 name: "status",
                 type: "uint8",
                 internalType: "enum EasyMilestones.Status",
               },
             ],
+          },
+          {
+            name: "created_at",
+            type: "uint256",
+            internalType: "uint256",
           },
         ],
       },
@@ -84,6 +101,12 @@ const easyMilestonesAbi = [
         internalType: "uint256",
       },
       {
+        name: "milestone_title",
+        type: "string",
+        indexed: false,
+        internalType: "string",
+      },
+      {
         name: "timestamp",
         type: "uint256",
         indexed: false,
@@ -109,23 +132,16 @@ const easyMilestonesAbi = [
         internalType: "uint256",
       },
       {
-        name: "milestones",
-        type: "tuple[]",
+        name: "title",
+        type: "string",
         indexed: false,
-        internalType: "struct EasyMilestones.Milestone[]",
-        components: [
-          { name: "amount", type: "uint256", internalType: "uint256" },
-          {
-            name: "deadline",
-            type: "uint256",
-            internalType: "uint256",
-          },
-          {
-            name: "status",
-            type: "uint8",
-            internalType: "enum EasyMilestones.Status",
-          },
-        ],
+        internalType: "string",
+      },
+      {
+        name: "created_at",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
       },
     ],
     anonymous: false,

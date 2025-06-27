@@ -14,6 +14,7 @@ import { Route as rootRoute } from './screens/__root'
 import { Route as IndexImport } from './screens/index'
 import { Route as TransactionsIndexImport } from './screens/transactions/index'
 import { Route as ShowcaseIndexImport } from './screens/showcase/index'
+import { Route as OnboardingIndexImport } from './screens/onboarding/index'
 import { Route as CreateTransactionIndexImport } from './screens/create-transaction/index'
 
 // Create/Update Routes
@@ -33,6 +34,12 @@ const TransactionsIndexRoute = TransactionsIndexImport.update({
 const ShowcaseIndexRoute = ShowcaseIndexImport.update({
   id: '/showcase/',
   path: '/showcase/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const OnboardingIndexRoute = OnboardingIndexImport.update({
+  id: '/onboarding/',
+  path: '/onboarding/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreateTransactionIndexImport
       parentRoute: typeof rootRoute
     }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/showcase/': {
       id: '/showcase/'
       path: '/showcase'
@@ -82,6 +96,7 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create-transaction': typeof CreateTransactionIndexRoute
+  '/onboarding': typeof OnboardingIndexRoute
   '/showcase': typeof ShowcaseIndexRoute
   '/transactions': typeof TransactionsIndexRoute
 }
@@ -89,6 +104,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create-transaction': typeof CreateTransactionIndexRoute
+  '/onboarding': typeof OnboardingIndexRoute
   '/showcase': typeof ShowcaseIndexRoute
   '/transactions': typeof TransactionsIndexRoute
 }
@@ -97,19 +113,31 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/create-transaction/': typeof CreateTransactionIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
   '/showcase/': typeof ShowcaseIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/create-transaction' | '/showcase' | '/transactions'
+  fullPaths:
+    | '/'
+    | '/create-transaction'
+    | '/onboarding'
+    | '/showcase'
+    | '/transactions'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create-transaction' | '/showcase' | '/transactions'
+  to:
+    | '/'
+    | '/create-transaction'
+    | '/onboarding'
+    | '/showcase'
+    | '/transactions'
   id:
     | '__root__'
     | '/'
     | '/create-transaction/'
+    | '/onboarding/'
     | '/showcase/'
     | '/transactions/'
   fileRoutesById: FileRoutesById
@@ -118,6 +146,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreateTransactionIndexRoute: typeof CreateTransactionIndexRoute
+  OnboardingIndexRoute: typeof OnboardingIndexRoute
   ShowcaseIndexRoute: typeof ShowcaseIndexRoute
   TransactionsIndexRoute: typeof TransactionsIndexRoute
 }
@@ -125,6 +154,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreateTransactionIndexRoute: CreateTransactionIndexRoute,
+  OnboardingIndexRoute: OnboardingIndexRoute,
   ShowcaseIndexRoute: ShowcaseIndexRoute,
   TransactionsIndexRoute: TransactionsIndexRoute,
 }
@@ -141,6 +171,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/create-transaction/",
+        "/onboarding/",
         "/showcase/",
         "/transactions/"
       ]
@@ -150,6 +181,9 @@ export const routeTree = rootRoute
     },
     "/create-transaction/": {
       "filePath": "create-transaction/index.tsx"
+    },
+    "/onboarding/": {
+      "filePath": "onboarding/index.tsx"
     },
     "/showcase/": {
       "filePath": "showcase/index.tsx"

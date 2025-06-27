@@ -59,6 +59,16 @@ export const noop = (...args: any[]) => undefined;
 export const toReversed = (arr: any[]) => structuredClone(arr).reverse();
 
 /**
+ * 
+ * @param str 
+ * @param desiredLength length of string (ellipsis excluded)
+ */
+export const truncate = (str: string, desiredLength: number) => {
+  if (str.length <= desiredLength) return str;
+  return str.slice(0, desiredLength).trimEnd() + "...";
+} 
+
+/**
  * uses Promise.resolve() to wait for a given amount of time
  */
 export const wait = async (delay = 500) => {

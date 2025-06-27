@@ -32,7 +32,7 @@ const PageScreen = (
     <section
       {...props}
       className={cn(
-        "font-Satoshi w-full h-full bg-em-primary pt-8",
+        "font-Satoshi w-full h-full bg-em-primary pt-8 pb-28",
         props.className
       )}
     >
