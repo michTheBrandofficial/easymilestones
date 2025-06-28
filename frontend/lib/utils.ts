@@ -221,6 +221,14 @@ export function deepCopy<T extends DeepCopyable>(value: T): T {
   return value;
 }
 
+/**
+ * converts bigint seconds example 1751126538n seconds to Date object by multiplying by 1000n and casting to number.
+ * @dev this loses precision by the way.
+ */
+export function bigintSecondsToDate(bigint: bigint) {
+  return new Date(Number(bigint * 1000n))
+}
+
 export enum Status {
   unpaid,
   paid,

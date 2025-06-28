@@ -65,9 +65,7 @@ class MilestoneBuilder {
    * @dev this returns the milestones left
    */
   removeMilestone(index: number) {
-    console.log('milestones:', this.milestones)
     this.milestones = this.milestones.filter((_, i) => i !== index);
-    console.log('milestones:', this.milestones)
     return this.milestones;
   }
 
