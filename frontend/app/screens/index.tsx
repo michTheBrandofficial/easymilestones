@@ -8,14 +8,16 @@ import {
 import { Typography } from "@/components/typography";
 import PageScreen from "@/components/ui/screen";
 import { wagmiContractConfig } from "@/lib/contract-utils";
-import { last, Status } from "@/lib/utils";
+import { bigintSecondsToDate, formatEthValue, last, Status } from "@/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { CheckmarkBadge01Icon, Clock04Icon } from "hugeicons-react";
+import { Calendar01Icon, CheckmarkBadge01Icon, Clock04Icon, MoneySendSquareIcon } from "hugeicons-react";
 import { useLocalAccount } from "./-contexts/local-account";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { formatEther } from "viem";
 import IOSSpinner from "@/components/ui/ios-spinner";
+import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
+import { formatDate, set } from "date-fns";
 export const Route = createFileRoute("/")({
   component: Home,
 });
@@ -34,7 +36,7 @@ function Home() {
         functionName: "getTransactions",
         args: [privateKeyAccount.address],
       });
-      return transactions;
+      return transactions as Helpers.DeepMutable<typeof transactions>;
     },
   });
   const investMentDataMemo = useMemo(() => {
@@ -66,6 +68,13 @@ function Home() {
       })(),
     };
   }, [transactions]);
+  const TxDetailsSheet = useVariableHeightSheet("transaction-details-home", {
+    onClose(close) {
+      close();
+      set_tx_details(null);
+    },
+  });
+  const [tx_details, set_tx_details] = useState<Transaction | null>(null);
   return (
     <PageScreen className="flex flex-col gap-y-5">
       <Typography variant="h1">GM, Mich</Typography>
@@ -157,7 +166,14 @@ function Home() {
                 };
               })();
               return (
-                <div key={index} className="w-full flex items-start gap-x-2">
+                <div
+                  key={index}
+                  onClick={() => {
+                    set_tx_details(tx);
+                    TxDetailsSheet.openSheet();
+                  }}
+                  className="w-full flex cursor-pointer items-start gap-x-2"
+                >
                   <div
                     className={cn(
                       "size-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
@@ -236,8 +252,8 @@ function Home() {
       ) : (
         <div className="w-full flex flex-col gap-y-6 px-4 pb-4 pt-6 bg-em-tertiary rounded-[28px]">
           <Typography className="w-full font-Bricolage_Grotesque font-semibold text-center text-lg">
-          No transactions yet
-        </Typography>
+            No transactions yet
+          </Typography>
           <Button
             variant="full"
             className="w-full"
@@ -246,6 +262,80 @@ function Home() {
             Create Transaction
           </Button>
         </div>
+      )}
+      {tx_details && (
+        <TxDetailsSheet.VariableHeightSheet
+          title={"Transaction Details"}
+          backButton={"Back"}
+        >
+          <TxDetailsSheet.VariableHeightSheetContent className="flex flex-col flex-grow gap-y-3 overflow-y-auto no-scrollbar">
+            <div className="w-full pb-2 px-2.5 border-b-2 border-b-[#D3D3D3] py-2 flex flex-col gap-y-3">
+              <div className="w-full flex items-center justify-between gap-x-2">
+                <Typography className="text-em-text">
+                  Transaction Title:
+                </Typography>
+                <Typography className="text-em-green font-medium font-Bricolage_Grotesque text-base overflow-ellipsis overflow-hidden bg-em-green/10 rounded-xl px-3 py-1">
+                  {tx_details.title}
+                </Typography>
+              </div>
+              <div className="w-full flex items-center justify-between gap-x-2">
+                <Typography className="text-em-text">Total:</Typography>
+                <Typography className="text-em-tertiary font-medium font-Bricolage_Grotesque text-base overflow-ellipsis overflow-hidden bg-em-primary/60 rounded-xl px-3 py-1">
+                  {formatEthValue(tx_details.amount)} ETH
+                </Typography>
+              </div>
+            </div>
+            <div className="flex-grow grid px-2.5 pt-5 overflow-y-auto no-scrollbar mb-4">
+              <div className="flex flex-col relative ">
+                {tx_details.milestones.map((milestone, index) => (
+                  <div key={index} className="w-full flex items-start gap-x-3">
+                    <div
+                      className={cn(
+                        "size-12 min-w-12 min-h-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
+                        {
+                          "bg-em-green/50": milestone.status === Status.paid,
+                        }
+                      )}
+                    >
+                      {milestone.status === Status.paid ? (
+                        <CheckmarkBadge01Icon className={cn("size-7")} />
+                      ) : (
+                        <Clock04Icon className={cn("size-7")} />
+                      )}
+                    </div>
+                    <div className="h-[160px] flex-grow space-y-3">
+                      <Typography className="font-bold font-Bricolage_Grotesque rounded-xl pl-4 pr-3 py-2.5 bg-gray-400/10 backdrop-blur-[12px] flex items-center justify-between">
+                        {milestone.title}
+                      </Typography>
+                      <div className="w-full flex items-center gap-x-3">
+                        <Calendar01Icon />
+                        <Typography className="font-bold font-Bricolage_Grotesque bg-orange-200 px-3 py-1 rounded-lg">
+                          {formatDate(
+                            bigintSecondsToDate(milestone.deadline),
+                            "do MMMM, yyyy"
+                          )}
+                        </Typography>
+                      </div>
+                      <div className="w-full flex items-center gap-x-3">
+                        <MoneySendSquareIcon />
+                        <Typography className="font-bold bg-lime-200 px-3 py-1 rounded-lg">
+                          {formatEthValue(milestone.amount)} ETH
+                        </Typography>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <Button
+              variant="full"
+              className="w-full"
+              onTap={() => TxDetailsSheet.closeSheet()}
+            >
+              Close
+            </Button>
+          </TxDetailsSheet.VariableHeightSheetContent>
+        </TxDetailsSheet.VariableHeightSheet>
       )}
     </PageScreen>
   );

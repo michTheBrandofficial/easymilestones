@@ -125,7 +125,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
             </div>
             <div className="w-full flex items-center justify-between gap-x-2">
               <Typography className="text-em-text text-sm">
-                Tx Title:
+                Transaction Title:
               </Typography>
               <Typography className="text-em-green font-medium font-Bricolage_Grotesque text-base overflow-ellipsis overflow-hidden bg-em-green/10 rounded-xl px-3 py-1">
                 {tx_payload.title}
