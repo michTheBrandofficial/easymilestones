@@ -1,4 +1,5 @@
 import { CSSProperties } from "react";
+import { formatEther } from "viem";
 
 /**
  * Scales the size of a dimension based on a given size multiplier
@@ -59,14 +60,14 @@ export const noop = (...args: any[]) => undefined;
 export const toReversed = (arr: any[]) => structuredClone(arr).reverse();
 
 /**
- * 
- * @param str 
+ *
+ * @param str
  * @param desiredLength length of string (ellipsis excluded)
  */
 export const truncate = (str: string, desiredLength: number) => {
   if (str.length <= desiredLength) return str;
   return str.slice(0, desiredLength).trimEnd() + "...";
-} 
+};
 
 /**
  * uses Promise.resolve() to wait for a given amount of time
@@ -219,6 +220,33 @@ export function deepCopy<T extends DeepCopyable>(value: T): T {
 
   // Handle primitives (strings, numbers, booleans)
   return value;
+}
+
+/**
+ * converts bigint seconds example 1751126538n seconds to Date object by multiplying by 1000n and casting to number.
+ * @dev this loses precision by the way.
+ */
+export function bigintSecondsToDate(bigint: bigint) {
+  return new Date(Number(bigint * 1000n));
+}
+
+// function that removes 0s at the back of a string
+export function removeTrailingZeros(str: string) {
+  // if string should represent a float then make it a float e.g 1.0 shouldn't be 1. it should be 1
+  if (str.includes(".")) {
+    str = str.replace(/0+$/, "");
+    if (str.endsWith(".")) {
+      str = str.slice(0, -1);
+    }
+    return str;
+  } else return str.replace(/0+$/, "")
+}
+
+/**
+ * @dev removes trailing 0s and formats eth value to 4 decimal places
+ */
+export function formatEthValue(value: bigint) {
+  return removeTrailingZeros(parseFloat(formatEther(value)).toFixed(4));
 }
 
 export enum Status {

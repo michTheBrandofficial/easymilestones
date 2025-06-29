@@ -105,7 +105,7 @@ const Milestone = ({ index, ...props }: MilestoneProps) => {
         })}
       >
         {milestone.deadline
-          ? `Deadline: ${formatDate(milestone.deadline, "dd MMMM, yyyy")}`
+          ? `Deadline: ${formatDate(milestone.deadline, "EEEE do MMMM, yyyy")}`
           : "Set a deadline"}
       </motion.p>
       <div className="flex gap-x-4 pr-1 h-fit">

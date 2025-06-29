@@ -10,11 +10,17 @@ import {
   Tick02Icon,
 } from "hugeicons-react";
 import React, { useState } from "react";
-import { formatEther } from "viem";
 import { useLocalAccount } from "../../-contexts/local-account";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import easyMilestonesAbi from "@/lib/abi";
 import { useToast } from "@/components/ui/toast-context";
+import Toggle from "@/components/ui/toggle";
+import {
+  bigintSecondsToDate,
+  formatEthValue,
+  truncate,
+  wait,
+} from "@/lib/utils";
 
 type Props = {
   tx_payload: TransactionPayload;
@@ -82,38 +88,57 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
       queryClient.invalidateQueries({ queryKey: ["account-balance"] });
     },
     onError(err) {
-      showToast("info", err.message);
+      set_tx_state("still_in_confirmation");
+      showToast("info", err.message || "Something went wrong");
     },
+  });
+  const [permissions, setPermissions] = useState({
+    cannot_access_assets: false,
+    authorization_to_lock: false,
   });
   const queryClient = useQueryClient();
   return (
-    <section className="flex flex-col flex-grow">
+    <section className="flex flex-col flex-grow overflow-y-auto no-scrollbar">
       {/* this will act as sheet header */}
-      {tx_state !== "confirmed" && (
+      {tx_state === "still_in_confirmation" && (
         <div className="w-full pb-2 px-2.5 border-b-2 border-b-[#D3D3D3] ">
-          <div className="w-full px-1.5 py-2 flex flex-col gap-y-3">
+          <div className="w-full py-2 flex flex-col gap-y-3">
             <div className="w-full flex items-center justify-between gap-x-2">
               <Typography className="text-em-text text-sm">Address:</Typography>
-              <Typography className="text-em-dark flex-grow pl-3 font-medium font-Bricolage_Grotesque overflow-ellipsis overflow-hidden">
+              <Typography className="text-em-dark flex-grow pl-3 font-medium font-Bricolage_Grotesque text-base overflow-ellipsis overflow-hidden">
                 {privateKeyAccount?.address}
               </Typography>
             </div>
             <div className="w-full flex items-center justify-between gap-x-2">
               <Typography className="text-em-text text-sm">Balance:</Typography>
-              <Typography className="text-em-dark font-medium font-Bricolage_Grotesque text-lg overflow-ellipsis overflow-hidden">
-                {parseFloat(formatEther(balance || 0n)).toFixed(2)} ETH
+              <Typography className="text-em-dark font-medium font-Bricolage_Grotesque text-base overflow-ellipsis overflow-hidden">
+                {formatEthValue(balance || 0n)} ETH
+              </Typography>
+            </div>
+            <div className="h-[1px] hidden bg-[#D3D3D3]" />
+
+            <div className="w-full flex items-center justify-between gap-x-2">
+              <Typography className="text-em-text text-sm">Total:</Typography>
+              <Typography className="text-em-tertiary font-medium font-Bricolage_Grotesque text-base overflow-ellipsis overflow-hidden bg-em-primary/60 rounded-xl px-3 py-1">
+                {formatEthValue(tx_payload.amount)} ETH
               </Typography>
             </div>
             <div className="w-full flex items-center justify-between gap-x-2">
-              <Typography className="text-em-text">Total:</Typography>
-              <Typography className="text-em-tertiary font-medium font-Bricolage_Grotesque text-lg overflow-ellipsis overflow-hidden bg-em-primary/60 rounded-xl px-3 py-1">
-                {parseFloat(formatEther(tx_payload.amount)).toFixed(2)} ETH
+              <Typography className="text-em-text text-sm">
+                Tx Title:
+              </Typography>
+              <Typography className="text-em-green font-medium font-Bricolage_Grotesque text-base overflow-ellipsis overflow-hidden bg-em-green/10 rounded-xl px-3 py-1">
+                {tx_payload.title}
               </Typography>
             </div>
           </div>
         </div>
       )}
-      {createTransactionMutation.isPending && <IOSSpinner />}
+      {createTransactionMutation.isPending && (
+        <div className="flex-grow w-full flex flex-col items-center justify-center">
+          <IOSSpinner />
+        </div>
+      )}
       {tx_state === "confirmed" && (
         <div className="w-full flex flex-col items-center gap-y-3 my-auto">
           <div className="p-3 w-fit bg-green-100 text-green-700 rounded-full">
@@ -124,13 +149,13 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
               Successfully stored
             </Typography>
             <Typography className="text-em-dark font-Bricolage_Grotesque font-bold text-xl">
-              {parseFloat(formatEther(tx_payload.amount)).toFixed(2)} ETH
+              {formatEthValue(tx_payload.amount)} ETH
             </Typography>
           </div>
         </div>
       )}
       {tx_state === "still_in_confirmation" && (
-        <div className="h-full grid grid-cols-[20%_80%] gap-x-0 px-[18px] pt-5 overflow-y-auto no-scrollbar">
+        <div className="flex-grow grid grid-cols-[20%_80%] gap-x-0 px-[18px] pt-5 overflow-y-auto no-scrollbar mb-4">
           <div className="flex flex-col ">
             {tx_payload.milestones.map((_, index) => {
               const sanePeoplesIndex = index + 1;
@@ -153,7 +178,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
                   <Calendar01Icon />
                   <Typography className="font-bold font-Bricolage_Grotesque bg-orange-200 px-3 py-1 rounded-lg">
                     {formatDate(
-                      new Date(Number(milestone.deadline * 1000n)),
+                      bigintSecondsToDate(milestone.deadline),
                       "do MMMM, yyyy"
                     )}
                   </Typography>
@@ -161,7 +186,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
                 <div className="w-full flex items-center gap-x-3">
                   <MoneySendSquareIcon />
                   <Typography className="font-bold bg-lime-200 px-3 py-1 rounded-lg">
-                    {parseFloat(formatEther(milestone.amount)).toFixed(2)} ETH
+                    {formatEthValue(milestone.amount)} ETH
                   </Typography>
                 </div>
               </div>
@@ -169,15 +194,66 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
           </div>
         </div>
       )}
+      {tx_state === "still_in_confirmation" && (
+        <div className="w-full flex flex-col gap-y-3 mt-auto mb-3 px-2.5">
+          <div className="w-full flex items-center gap-x-3">
+            <Toggle
+              checked={permissions.authorization_to_lock}
+              onChange={(checked) =>
+                setPermissions({
+                  ...permissions,
+                  authorization_to_lock: checked,
+                })
+              }
+            />
+            <Typography className="text-xs text-em-dark">
+              I authorize EasyMilestones to lock{" "}
+              {formatEthValue(tx_payload.amount)} ETH immediately and return it
+              in milestones as defined above till{" "}
+              {formatDate(
+                bigintSecondsToDate(tx_payload.final_deadline),
+                "EEEE do MMMM, yyyy"
+              )}
+              . I confirm and approve this transaction.
+            </Typography>
+          </div>
+          <div className="h-[1px] bg-[#D3D3D3]" />
+          <div className="w-full flex items-center gap-x-3">
+            <Toggle
+              checked={permissions.cannot_access_assets}
+              onChange={(checked) =>
+                setPermissions({
+                  ...permissions,
+                  cannot_access_assets: checked,
+                })
+              }
+            />
+            <Typography className="text-xs text-em-dark">
+              I hereby acknowledge that this Transaction{" "}
+              <span className="bg-em-tertiary ">
+                {truncate(tx_payload.title, 20)}
+              </span>{" "}
+              CANNOT be broken once it has been created.
+            </Typography>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col gap-y-3 mt-auto px-2.5">
         <Button
           variant="full"
           className="w-full"
-          disabled={createTransactionMutation.isPending}
+          disabled={
+            createTransactionMutation.isPending ||
+            !permissions.cannot_access_assets ||
+            !permissions.authorization_to_lock
+          }
           onTap={() => {
-            tx_state === "confirmed"
-              ? props.onTransactionCreatedSuccessClose()
-              : createTransactionMutation.mutateAsync();
+            if (tx_state === "confirmed")
+              props.onTransactionCreatedSuccessClose();
+            else {
+              set_tx_state("pending");
+              createTransactionMutation.mutateAsync();
+            }
           }}
         >
           {tx_state === "confirmed" ? "Close" : "Confirm"}

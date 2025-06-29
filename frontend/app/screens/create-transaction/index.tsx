@@ -3,7 +3,7 @@ import { Typography } from "@/components/typography";
 import { MoneyExchange03Icon } from "hugeicons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import PageScreen from "@/components/ui/screen";
-import { inlineSwitch } from "@/lib/utils";
+import { inlineSwitch, wait } from "@/lib/utils";
 import WaterBodySVG from "../-components/water-body-svg";
 import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -66,17 +66,10 @@ function CreateTransaction() {
     if (step === MAX_STEP) {
       try {
         const tx_payload = milestoneBuilder.build();
-        console.log(tx_payload);
         setTx_Payload(tx_payload);
         ConfirmationSheet.openSheet();
       } catch (error) {
-        ErrorMatcher.use(error)
-          .match(MilestoneBuilderError, (err) => {
-            showToast("info", err.message);
-          })
-          .match(Error, (err) => {
-            showToast("info", err.message);
-          });
+        showToast('info', (error as MilestoneBuilderError).message)
       }
     } else if (step === 1) {
       if (txTitle === "") return;
@@ -340,14 +333,15 @@ function CreateTransaction() {
                         else reject(didMilestoneUpdate);
                       });
                     }}
-                    onAdd={() => {
+                    onAdd={async () => {
                       milestoneBuilder.addEmptyMilestone(index);
+                      // wait sometime before executing
+                      await wait(200)
                       const nextMilestone =
                         milestoneContainerRef.current?.querySelector<HTMLDivElement>(
                           `[data-milestone='${index + 1}']`
                         );
                       if (nextMilestone) {
-                        // temp4.scroll({ top: (temp6.offsetTop + temp6.getBoundingClientRect().height) - temp4.getBoundingClientRect().height, behavior: 'smooth' })
                         milestoneContainerRef.current?.scroll({
                           top:
                             nextMilestone.offsetTop +
@@ -356,13 +350,12 @@ function CreateTransaction() {
                               .height,
                           behavior: "smooth",
                         });
-                        setTimeout(() => {
-                          const input =
-                            nextMilestone.querySelector<HTMLInputElement>(
-                              "input[name='title']"
-                            );
-                          if (input) input.focus();
-                        }, 300);
+                        await wait(500)
+                        const input =
+                          nextMilestone.querySelector<HTMLInputElement>(
+                            "input[name='title']"
+                          );
+                        if (input) input.focus();
                       }
                     }}
                     onRemove={() => {
@@ -372,6 +365,7 @@ function CreateTransaction() {
                           "At least one milestone must be provided"
                         );
                       milestoneBuilder.removeMilestone(index);
+                      showToast("info", "Milestone removed");
                     }}
                   />
                 ))}
@@ -457,6 +451,9 @@ function CreateTransaction() {
               onTransactionCreatedSuccessClose={() => {
                 ConfirmationSheet.closeSheet();
                 milestoneBuilder.clear();
+                setTxTitle('');
+                focusOnTxTitle()
+                setStep(1)
               }}
             />
           </ConfirmationSheet.SheetContent>
