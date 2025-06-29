@@ -136,7 +136,7 @@ const SheetProvider = ({ children }: SheetUnderlayProps) => {
     >
       <div
         id="app_sheet_container"
-        className="h-screen w-screen bg-black flex items-center justify-center relative overflow-y-auto no-scrollbar"
+        className="h-screen w-screen bg-black flex items-center justify-center relative overflow-y-hidden"
       >
         <motion.div
           initial={{

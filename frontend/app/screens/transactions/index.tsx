@@ -22,8 +22,9 @@ import { useLocalAccount } from "../-contexts/local-account";
 import { useQuery } from "@tanstack/react-query";
 import { wagmiContractConfig } from "@/lib/contract-utils";
 import IOSSpinner from "@/components/ui/ios-spinner";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { formatEther } from "viem";
+import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
 
 export const Route = createFileRoute("/transactions/")({
   component: Transactions,
@@ -61,9 +62,11 @@ function Transactions() {
       }),
     };
   }, [transactions]);
+  const TxDetailsSheet = useVariableHeightSheet("transaction-details");
+  const [tx_details, set_tx_details] = useState<Transaction | null>(null)
   return (
     <PageScreen className="flex flex-col flex-grow gap-y-5 relative overflow-y-auto no-scrollbar pb-0">
-      <div className="w-full flex items-center justify-between  ">
+      <div className="w-full flex items-center justify-between">
         <Typography variant="h1">Transactions</Typography>
         <Button
           variant="icon"
@@ -146,7 +149,10 @@ function Transactions() {
   );
 }
 
-const Transaction = (props: { tx: Transaction }) => {
+const Transaction = (props: {
+  tx: Transaction;
+  onClickTransaction?: () => void;
+}) => {
   const tx = props.tx;
   const txParameters = (() => {
     return {
@@ -270,5 +276,3 @@ const Transaction = (props: { tx: Transaction }) => {
     </div>
   );
 };
-
-// onclick milestone show view in sheet
