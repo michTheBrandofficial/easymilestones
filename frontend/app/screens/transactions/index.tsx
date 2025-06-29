@@ -11,7 +11,7 @@ import {
 } from "hugeicons-react";
 import { formatDate } from "date-fns";
 import { cn } from "@/components/cn";
-import { last, Status } from "@/lib/utils";
+import { bigintSecondsToDate, formatEthValue, last, Status } from "@/lib/utils";
 import {
   LastLittleMilestoneSVG,
   LittleMilestoneSVG,
@@ -174,7 +174,7 @@ const Transaction = (props: { tx: Transaction }) => {
               {tx.title}
             </Typography>
             <Typography className="font-bold text- text-em-text whitespace-nowrap">
-              {parseFloat(formatEther(tx.amount)).toFixed(2)} ETH
+              {formatEthValue(tx.amount)} ETH
             </Typography>
           </div>
           <div className="w-full mt-4 flex py-6">
@@ -213,15 +213,12 @@ const Transaction = (props: { tx: Transaction }) => {
           <div className="w-full flex items-center justify-between mt-4 ">
             <div className="flex items-center gap-x-1.5 text-em-text text-sm">
               <RocketIcon width={16} height={16} />
-              {formatDate(
-                new Date(Number(tx.created_at * 1000n)),
-                "MMM dd, yyyy"
-              )}
+              {formatDate(bigintSecondsToDate(tx.created_at), "MMM dd, yyyy")}
             </div>
             <div className="flex items-center gap-x-1.5 text-em-text text-sm">
               <RocketIcon width={16} height={16} className="rotate-90" />
               {formatDate(
-                new Date(Number(tx.final_deadline * 1000n)),
+                bigintSecondsToDate(tx.final_deadline),
                 "MMM dd, yyyy"
               )}
             </div>
@@ -253,14 +250,14 @@ const Transaction = (props: { tx: Transaction }) => {
                 </Typography>
                 <Typography className="font-medium text-em-text text-xs">
                   {formatDate(
-                    new Date(Number(milestone.deadline * 1000n)),
+                    bigintSecondsToDate(milestone.deadline),
                     "MMM dd, yyyy"
                   )}
                 </Typography>
               </div>
               <div className="w-fit flex flex-col gap-y-0.5 items-end ml-auto">
                 <Typography className="font-bold whitespace-nowrap">
-                  {parseFloat(formatEther(milestone.amount)).toFixed(2)} ETH
+                  {formatEthValue(milestone.amount)} ETH
                 </Typography>
                 <Typography className="font-medium text-em-text text-xs">
                   {milestone.status === Status.paid ? "Completed" : "Ongoing"}

@@ -451,6 +451,9 @@ function CreateTransaction() {
               onTransactionCreatedSuccessClose={() => {
                 ConfirmationSheet.closeSheet();
                 milestoneBuilder.clear();
+                setTxTitle('');
+                focusOnTxTitle()
+                setStep(1)
               }}
             />
           </ConfirmationSheet.SheetContent>

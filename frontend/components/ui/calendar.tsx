@@ -275,7 +275,9 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
   ...props
 }) => {
   const [selectedDate, setSelectedDate] = useState(props.value ?? new Date());
-  const [calendarDays, setCalendarDays] = useState(getCalendarDays(props.value ?? new Date()));
+  const [calendarDays, setCalendarDays] = useState(
+    getCalendarDays(props.value ?? new Date())
+  );
   return (
     <section
       className={cn(
@@ -318,6 +320,7 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
             newDate.setMonth(monthIndex);
             setSelectedDate(newDate);
             props.onChange?.(newDate as Date);
+            setCalendarDays(getCalendarDays(newDate));
           }}
         />
         <SearchableDropdown
@@ -337,6 +340,7 @@ const DatePickerComp: React.FC<DatePickerProps> = ({
             newDate.setFullYear(Number(option.value));
             setSelectedDate(newDate);
             props.onChange?.(newDate as Date);
+            setCalendarDays(getCalendarDays(newDate));
           }}
         />
         <Button

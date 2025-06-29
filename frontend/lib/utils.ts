@@ -1,4 +1,5 @@
 import { CSSProperties } from "react";
+import { formatEther } from "viem";
 
 /**
  * Scales the size of a dimension based on a given size multiplier
@@ -59,14 +60,14 @@ export const noop = (...args: any[]) => undefined;
 export const toReversed = (arr: any[]) => structuredClone(arr).reverse();
 
 /**
- * 
- * @param str 
+ *
+ * @param str
  * @param desiredLength length of string (ellipsis excluded)
  */
 export const truncate = (str: string, desiredLength: number) => {
   if (str.length <= desiredLength) return str;
   return str.slice(0, desiredLength).trimEnd() + "...";
-} 
+};
 
 /**
  * uses Promise.resolve() to wait for a given amount of time
@@ -226,7 +227,19 @@ export function deepCopy<T extends DeepCopyable>(value: T): T {
  * @dev this loses precision by the way.
  */
 export function bigintSecondsToDate(bigint: bigint) {
-  return new Date(Number(bigint * 1000n))
+  return new Date(Number(bigint * 1000n));
+}
+
+// function that removes 0s at the back of a string
+export function removeTrailingZeros(str: string) {
+  return str.replace(/0+$/, "");
+}
+
+/**
+ * @dev removes trailing 0s and formats eth value to 4 decimal places
+ */
+export function formatEthValue(value: bigint) {
+  return removeTrailingZeros(parseFloat(formatEther(value)).toFixed(4));
 }
 
 export enum Status {
