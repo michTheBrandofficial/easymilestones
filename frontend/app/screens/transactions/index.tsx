@@ -1,30 +1,26 @@
 import { Button } from "@/components/buttons";
-import RocketIcon from "@/components/icons/rocket";
 import { Typography } from "@/components/typography";
 import PageScreen from "@/components/ui/screen";
-import FakeData from "@/lib/fake-data";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
+  Calendar01Icon,
   CheckmarkBadge01Icon,
   Clock04Icon,
+  MoneySendSquareIcon,
   PlusSignIcon,
 } from "hugeicons-react";
-import { formatDate } from "date-fns";
-import { cn } from "@/components/cn";
-import { bigintSecondsToDate, formatEthValue, last, Status } from "@/lib/utils";
-import {
-  LastLittleMilestoneSVG,
-  LittleMilestoneSVG,
-  MilestoneSVG,
-} from "@/components/icons/transaction-list-svgs";
+import { bigintSecondsToDate, formatEthValue, Status } from "@/lib/utils";
 import Tabs from "@/components/ui/tabs";
 import { useLocalAccount } from "../-contexts/local-account";
 import { useQuery } from "@tanstack/react-query";
 import { wagmiContractConfig } from "@/lib/contract-utils";
 import IOSSpinner from "@/components/ui/ios-spinner";
 import { useMemo, useState } from "react";
-import { formatEther } from "viem";
+import Transaction from "./-components/transaction";
 import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
+import { formatDate } from "date-fns";
+import { MilestoneSVG } from "@/components/icons/transaction-list-svgs";
+import { cn } from "@/components/cn";
 
 export const Route = createFileRoute("/transactions/")({
   component: Transactions,
@@ -62,8 +58,13 @@ function Transactions() {
       }),
     };
   }, [transactions]);
-  const TxDetailsSheet = useVariableHeightSheet("transaction-details");
-  const [tx_details, set_tx_details] = useState<Transaction | null>(null)
+  const TxDetailsSheet = useVariableHeightSheet("transaction-details", {
+    onClose(close) {
+      close();
+      set_tx_details(null);
+    },
+  });
+  const [tx_details, set_tx_details] = useState<Transaction | null>(null);
   return (
     <PageScreen className="flex flex-col flex-grow gap-y-5 relative overflow-y-auto no-scrollbar pb-0">
       <div className="w-full flex items-center justify-between">
@@ -124,7 +125,14 @@ function Transactions() {
             value="all"
           >
             {transactionTabsMemo.all.map((tx, index) => (
-              <Transaction key={index} tx={tx} />
+              <Transaction
+                key={index}
+                tx={tx}
+                onClickTransaction={() => {
+                  set_tx_details(tx);
+                  TxDetailsSheet.openSheet();
+                }}
+              />
             ))}
           </Tabs.Content>
           <Tabs.Content
@@ -132,7 +140,14 @@ function Transactions() {
             value="ongoing"
           >
             {transactionTabsMemo.ongoing.map((tx, index) => (
-              <Transaction key={index} tx={tx} />
+              <Transaction
+                key={index}
+                tx={tx}
+                onClickTransaction={() => {
+                  set_tx_details(tx);
+                  TxDetailsSheet.openSheet();
+                }}
+              />
             ))}
           </Tabs.Content>
           <Tabs.Content
@@ -140,139 +155,92 @@ function Transactions() {
             value="completed"
           >
             {transactionTabsMemo.completed.map((tx, index) => (
-              <Transaction key={index} tx={tx} />
+              <Transaction
+                key={index}
+                tx={tx}
+                onClickTransaction={() => {
+                  set_tx_details(tx);
+                  TxDetailsSheet.openSheet();
+                }}
+              />
             ))}
           </Tabs.Content>
         </Tabs>
       )}
+      {tx_details && (
+        <TxDetailsSheet.VariableHeightSheet
+          title={"Transaction Details"}
+          backButton={"Back"}
+        >
+          <TxDetailsSheet.VariableHeightSheetContent className="flex flex-col flex-grow gap-y-3 overflow-y-auto no-scrollbar">
+            <div className="w-full pb-2 px-2.5 border-b-2 border-b-[#D3D3D3] py-2 flex flex-col gap-y-3">
+              <div className="w-full flex items-center justify-between gap-x-2">
+                <Typography className="text-em-text">
+                  Transaction Title:
+                </Typography>
+                <Typography className="text-em-green font-medium font-Bricolage_Grotesque text-base overflow-ellipsis overflow-hidden bg-em-green/10 rounded-xl px-3 py-1">
+                  {tx_details.title}
+                </Typography>
+              </div>
+              <div className="w-full flex items-center justify-between gap-x-2">
+                <Typography className="text-em-text">Total:</Typography>
+                <Typography className="text-em-tertiary font-medium font-Bricolage_Grotesque text-base overflow-ellipsis overflow-hidden bg-em-primary/60 rounded-xl px-3 py-1">
+                  {formatEthValue(tx_details.amount)} ETH
+                </Typography>
+              </div>
+            </div>
+            <div className="flex-grow grid px-2.5 pt-5 overflow-y-auto no-scrollbar mb-4">
+              <div className="flex flex-col relative ">
+                {tx_details.milestones.map((milestone, index) => (
+                  <div key={index} className="w-full flex items-start gap-x-3">
+                    <div
+                      className={cn(
+                        "size-12 min-w-12 min-h-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
+                        {
+                          "bg-em-green/50": milestone.status === Status.paid,
+                        }
+                      )}
+                    >
+                      {milestone.status === Status.paid ? (
+                        <CheckmarkBadge01Icon className={cn("size-7")} />
+                      ) : (
+                        <Clock04Icon className={cn("size-7")} />
+                      )}
+                    </div>
+                    <div className="h-[160px] flex-grow space-y-3">
+                      <Typography className="font-bold font-Bricolage_Grotesque rounded-xl pl-4 pr-3 py-2.5 bg-gray-400/10 backdrop-blur-[12px] flex items-center justify-between">
+                        {milestone.title}
+                      </Typography>
+                      <div className="w-full flex items-center gap-x-3">
+                        <Calendar01Icon />
+                        <Typography className="font-bold font-Bricolage_Grotesque bg-orange-200 px-3 py-1 rounded-lg">
+                          {formatDate(
+                            bigintSecondsToDate(milestone.deadline),
+                            "do MMMM, yyyy"
+                          )}
+                        </Typography>
+                      </div>
+                      <div className="w-full flex items-center gap-x-3">
+                        <MoneySendSquareIcon />
+                        <Typography className="font-bold bg-lime-200 px-3 py-1 rounded-lg">
+                          {formatEthValue(milestone.amount)} ETH
+                        </Typography>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <Button
+              variant="full"
+              className="w-full"
+              onTap={() => TxDetailsSheet.closeSheet()}
+            >
+              Close
+            </Button>
+          </TxDetailsSheet.VariableHeightSheetContent>
+        </TxDetailsSheet.VariableHeightSheet>
+      )}
     </PageScreen>
   );
 }
-
-const Transaction = (props: {
-  tx: Transaction;
-  onClickTransaction?: () => void;
-}) => {
-  const tx = props.tx;
-  const txParameters = (() => {
-    return {
-      firstMilestoneCompleted: tx.milestones[0].status === Status.paid,
-      hasMultipleMilestones: tx.milestones.length > 1,
-      secondMilestoneCompleted: tx.milestones[1]?.status === Status.paid,
-      moreThan2Milestones:
-        tx.milestones.length > 2
-          ? {
-              inBetween: tx.milestones.slice(1, tx.milestones.length - 1),
-              lastMilestoneCompleted:
-                last(tx.milestones).status === Status.paid,
-            }
-          : null,
-    };
-  })();
-  // get search params and scroll to it using props.index
-  return (
-    // change bg to em-tertiary
-    <div className="w-full bg-[#f1f1f1] rounded-[28px] max-h-96">
-      <div className="w-full px-[3px] pt-[3px] rounded-[inherit] ">
-        <div className="w-full bg-white px-4 pt-4 pb-3 rounded-[inherit] ">
-          <div className="w-full flex  gap-y-2  justify-between">
-            <Typography className="font-bold text-lg whitespace-nowrap overflow-hidden overflow-ellipsis w-full">
-              {tx.title}
-            </Typography>
-            <Typography className="font-bold text- text-em-text whitespace-nowrap">
-              {formatEthValue(tx.amount)} ETH
-            </Typography>
-          </div>
-          <div className="w-full mt-4 flex py-6">
-            <MilestoneSVG
-              size={1}
-              className="flex-1 h-fit "
-              completed={txParameters.firstMilestoneCompleted}
-            />
-            {txParameters.hasMultipleMilestones &&
-              (txParameters.moreThan2Milestones ? (
-                <>
-                  <LittleMilestoneSVG
-                    size={0.8}
-                    completed={txParameters.secondMilestoneCompleted}
-                    className="-mt-1 -ml-[10px] flex-1 h-fit max-w-[40px] "
-                  />
-                  <Typography className="text-em-text font-bold text-sm -mt-1.5 mx-1.5 whitespace-nowrap">
-                    {txParameters.moreThan2Milestones.inBetween.length} more
-                  </Typography>
-                  <LastLittleMilestoneSVG
-                    size={0.8}
-                    completed={
-                      txParameters.moreThan2Milestones.lastMilestoneCompleted
-                    }
-                    className="-mt-[6px] flex-1 h-fit max-w-[42px]"
-                  />
-                </>
-              ) : (
-                <MilestoneSVG
-                  size={1}
-                  completed={txParameters.secondMilestoneCompleted}
-                  className="flex-1 h-fit -mt-2.5 -ml-[4px]"
-                />
-              ))}
-          </div>
-          <div className="w-full flex items-center justify-between mt-4 ">
-            <div className="flex items-center gap-x-1.5 text-em-text text-sm">
-              <RocketIcon width={16} height={16} />
-              {formatDate(bigintSecondsToDate(tx.created_at), "MMM dd, yyyy")}
-            </div>
-            <div className="flex items-center gap-x-1.5 text-em-text text-sm">
-              <RocketIcon width={16} height={16} className="rotate-90" />
-              {formatDate(
-                bigintSecondsToDate(tx.final_deadline),
-                "MMM dd, yyyy"
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full space-y-6 px-3.5 pt-4 pb-5 max-h-[160px] overflow-y-auto no-scrollbar ">
-        <div className="space-y-5">
-          {tx.milestones.map((milestone, index) => (
-            <div key={index} className="w-full flex items-start gap-x-2">
-              <div
-                className={cn(
-                  "size-12 min-w-12 min-h-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
-                  {
-                    "bg-em-green/50": milestone.status === Status.paid,
-                  }
-                )}
-              >
-                {milestone.status === Status.paid ? (
-                  <CheckmarkBadge01Icon className={cn("size-7")} />
-                ) : (
-                  <Clock04Icon className={cn("size-7")} />
-                )}
-              </div>
-              <div className="flex flex-col gap-y-0.5 w-[65%] items-start ">
-                <Typography className="whitespace-nowrap overflow-hidden overflow-ellipsis w-full">
-                  {milestone.title}
-                </Typography>
-                <Typography className="font-medium text-em-text text-xs">
-                  {formatDate(
-                    bigintSecondsToDate(milestone.deadline),
-                    "MMM dd, yyyy"
-                  )}
-                </Typography>
-              </div>
-              <div className="w-fit flex flex-col gap-y-0.5 items-end ml-auto">
-                <Typography className="font-bold whitespace-nowrap">
-                  {formatEthValue(milestone.amount)} ETH
-                </Typography>
-                <Typography className="font-medium text-em-text text-xs">
-                  {milestone.status === Status.paid ? "Completed" : "Ongoing"}
-                </Typography>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
