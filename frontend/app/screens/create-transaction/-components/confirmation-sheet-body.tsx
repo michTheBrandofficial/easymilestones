@@ -10,7 +10,6 @@ import {
   Tick02Icon,
 } from "hugeicons-react";
 import React, { useState } from "react";
-import { formatEther } from "viem";
 import { useLocalAccount } from "../../-contexts/local-account";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import easyMilestonesAbi from "@/lib/abi";
@@ -61,7 +60,6 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
   const showToast = useToast();
   const createTransactionMutation = useMutation({
     mutationFn: async () => {
-      await wait(7000);
       const { request: simulatedContractRequest } =
         await publicClient.simulateContract({
           address: deployedContractAddress,
@@ -91,7 +89,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
     },
     onError(err) {
       set_tx_state("still_in_confirmation");
-      showToast("info", err.message);
+      showToast("info", err.message || "Something went wrong");
     },
   });
   const [permissions, setPermissions] = useState({
@@ -136,7 +134,11 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
           </div>
         </div>
       )}
-      {createTransactionMutation.isPending && <IOSSpinner />}
+      {createTransactionMutation.isPending && (
+        <div className="flex-grow w-full flex flex-col items-center justify-center">
+          <IOSSpinner />
+        </div>
+      )}
       {tx_state === "confirmed" && (
         <div className="w-full flex flex-col items-center gap-y-3 my-auto">
           <div className="p-3 w-fit bg-green-100 text-green-700 rounded-full">

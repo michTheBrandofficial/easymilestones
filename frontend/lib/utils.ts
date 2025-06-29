@@ -232,7 +232,14 @@ export function bigintSecondsToDate(bigint: bigint) {
 
 // function that removes 0s at the back of a string
 export function removeTrailingZeros(str: string) {
-  return str.replace(/0+$/, "");
+  // if string should represent a float then make it a float e.g 1.0 shouldn't be 1. it should be 1
+  if (str.includes(".")) {
+    str = str.replace(/0+$/, "");
+    if (str.endsWith(".")) {
+      str = str.slice(0, -1);
+    }
+    return str;
+  } else return str.replace(/0+$/, "")
 }
 
 /**

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/shadcn-utils";
+import { wait } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 export interface Option {
@@ -59,6 +60,23 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (isOpen === true) {
+      if (!value?.value) return;
+      (async () => {
+        await wait(300);
+        const selectedOption =
+          dropdownRef.current?.querySelector<HTMLDivElement>(
+            `[data-option='${value?.value || ""}']`
+          );
+        selectedOption?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      })();
+    }
+  }, [isOpen]);
+
   // Reset search term when dropdown closes
   useEffect(() => {
     if (!isOpen) {
@@ -78,16 +96,6 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
     setIsOpen(false);
     setSearchTerm("");
     inputRef.current?.blur();
-  };
-
-  const handleClearClick = () => {
-    onChange({
-      label: "",
-      value: "",
-    });
-    setSearchTerm("");
-    setIsOpen(false);
-    inputRef.current?.focus();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -155,14 +163,8 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
             className="p-1 rounded-full text-gray-400 hover:text-gray-600"
             aria-label={isOpen ? "Close dropdown" : "Open dropdown"}
           >
-            <ChevronDown
-              size={14}
-              className="rotate-180 translate-y-0.5"
-            />
-            <ChevronDown
-              size={14}
-              className="-translate-y-0.5"
-            />
+            <ChevronDown size={14} className="rotate-180 translate-y-0.5" />
+            <ChevronDown size={14} className="-translate-y-0.5" />
           </button>
         </div>
       </div>
@@ -182,6 +184,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
             <div
               key={option.value}
               role="option"
+              data-option={option.value}
               aria-selected={value?.value === option.value}
               className={`px-5 py-3 cursor-pointer transition-colors duration-150 border-b
                 ${
@@ -190,7 +193,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
                 ${value?.value === option.value ? "bg-blue-50 font-medium" : ""}
               `}
               onClick={() => handleOptionClick(option)}
-              onMouseEnter={() => setHighlightedIndex(index)}
+              // onMouseEnter={() => setHighlightedIndex(index)}
             >
               {option.label}
             </div>
