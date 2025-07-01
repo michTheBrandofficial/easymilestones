@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL 3.0
 pragma solidity ^0.8.24;
 
-import "forge-std/console.sol";
-
 contract Set {
   mapping(address => bool) internal addedValuesMapping;
   address[] internal addedValuesList;
