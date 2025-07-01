@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL 3.0
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.28;
 
 import { Set } from "./Libs.sol";
 
@@ -76,14 +76,24 @@ contract EasyMilestones {
     require(_milestones.getTotalAmount() == total_amount, "Total amount must be equal to the sum of milestones");
     transactionOwnersSet.add(newTransactionOwner);
 
-    Milestone[] memory _milestonesWithStatus = new Milestone[](_milestones.length);
+    // Create transaction struct in memory first, then push to storage
+    Transaction storage newTransaction = transactions[newTransactionOwner].push();
+    newTransaction.amount = total_amount;
+    newTransaction.final_deadline = final_deadline;
+    newTransaction.title = title;
+    newTransaction.created_at = block.timestamp;
+
+    // Add milestones to the storage array
     for (uint256 i = 0; i < _milestones.length; i++) {
-      _milestonesWithStatus[i] =
-        Milestone(_milestones[i].amount, _milestones[i].deadline, _milestones[i].title, Status.unpaid);
+      newTransaction.milestones.push(
+        Milestone({
+          amount: _milestones[i].amount,
+          deadline: _milestones[i].deadline,
+          title: _milestones[i].title,
+          status: Status.unpaid
+        })
+      );
     }
-    transactions[newTransactionOwner].push(
-      Transaction(total_amount, final_deadline, title, _milestonesWithStatus, block.timestamp)
-    );
     emit TransactionCreated(newTransactionOwner, total_amount, title, block.timestamp);
   }
 

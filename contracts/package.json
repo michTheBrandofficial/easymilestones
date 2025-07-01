@@ -4,7 +4,6 @@
     "local": "anvil",
     "compile": "forge build",
     "test": "forge test -vvvv",
-    "test:env": "echo $RPC_URL",
     "deploy:local": "forge create src/EasyMilestones.sol:EasyMilestones --rpc-url http://localhost:8545 --interactive --broadcast",
     "deploy:testnet": "forge create src/EasyMilestones.sol:EasyMilestones --rpc-url $RPC_URL --private-key $DEPLOYER_PRIVATE_KEY --broadcast"
   }
