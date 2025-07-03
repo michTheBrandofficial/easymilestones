@@ -9,7 +9,9 @@ configDotenv({
   path: ["./.env.local", ".env"],
 });
 
-const localAccount = privateKeyToAccount(process.env.DEPLOYER_PRIVATE_KEY! as `0x${string}`)
+const localAccount = privateKeyToAccount(
+  process.env.DEPLOYER_PRIVATE_KEY! as `0x${string}`
+);
 const walletClient = createWalletClient({
   chain: anvil,
   transport: http(process.env.RPC_URL),
@@ -20,13 +22,17 @@ const DEPLOYED_CONTRACT_ADDRESS = process.env
   .CONTRACT_ADDRESS! as `0x${string}`;
 
 const processDueMilestones = async () => {
-  const hash = await walletClient.writeContract({
-    address: DEPLOYED_CONTRACT_ADDRESS,
-    abi: contractAbi,
-    functionName: "processDueMilestones",
-    args: [] as any,
-  });
-  console.log(hash);
+  try {
+    const hash = await walletClient.writeContract({
+      address: DEPLOYED_CONTRACT_ADDRESS,
+      abi: contractAbi,
+      functionName: "processDueMilestones",
+      args: [] as any,
+    });
+    console.log(hash);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const job = new CronJob(

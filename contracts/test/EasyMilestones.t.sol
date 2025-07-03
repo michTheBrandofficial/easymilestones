@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.28;
 
 import { Test, console } from "forge-std/Test.sol";
 import { EasyMilestones } from "../src/EasyMilestones.sol";
@@ -154,10 +154,11 @@ contract EasyMilestonesTest is Test {
   function test_FundsTransferred_EventEmitted_When_MilestoneProcessed() public {
     vm.warp(TWELVETH_JULY + uint256(15 minutes));
     EasyMilestones.Transaction memory first_created_transaction = easyMilestones.getTransactions(address(this))[0];
-    EasyMilestones.Milestone memory firstTransaction_FirstMilestone =
-      first_created_transaction.milestones[0];
+    EasyMilestones.Milestone memory firstTransaction_FirstMilestone = first_created_transaction.milestones[0];
     vm.expectEmit(true, false, false, true);
-    emit EasyMilestones.FundsTransferred(address(this), firstTransaction_FirstMilestone.amount, firstTransaction_FirstMilestone.title, block.timestamp);
+    emit EasyMilestones.FundsTransferred(
+      address(this), firstTransaction_FirstMilestone.amount, firstTransaction_FirstMilestone.title, block.timestamp
+    );
     easyMilestones.processDueMilestones();
   }
 }
