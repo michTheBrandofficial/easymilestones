@@ -23,7 +23,8 @@ library LibArray {
   // Helper function to get total amount directly
   function getTotalAmount(EasyMilestones.MilestoneWithoutStatus[] memory self) internal pure returns (uint256) {
     uint256 total = 0;
-    for (uint256 i = 0; i < self.length; i++) {
+    uint256 arrayLength = self.length;
+    for (uint256 i = 0; i < arrayLength; i++) {
       total += self[i].amount;
     }
     return total;
@@ -102,8 +103,9 @@ contract EasyMilestones {
     newTransaction.title = title;
     newTransaction.created_at = block.timestamp;
 
+    uint256 milestones_length = _milestones.length;
     // Add milestones to the storage array
-    for (uint256 i = 0; i < _milestones.length; i++) {
+    for (uint256 i = 0; i < milestones_length; i++) {
       newTransaction.milestones.push(
         Milestone({
           amount: _milestones[i].amount,
@@ -123,7 +125,7 @@ contract EasyMilestones {
     return txn;
   }
 
-  event FundsTransferred(address indexed owner, uint256 amount, string milestone_title, uint256 timestamp);
+  event FundsTransferred(address indexed owner, uint256 amount, string title, uint256 timestamp);
 
   function payTransactionOwner(address payable transaction_owner, Milestone storage milestone, uint256 block_timestamp)
     internal
@@ -146,13 +148,16 @@ contract EasyMilestones {
   function processDueMilestones() external nonReentrant {
     uint256 timestamp = block.timestamp;
     address[] memory transactionOwnersList = transactionOwnersSet.toArray();
-    for (uint256 index = 0; index < transactionOwnersList.length; index++) {
+    uint256 transactionOwnersLength = transactionOwnersList.length;
+    for (uint256 index = 0; index < transactionOwnersLength; index++) {
       // for each transaction owner that has transactions. we get all the transactions
       address payable transaction_owner = payable(transactionOwnersList[index]);
       Transaction[] storage txns = transactions[transaction_owner];
-      for (uint256 transaction_index = 0; transaction_index < txns.length; transaction_index++) {
+      uint256 txns_length = txns.length;
+      for (uint256 transaction_index = 0; transaction_index < txns_length; transaction_index++) {
         Milestone[] storage txn_milestones = txns[transaction_index].milestones;
-        for (uint256 milestone_index = 0; milestone_index < txn_milestones.length; milestone_index++) {
+        uint256 milestones_length = txn_milestones.length;
+        for (uint256 milestone_index = 0; milestone_index < milestones_length; milestone_index++) {
           payTransactionOwner(transaction_owner, txn_milestones[milestone_index], timestamp);
         }
       }
