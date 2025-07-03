@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL 3.0
 pragma solidity ^0.8.28;
-
-import { Set } from "./Libs.sol";
-
+import { Set } from './Libs.sol';
 library LibArray {
   function last(EasyMilestones.MilestoneWithoutStatus[] memory self)
     internal
@@ -77,6 +75,7 @@ contract EasyMilestones {
     public
     payable
     nonZeroValue
+    nonReentrant
   {
     address newTransactionOwner = msg.sender;
     uint256 total_amount = msg.value;
