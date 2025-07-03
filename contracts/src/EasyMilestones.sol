@@ -57,9 +57,18 @@ contract EasyMilestones {
 
   mapping(address => Transaction[]) private transactions;
 
+  bool private locked;
+
   modifier nonZeroValue() {
     require(msg.value > 0, "Value must be greater than 0");
     _;
+  }
+
+  modifier nonReentrant() {
+    require(!locked, "Reentrant call");
+    locked = true;
+    _;
+    locked = false;
   }
 
   event TransactionCreated(address indexed owner, uint256 amount, string title, uint256 created_at);
@@ -110,16 +119,21 @@ contract EasyMilestones {
     internal
   {
     if (block_timestamp >= milestone.deadline && milestone.status == Status.unpaid) {
-      (bool success,) = transaction_owner.call{ value: milestone.amount }("");
-      require(success, "Failed to transfer funds");
+      // update state first
       milestone.status = Status.paid;
+
+      // external interactions last
+      (bool success,) = transaction_owner.call{ value: milestone.amount }("");
+      if (success == false) {
+        revert("Failed to transfer funds");
+      }
       emit FundsTransferred(transaction_owner, milestone.amount, milestone.title, block_timestamp);
     }
   }
 
   /// @notice this function will use block.timestamp to check if the milestone is due.
-  /// @notice anybody can call this function to process due milestones, that is if you are ready to pay gas fees 😂
-  function processDueMilestones() external {
+  /// @notice anybody can call this function to process due milestones, that is if you are willing to pay gas fees 😂
+  function processDueMilestones() external nonReentrant {
     uint256 timestamp = block.timestamp;
     address[] memory transactionOwnersList = transactionOwnersSet.toArray();
     for (uint256 index = 0; index < transactionOwnersList.length; index++) {
