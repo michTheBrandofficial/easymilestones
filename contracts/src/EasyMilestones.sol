@@ -2,6 +2,15 @@
 pragma solidity ^0.8.28;
 import { Set } from './Libs.sol';
 library LibArray {
+  function first(EasyMilestones.MilestoneWithoutStatus[] memory self)
+    internal
+    pure
+    returns (EasyMilestones.MilestoneWithoutStatus memory)
+  {
+    require(self.length > 0, "Index out of bounds");
+    return self[0];
+  }
+
   function last(EasyMilestones.MilestoneWithoutStatus[] memory self)
     internal
     pure
@@ -80,6 +89,8 @@ contract EasyMilestones {
     address newTransactionOwner = msg.sender;
     uint256 total_amount = msg.value;
     // Check if the final deadline is equal to the deadline of the last milestone in the array
+    require(_milestones.length > 0, "No milestones provided");
+    require(_milestones.first().deadline > block.timestamp, "Deadline must be in future");
     require(_milestones.last().deadline == final_deadline, "Last milestone deadline must be equal to final deadline");
     require(_milestones.getTotalAmount() == total_amount, "Total amount must be equal to the sum of milestones");
     transactionOwnersSet.add(newTransactionOwner);
