@@ -1,5 +1,5 @@
 import PageScreen from "@/components/ui/screen";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import WaterBodySVGFull from "../-components/water-body-svg-full";
 import { Button } from "@/components/buttons";
 import { useConnect } from "wagmi";
@@ -11,6 +11,7 @@ export const Route = createFileRoute("/onboarding/")({
 
 function Onboarding() {
   const { connectors, connectAsync } = useConnect();
+  const navigate = useNavigate()
   return (
     <PageScreen className="flex flex-col gap-y-5 relative ">
       <div className="w-full flex items-center justify-center fixed left-1/2 -translate-x-1/2 top-[20%] z-50">
@@ -22,7 +23,12 @@ function Onboarding() {
           <Button
             key={connector.id}
             className="w-full"
-            onTap={() => connectAsync({ connector })}
+            onTap={() => connectAsync({ connector }).then(() => {
+              navigate({
+                to: "/",
+                replace: true,
+              });
+            })}
           >
             Connect {connector.name}
           </Button>

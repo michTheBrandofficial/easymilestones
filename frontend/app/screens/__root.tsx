@@ -1,15 +1,19 @@
-import { Outlet, createRootRoute, useLocation } from "@tanstack/react-router";
+import {
+  Navigate,
+  Outlet,
+  createRootRoute,
+  useLocation,
+} from "@tanstack/react-router";
 import { Button } from "@/components/buttons";
-import { useLocalAccount } from "./-contexts/local-account";
 import Logo from "../android-chrome-512x512.png";
-import { formatEthAddress, noop } from "@/lib/utils";
+import { formatEthAddress } from "@/lib/utils";
 import Ethereum from "@/components/icons/ethereum";
 import FloatingTabBar from "./-components/floating-tab-bar";
 import { Typography } from "@/components/typography";
-import { formatEther } from "viem";
-import { useQuery } from "@tanstack/react-query";
 import type { FileRoutesByTo } from "../routeTree.gen";
 import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
+import { useAccount, useBalance, useDisconnect } from "wagmi";
+import IOSSpinner from "@/components/ui/ios-spinner";
 export const Route = createRootRoute({
   component: RootComponent,
 });
@@ -22,19 +26,29 @@ const noFloatingBarRoutes: Array<keyof FileRoutesByTo & (string & {})> = [
 function RootComponent() {
   const { pathname } = useLocation();
   const AccountSheet = useVariableHeightSheet("account");
-  const { privateKeyAccount, publicClient } = useLocalAccount();
-  const { data: balance } = useQuery({
-    queryKey: ["account-balance"],
-    queryFn: async () =>
-      publicClient.getBalance({
-        address: privateKeyAccount.address,
-        blockTag: "latest",
-      }),
-    refetchOnWindowFocus: false,
+  const { isConnected, isConnecting, address } = useAccount();
+  const { disconnect } = useDisconnect();
+  const userBalance = useBalance({
+    address,
+    blockTag: "latest",
   });
+  if (isConnecting)
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto no-scrollbar bg-em-primary px-4 ">
+        <IOSSpinner />
+      </div>
+    );
+  if (!isConnected)
+    return (
+      <div className="w-full h-full flex flex-col overflow-y-auto no-scrollbar bg-em-primary pt-[54px] px-4 ">
+        <Navigate to="/onboarding" replace />;
+        <Outlet />
+      </div>
+    );
+  else <Navigate to="/" replace />;
   return (
     // padding top of 48 for safe area zone.
-    <div className="w-full h-full flex flex-col overflow-y-auto no-scrollbar bg-em-primary pt-[54px]  px-4 ">
+    <div className="w-full h-full flex flex-col overflow-y-auto no-scrollbar bg-em-primary pt-[54px] px-4 ">
       {pathname === "/onboarding" ? null : (
         <div className="w-full flex items-center justify-between pt-5">
           <img
@@ -46,7 +60,7 @@ function RootComponent() {
             onTap={AccountSheet.openSheet}
             className="flex items-center gap-x-2 px-4 py-2.5 bg-em-dark text-white rounded-full text-sm"
           >
-            {formatEthAddress(privateKeyAccount?.address)}
+            {formatEthAddress(address ?? "0x")}
             <Ethereum fill="#4CABEF" />
           </Button>
         </div>
@@ -66,13 +80,13 @@ function RootComponent() {
               <div className="w-full flex items-center gap-x-2">
                 <Typography className="text-em-text">Address:</Typography>
                 <Typography className="text-em-tertiary font-bold flex-grow bg-em-primary/60 rounded-xl px-3 py-1 overflow-ellipsis overflow-hidden">
-                  {privateKeyAccount?.address}
+                  {address}
                 </Typography>
               </div>
               <div className="w-full flex items-center gap-x-2">
                 <Typography className="text-em-text">Balance:</Typography>
                 <Typography className="text-em-tertiary font-bold bg-em-primary/60 rounded-xl px-3 py-1 overflow-ellipsis overflow-hidden">
-                  {parseFloat(formatEther(balance || 0n)).toFixed(2)} ETH
+                  {userBalance.data?.formatted} {userBalance.data?.symbol}
                 </Typography>
               </div>
             </div>
@@ -80,7 +94,7 @@ function RootComponent() {
               <Button
                 variant="ghost-outline"
                 className="w-full"
-                onTap={noop}
+                onTap={() => disconnect()}
               >
                 Disconnect
               </Button>
