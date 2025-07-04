@@ -6,35 +6,13 @@ import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createConfig, http } from "wagmi";
-import { sepolia } from "wagmi/chains";
+import { baseSepolia } from "wagmi/chains";
 import { metaMask } from "wagmi/connectors";
 import WagmiContextProvider from "./screens/-contexts";
 import { AnimatePresence } from "motion/react";
 import { LocalAccountProvider } from "./screens/-contexts/local-account";
 import { VariableHeightSheetProvider } from "@/components/ui/variable-height-sheet";
-import './test-client'
 
-const queryClient = new QueryClient();
-
-// Create wagmi config
-const config = createConfig({
-  chains: [sepolia],
-  connectors: [
-    metaMask({
-      extensionOnly: true,
-    }),
-  ],
-  transports: {
-    [sepolia.id]: http(),
-  },
-});
-
-// Register the config for type safety
-declare module "wagmi" {
-  interface Register {
-    config: typeof config;
-  }
-}
 // Set up a Router instance
 const router = createRouter({
   routeTree,
@@ -60,11 +38,9 @@ if (!rootElement.innerHTML) {
         <VariableHeightSheetProvider>
           <WagmiContextProvider cookies={null}>
             <LocalAccountProvider>
-              <QueryClientProvider client={queryClient}>
-                <AnimatePresence mode="popLayout">
-                  <RouterProvider router={router}></RouterProvider>
-                </AnimatePresence>
-              </QueryClientProvider>
+              <AnimatePresence mode="popLayout">
+                <RouterProvider router={router}></RouterProvider>
+              </AnimatePresence>
             </LocalAccountProvider>
           </WagmiContextProvider>
         </VariableHeightSheetProvider>

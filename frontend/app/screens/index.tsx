@@ -9,7 +9,7 @@ import { Typography } from "@/components/typography";
 import PageScreen from "@/components/ui/screen";
 import { wagmiContractConfig } from "@/lib/contract-utils";
 import { bigintSecondsToDate, formatEthValue, last, Status } from "@/lib/utils";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
 import { Calendar01Icon, CheckmarkBadge01Icon, Clock04Icon, MoneySendSquareIcon } from "hugeicons-react";
 import { useLocalAccount } from "./-contexts/local-account";
 import { useQuery } from "@tanstack/react-query";
@@ -17,9 +17,9 @@ import { useMemo, useState } from "react";
 import { formatEther } from "viem";
 import IOSSpinner from "@/components/ui/ios-spinner";
 import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
-import { formatDate, set } from "date-fns";
+import { formatDate } from "date-fns";
 export const Route = createFileRoute("/")({
-  component: Home,
+  component: () => <Navigate to="/onboarding" replace />,
 });
 
 function Home() {
