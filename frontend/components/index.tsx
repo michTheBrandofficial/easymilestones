@@ -4,7 +4,6 @@ import { Button } from "./buttons";
 import PendingOverlay from "./ui/pending-overlay";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Typography } from "./typography";
-import { useLocalAccount } from "@/app/screens/-contexts/local-account";
 import { Calendar01Icon, MoneySendSquareIcon } from "hugeicons-react";
 
 const Components = () => {
@@ -29,16 +28,6 @@ const Components = () => {
         }, 4000);
       });
     },
-  });
-  const { privateKeyAccount, publicClient } = useLocalAccount();
-  const { data: balance } = useQuery({
-    queryKey: ["account-balance"],
-    queryFn: async () =>
-      publicClient.getBalance({
-        address: privateKeyAccount.address,
-        blockTag: "latest",
-      }),
-    refetchOnWindowFocus: false,
   });
   return (
     <section className="w-full h-full bg-orange-400overflow-y-auto no-scrollbar flex ">
