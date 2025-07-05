@@ -31,6 +31,9 @@ function Transactions() {
     ...wagmiContractConfig,
     functionName: "getTransactions",
     args: [userAddress!],
+    query: {
+      enabled: !!userAddress,
+    }
   });
   const transactionTabsMemo = useMemo(() => {
     const castTransactionsToMutable = transactions as Helpers.DeepMutable<

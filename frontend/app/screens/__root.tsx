@@ -31,6 +31,9 @@ function RootComponent() {
   const userBalance = useBalance({
     address,
     blockTag: "latest",
+    query: {
+      enabled: !!address,
+    }
   });
   if (isConnecting)
     return (
@@ -41,7 +44,7 @@ function RootComponent() {
   if (!isConnected)
     return (
       <div className="w-full h-full flex flex-col overflow-y-auto no-scrollbar bg-em-primary pt-[54px] px-4 ">
-        <Navigate to="/onboarding" replace />;
+        <Navigate to="/onboarding" replace />
         <Outlet />
       </div>
     );

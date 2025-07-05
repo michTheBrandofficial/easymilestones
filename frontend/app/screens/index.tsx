@@ -34,6 +34,9 @@ function Home() {
     ...wagmiContractConfig,
     functionName: "getTransactions",
     args: [userAddress!],
+    query: {
+      enabled: !!userAddress,
+    }
   });
   const investMentDataMemo = useMemo(() => {
     return {

@@ -10,17 +10,19 @@ import {
   Tick02Icon,
 } from "hugeicons-react";
 import React, { useState } from "react";
-import { useLocalAccount } from "../../-contexts/local-account";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import easyMilestonesAbi from "@/lib/abi";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/toast-context";
 import Toggle from "@/components/ui/toggle";
+import { bigintSecondsToDate, formatEthValue, truncate } from "@/lib/utils";
 import {
-  bigintSecondsToDate,
-  formatEthValue,
-  truncate,
-  wait,
-} from "@/lib/utils";
+  useAccount,
+  useBalance,
+  usePublicClient,
+  useWalletClient,
+  useWriteContract,
+} from "wagmi";
+import { wagmiContractConfig } from "@/lib/contract-utils";
+import { create } from "domain";
 
 type Props = {
   tx_payload: TransactionPayload;
@@ -41,32 +43,25 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
   const [tx_state, set_tx_state] = useState<TransactionState>(
     "still_in_confirmation"
   );
-  const {
-    privateKeyAccount,
-    publicClient,
-    walletClient,
-    chain,
-    deployedContractAddress,
-  } = useLocalAccount();
-  const { data: balance } = useQuery({
-    queryKey: ["account-balance"],
-    queryFn: async () =>
-      publicClient.getBalance({
-        address: privateKeyAccount.address,
-        blockTag: "latest",
-      }),
-    refetchOnWindowFocus: false,
+  const { address: userAddress, chain } = useAccount();
+  const userBalance = useBalance({
+    address: userAddress,
+    blockTag: "latest",
+    query: {
+      enabled: !!userAddress,
+    },
   });
-  const showToast = useToast();
-  const createTransactionMutation = useMutation({
+  const publicClient = usePublicClient();
+  const { data: walletClient } = useWalletClient();
+  const createTxMutation = useMutation({
     mutationFn: async () => {
+      if (!walletClient) throw new Error("Wallet client not found");
       const { request: simulatedContractRequest } =
         await publicClient.simulateContract({
-          address: deployedContractAddress,
-          abi: easyMilestonesAbi,
+          ...wagmiContractConfig,
           functionName: "createTransaction",
           chain: chain,
-          account: privateKeyAccount,
+          account: walletClient.account,
           args: [
             tx_payload.final_deadline,
             tx_payload.title,
@@ -80,7 +75,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
           ],
           value: tx_payload.amount,
         });
-      await walletClient.writeContract(simulatedContractRequest);
+      await walletClient?.writeContract(simulatedContractRequest);
     },
     onSuccess: () => {
       set_tx_state("confirmed");
@@ -89,9 +84,21 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
     },
     onError(err) {
       set_tx_state("still_in_confirmation");
-      showToast("info", err.message || "Something went wrong");
+      showToast(
+        "info",
+        truncate(
+          err.message ||
+            // @ts-expect-error this is a bug in wagmi connector:
+            err.details ||
+            // @ts-expect-error this is a bug in wagmi connector:
+            err.shortMessage ||
+            "Something went wrong",
+          30
+        )
+      );
     },
   });
+  const showToast = useToast();
   const [permissions, setPermissions] = useState({
     cannot_access_assets: false,
     authorization_to_lock: false,
@@ -106,13 +113,13 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
             <div className="w-full flex items-center justify-between gap-x-2">
               <Typography className="text-em-text text-sm">Address:</Typography>
               <Typography className="text-em-dark flex-grow pl-3 font-medium font-Bricolage_Grotesque text-base overflow-ellipsis overflow-hidden">
-                {privateKeyAccount?.address}
+                {userAddress}
               </Typography>
             </div>
             <div className="w-full flex items-center justify-between gap-x-2">
               <Typography className="text-em-text text-sm">Balance:</Typography>
               <Typography className="text-em-dark font-medium font-Bricolage_Grotesque text-base overflow-ellipsis overflow-hidden">
-                {formatEthValue(balance || 0n)} ETH
+                {userBalance.data?.formatted} {userBalance.data?.symbol}
               </Typography>
             </div>
             <div className="h-[1px] hidden bg-[#D3D3D3]" />
@@ -134,7 +141,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
           </div>
         </div>
       )}
-      {createTransactionMutation.isPending && (
+      {createTxMutation.isPending && (
         <div className="flex-grow w-full flex flex-col items-center justify-center">
           <IOSSpinner />
         </div>
@@ -243,7 +250,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
           variant="full"
           className="w-full"
           disabled={
-            createTransactionMutation.isPending ||
+            createTxMutation.isPending ||
             !permissions.cannot_access_assets ||
             !permissions.authorization_to_lock
           }
@@ -252,7 +259,7 @@ const ConfirmationSheetBody: React.FC<Props> = ({ tx_payload, ...props }) => {
               props.onTransactionCreatedSuccessClose();
             else {
               set_tx_state("pending");
-              createTransactionMutation.mutateAsync();
+              createTxMutation.mutateAsync();
             }
           }}
         >
