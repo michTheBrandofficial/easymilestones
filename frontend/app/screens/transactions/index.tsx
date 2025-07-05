@@ -11,16 +11,14 @@ import {
 } from "hugeicons-react";
 import { bigintSecondsToDate, formatEthValue, Status } from "@/lib/utils";
 import Tabs from "@/components/ui/tabs";
-import { useLocalAccount } from "../-contexts/local-account";
-import { useQuery } from "@tanstack/react-query";
 import { wagmiContractConfig } from "@/lib/contract-utils";
 import IOSSpinner from "@/components/ui/ios-spinner";
 import { useMemo, useState } from "react";
 import Transaction from "./-components/transaction";
 import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
 import { formatDate } from "date-fns";
-import { MilestoneSVG } from "@/components/icons/transaction-list-svgs";
 import { cn } from "@/components/cn";
+import { useAccount, useReadContract } from "wagmi";
 
 export const Route = createFileRoute("/transactions/")({
   component: Transactions,
@@ -28,19 +26,14 @@ export const Route = createFileRoute("/transactions/")({
 
 function Transactions() {
   const navigate = useNavigate();
-  const { publicClient, privateKeyAccount, deployedContractAddress } =
-    useLocalAccount();
-  const { data: transactions = [], isFetching } = useQuery({
-    queryKey: ["transactions"],
-    queryFn: async () => {
-      const transactions = await publicClient.readContract({
-        address: deployedContractAddress,
-        abi: wagmiContractConfig.abi,
-        functionName: "getTransactions",
-        args: [privateKeyAccount.address],
-      });
-      return transactions;
-    },
+  const { address: userAddress } = useAccount();
+  const { data: transactions = [], isFetching } = useReadContract({
+    ...wagmiContractConfig,
+    functionName: "getTransactions",
+    args: [userAddress!],
+    query: {
+      enabled: !!userAddress,
+    }
   });
   const transactionTabsMemo = useMemo(() => {
     const castTransactionsToMutable = transactions as Helpers.DeepMutable<

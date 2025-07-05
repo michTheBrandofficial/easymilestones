@@ -14,7 +14,6 @@ import {
 } from "@/lib/milestone_builder";
 import { useToast } from "@/components/ui/toast-context";
 import { useSheet } from "@/components/ui/sheet";
-import { ErrorMatcher } from "@/lib/error-matcher";
 import Milestone from "./-components/milestone";
 import ConfirmationSheetBody from "./-components/confirmation-sheet-body";
 
@@ -69,7 +68,7 @@ function CreateTransaction() {
         setTx_Payload(tx_payload);
         ConfirmationSheet.openSheet();
       } catch (error) {
-        showToast('info', (error as MilestoneBuilderError).message)
+        showToast("info", (error as MilestoneBuilderError).message);
       }
     } else if (step === 1) {
       if (txTitle === "") return;
@@ -336,7 +335,7 @@ function CreateTransaction() {
                     onAdd={async () => {
                       milestoneBuilder.addEmptyMilestone(index);
                       // wait sometime before executing
-                      await wait(200)
+                      await wait(200);
                       const nextMilestone =
                         milestoneContainerRef.current?.querySelector<HTMLDivElement>(
                           `[data-milestone='${index + 1}']`
@@ -350,7 +349,7 @@ function CreateTransaction() {
                               .height,
                           behavior: "smooth",
                         });
-                        await wait(500)
+                        await wait(500);
                         const input =
                           nextMilestone.querySelector<HTMLInputElement>(
                             "input[name='title']"
@@ -451,9 +450,9 @@ function CreateTransaction() {
               onTransactionCreatedSuccessClose={() => {
                 ConfirmationSheet.closeSheet();
                 milestoneBuilder.clear();
-                setTxTitle('');
-                focusOnTxTitle()
-                setStep(1)
+                setTxTitle("");
+                focusOnTxTitle();
+                setStep(1);
               }}
             />
           </ConfirmationSheet.SheetContent>

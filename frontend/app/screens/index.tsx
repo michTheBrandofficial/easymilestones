@@ -9,15 +9,19 @@ import { Typography } from "@/components/typography";
 import PageScreen from "@/components/ui/screen";
 import { wagmiContractConfig } from "@/lib/contract-utils";
 import { bigintSecondsToDate, formatEthValue, last, Status } from "@/lib/utils";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Calendar01Icon, CheckmarkBadge01Icon, Clock04Icon, MoneySendSquareIcon } from "hugeicons-react";
-import { useLocalAccount } from "./-contexts/local-account";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
+import {
+  Calendar01Icon,
+  CheckmarkBadge01Icon,
+  Clock04Icon,
+  MoneySendSquareIcon,
+} from "hugeicons-react";
 import { useMemo, useState } from "react";
 import { formatEther } from "viem";
 import IOSSpinner from "@/components/ui/ios-spinner";
 import { useVariableHeightSheet } from "@/components/ui/variable-height-sheet";
-import { formatDate, set } from "date-fns";
+import { formatDate } from "date-fns";
+import { useAccount, useReadContract } from "wagmi";
 export const Route = createFileRoute("/")({
   component: Home,
 });
@@ -25,19 +29,14 @@ export const Route = createFileRoute("/")({
 function Home() {
   const navigate = useNavigate();
   // use wagmi to fetch transactions
-  const { publicClient, privateKeyAccount, deployedContractAddress } =
-    useLocalAccount();
-  const { data: transactions = [], isFetching } = useQuery({
-    queryKey: ["transactions"],
-    queryFn: async () => {
-      const transactions = await publicClient.readContract({
-        address: deployedContractAddress,
-        abi: wagmiContractConfig.abi,
-        functionName: "getTransactions",
-        args: [privateKeyAccount.address],
-      });
-      return transactions as Helpers.DeepMutable<typeof transactions>;
-    },
+  const { address: userAddress } = useAccount();
+  const { data: transactions = [], isFetching } = useReadContract({
+    ...wagmiContractConfig,
+    functionName: "getTransactions",
+    args: [userAddress!],
+    query: {
+      enabled: !!userAddress,
+    }
   });
   const investMentDataMemo = useMemo(() => {
     return {
@@ -137,116 +136,118 @@ function Home() {
           </div>
           <div className="space-y-3">
             {/* filter through to get only transactions that have at least one milestone */}
-            {transactions.map((tx, index) => {
-              const isAllPaid = tx.milestones.every(
-                (m) => m.status === Status.paid
-              );
-              const transactionParameters = (() => {
-                return {
-                  firstMilestoneCompleted:
-                    tx.milestones[0].status === Status.paid,
-                  hasMultipleMilestones: tx.milestones.length > 1,
-                  secondMilestoneCompleted:
-                    tx.milestones[1]?.status === Status.paid,
-                  moreThan2Milestones:
-                    tx.milestones.length > 2
-                      ? {
-                          inBetween: tx.milestones.slice(
-                            1,
-                            tx.milestones.length - 1
-                          ),
-                          lastMilestoneCompleted:
-                            last(
-                              tx.milestones as Helpers.Mutable<
-                                typeof tx.milestones
-                              >
-                            ).status === Status.paid,
-                        }
-                      : null,
-                };
-              })();
-              return (
-                <div
-                  key={index}
-                  onClick={() => {
-                    set_tx_details(tx);
-                    TxDetailsSheet.openSheet();
-                  }}
-                  className="w-full flex cursor-pointer items-start gap-x-2"
-                >
+            {(transactions as Helpers.DeepMutable<typeof transactions>).map(
+              (tx, index) => {
+                const isAllPaid = tx.milestones.every(
+                  (m) => m.status === Status.paid
+                );
+                const transactionParameters = (() => {
+                  return {
+                    firstMilestoneCompleted:
+                      tx.milestones[0].status === Status.paid,
+                    hasMultipleMilestones: tx.milestones.length > 1,
+                    secondMilestoneCompleted:
+                      tx.milestones[1]?.status === Status.paid,
+                    moreThan2Milestones:
+                      tx.milestones.length > 2
+                        ? {
+                            inBetween: tx.milestones.slice(
+                              1,
+                              tx.milestones.length - 1
+                            ),
+                            lastMilestoneCompleted:
+                              last(
+                                tx.milestones as Helpers.Mutable<
+                                  typeof tx.milestones
+                                >
+                              ).status === Status.paid,
+                          }
+                        : null,
+                  };
+                })();
+                return (
                   <div
-                    className={cn(
-                      "size-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
-                      {
-                        "bg-em-green/50": isAllPaid,
-                      }
-                    )}
+                    key={index}
+                    onClick={() => {
+                      set_tx_details(tx);
+                      TxDetailsSheet.openSheet();
+                    }}
+                    className="w-full flex cursor-pointer items-start gap-x-2"
                   >
-                    {isAllPaid ? (
-                      <CheckmarkBadge01Icon className={cn("size-7")} />
-                    ) : (
-                      <Clock04Icon className={cn("size-7")} />
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-y-1 w-[65%] items-start ">
-                    <Typography className="font-bold whitespace-nowrap overflow-hidden overflow-ellipsis w-full">
-                      {tx.title}
-                    </Typography>
-                    <div className="w-full flex pt-4 pb-2 bg-orange-">
-                      <MilestoneSVG
-                        size={1}
-                        completed={
-                          transactionParameters.firstMilestoneCompleted
+                    <div
+                      className={cn(
+                        "size-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
+                        {
+                          "bg-em-green/50": isAllPaid,
                         }
-                      />
-                      {transactionParameters.hasMultipleMilestones &&
-                        (transactionParameters.moreThan2Milestones ? (
-                          <>
-                            <LittleMilestoneSVG
-                              size={0.8}
+                      )}
+                    >
+                      {isAllPaid ? (
+                        <CheckmarkBadge01Icon className={cn("size-7")} />
+                      ) : (
+                        <Clock04Icon className={cn("size-7")} />
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-y-1 w-[65%] items-start ">
+                      <Typography className="font-bold whitespace-nowrap overflow-hidden overflow-ellipsis w-full">
+                        {tx.title}
+                      </Typography>
+                      <div className="w-full flex pt-4 pb-2 bg-orange-">
+                        <MilestoneSVG
+                          size={1}
+                          completed={
+                            transactionParameters.firstMilestoneCompleted
+                          }
+                        />
+                        {transactionParameters.hasMultipleMilestones &&
+                          (transactionParameters.moreThan2Milestones ? (
+                            <>
+                              <LittleMilestoneSVG
+                                size={0.8}
+                                completed={
+                                  transactionParameters.secondMilestoneCompleted
+                                }
+                                className="-mt-1 -ml-[7px]"
+                              />
+                              <Typography className="text-em-text font-bold text-xs -mt-2 mx-1.5 whitespace-nowrap">
+                                {
+                                  transactionParameters.moreThan2Milestones
+                                    .inBetween.length
+                                }{" "}
+                                more
+                              </Typography>
+                              <LastLittleMilestoneSVG
+                                size={0.8}
+                                completed={
+                                  transactionParameters.moreThan2Milestones
+                                    .lastMilestoneCompleted
+                                }
+                                className="-mt-[9px] -ml-"
+                              />
+                            </>
+                          ) : (
+                            <MilestoneSVG
+                              size={1}
                               completed={
                                 transactionParameters.secondMilestoneCompleted
                               }
-                              className="-mt-1 -ml-[7px]"
+                              className="-mt-2.5 -ml-[7px]"
                             />
-                            <Typography className="text-em-text font-bold text-xs -mt-2 mx-1.5 whitespace-nowrap">
-                              {
-                                transactionParameters.moreThan2Milestones
-                                  .inBetween.length
-                              }{" "}
-                              more
-                            </Typography>
-                            <LastLittleMilestoneSVG
-                              size={0.8}
-                              completed={
-                                transactionParameters.moreThan2Milestones
-                                  .lastMilestoneCompleted
-                              }
-                              className="-mt-[9px] -ml-"
-                            />
-                          </>
-                        ) : (
-                          <MilestoneSVG
-                            size={1}
-                            completed={
-                              transactionParameters.secondMilestoneCompleted
-                            }
-                            className="-mt-2.5 -ml-[7px]"
-                          />
-                        ))}
+                          ))}
+                      </div>
+                    </div>
+                    <div className="w-fit flex flex-col gap-y-1 items-end ml-auto">
+                      <Typography className="font-semibold whitespace-nowrap">
+                        {formatEther(tx.amount)} ETH
+                      </Typography>
+                      <Typography className="font-medium text-em-text text-xs">
+                        {isAllPaid ? "Completed" : "Ongoing"}
+                      </Typography>
                     </div>
                   </div>
-                  <div className="w-fit flex flex-col gap-y-1 items-end ml-auto">
-                    <Typography className="font-semibold whitespace-nowrap">
-                      {formatEther(tx.amount)} ETH
-                    </Typography>
-                    <Typography className="font-medium text-em-text text-xs">
-                      {isAllPaid ? "Completed" : "Ongoing"}
-                    </Typography>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              }
+            )}
           </div>
         </div>
       ) : (

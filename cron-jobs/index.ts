@@ -1,7 +1,7 @@
 import { CronJob } from "cron";
 import { configDotenv } from "dotenv";
 import { http, createWalletClient } from "viem";
-import { anvil } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 import contractAbi from "./abi";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -13,7 +13,7 @@ const localAccount = privateKeyToAccount(
   process.env.DEPLOYER_PRIVATE_KEY! as `0x${string}`
 );
 const walletClient = createWalletClient({
-  chain: anvil,
+  chain: baseSepolia,
   transport: http(process.env.RPC_URL),
   account: localAccount,
 });
@@ -36,7 +36,7 @@ const processDueMilestones = async () => {
 };
 
 const job = new CronJob(
-  // make this into every 15 mins
+  // make this into every 15
   "0 */15 * * * *",
   processDueMilestones,
   null,
