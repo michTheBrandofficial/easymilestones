@@ -1,12 +1,6 @@
 import { cn } from "@/components/cn";
 import React from "react";
 
-type Props = React.SVGProps<SVGSVGElement> & {
-  /**
-   * @dev whether plant should show or not
-   */
-  plants?: boolean;
-};
 
 /**
  * @dev this is the water body svg just like in the figma
@@ -14,7 +8,6 @@ type Props = React.SVGProps<SVGSVGElement> & {
  */
 const WaterBodySVG = ({
   className = "fixed bottom-5 z-10 left-0 min-w-[100vw] ",
-  ...props
 }: React.SVGProps<SVGSVGElement>) => {
   return (
     <div className={cn("", className)}>

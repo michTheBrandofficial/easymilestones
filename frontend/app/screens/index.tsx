@@ -9,7 +9,7 @@ import { Typography } from "@/components/typography";
 import PageScreen from "@/components/ui/screen";
 import { wagmiContractConfig } from "@/lib/contract-utils";
 import { bigintSecondsToDate, formatEthValue, last, Status } from "@/lib/utils";
-import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Calendar01Icon,
   CheckmarkBadge01Icon,

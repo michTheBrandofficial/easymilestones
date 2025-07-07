@@ -19,10 +19,8 @@ import {
   useBalance,
   usePublicClient,
   useWalletClient,
-  useWriteContract,
 } from "wagmi";
 import { wagmiContractConfig } from "@/lib/contract-utils";
-import { create } from "domain";
 
 type Props = {
   tx_payload: TransactionPayload;
