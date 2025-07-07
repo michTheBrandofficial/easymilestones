@@ -1,3 +1,5 @@
+# production
 .next/
+/dist
 # dependencies
 /node_modules
