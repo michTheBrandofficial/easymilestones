@@ -14,7 +14,6 @@ import { Button } from "../buttons";
 import { Typography } from "../typography";
 import Modal from "./modal";
 import SearchableDropdown from "./searchable-dropdown";
-import { noop } from "@/lib/utils";
 
 const months = [
   "January",

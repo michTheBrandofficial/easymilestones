@@ -39,7 +39,7 @@ const Components = () => {
   );
 };
 
-const Milestone = (_props: any) => {
+export const Milestone = (_props: any) => {
   return (
     <div className="flex items-end gap-x-2 group ">
       <div className="flex flex-col items-center">

@@ -7,7 +7,7 @@ type MilestoneCreationSVGProps = {
 
 const BRANCH_COLOR = "#A3D5FA";
 
-const Branch: React.FC<MilestoneCreationSVGProps> = ({ size = 1, ...props }) => {
+const Branch: React.FC<MilestoneCreationSVGProps> = ({ size = 1 }) => {
   const [w, h] = scaleSize(size, {
     width: "45",
     height: "100",
@@ -29,7 +29,7 @@ const Branch: React.FC<MilestoneCreationSVGProps> = ({ size = 1, ...props }) => 
   );
 };
 
-const StreamFlow: React.FC<MilestoneCreationSVGProps> = ({ size = 1, ...props }) => {
+const StreamFlow: React.FC<MilestoneCreationSVGProps> = ({ size = 1 }) => {
   const [w, h] = scaleSize(size, {
     width: "35",
     height: "73",
@@ -42,7 +42,11 @@ const StreamFlow: React.FC<MilestoneCreationSVGProps> = ({ size = 1, ...props })
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M32.7841 -0.17197C37.963 64.5515 -11.5 -15.7932 5.00008 72.2068" stroke={BRANCH_COLOR} strokeWidth="2.7"/>
+      <path
+        d="M32.7841 -0.17197C37.963 64.5515 -11.5 -15.7932 5.00008 72.2068"
+        stroke={BRANCH_COLOR}
+        strokeWidth="2.7"
+      />
     </svg>
   );
 };
@@ -50,4 +54,4 @@ const StreamFlow: React.FC<MilestoneCreationSVGProps> = ({ size = 1, ...props })
 export const MilestoneCreationSVGs = {
   Branch,
   StreamFlow,
-}
+};
