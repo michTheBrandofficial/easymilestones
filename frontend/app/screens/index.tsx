@@ -176,7 +176,7 @@ function Home() {
                   >
                     <div
                       className={cn(
-                        "size-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
+                        "size-12 min-w-12 min-h-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
                         {
                           "bg-em-green/50": isAllPaid,
                         }
@@ -292,7 +292,7 @@ function Home() {
                   <div key={index} className="w-full flex items-start gap-x-3">
                     <div
                       className={cn(
-                        "size-12 min-w-12 min-h-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
+                        "min-w-12 min-h-12 flex items-center justify-center bg-em-tertiary/50 rounded-full",
                         {
                           "bg-em-green/50": milestone.status === Status.paid,
                         }
